@@ -52,7 +52,10 @@
 /* ── hero ───────────────────────────────────────────────────────────── */
 .ch-hero { min-height: 100svh; display: flex; align-items: flex-end; padding: calc(var(--nav-h) + 40px) 0 clamp(96px, 14vh, 150px); }
 .ch-hero .mono { color: var(--text-3); max-width: 40ch; }
-.ch-hero__title { font-size: clamp(2.7rem, .9rem + 6.3vw, 7.6rem); margin: 22px 0 26px; max-width: 13ch; }
+.ch-hero__title { font-size: clamp(2.3rem, .6rem + 4vw, 5.4rem); margin: 22px 0 26px; max-width: min(11.5em, 100%); text-wrap: balance; }
+/* three lines at most: the lead stays on one line, the question takes two */
+.ch-hero__title em { white-space: nowrap; }
+@media (min-width: 900px) { .ch-hero__title { max-width: min(11.5em, 50vw); } } /* clear of the globe */
 .ch-hero__title em { color: var(--acc); }
 .ch-hero__row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
 .ch-hero__row .mono { color: var(--text-3); max-width: 46ch; }

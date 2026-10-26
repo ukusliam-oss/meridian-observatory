@@ -264,7 +264,11 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
 ## Not done
 - Not deployed. The original Meridian 1 is still live at https://ukusliam-oss.github.io/meridian/ (af7a163); this
   project has no remote.
-- Phases left from the analysis: 2 colour and hierarchy, 3 light pipeline and map saturation, 4 HUD and lighting-up
+- Phase 2 (2026-10-26): colour is light only. `.btn--accent` is card glass with one glowing subject dot, `.tag` is a
+  faint outline in the subject colour (never a fill), the command-word ladder is one white light rising by level; lens
+  cards speak in serif and mono only; chapter titles keep their lead on one line and the question in two (at most three
+  lines, at most half the screen wide). History's colour (amber outside, violet inside) is still undecided.
+- Phases left from the analysis: 3 light pipeline and map saturation, 4 HUD and lighting-up
   motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):

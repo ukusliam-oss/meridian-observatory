@@ -83,7 +83,6 @@ lens_html = ''.join(f'''
       <div class="wrap"><article class="lens__card" style="--c:var(--{c})" data-reveal>
         <p class="lens__num"><b>{num}</b>{label}</p>
         <h2 class="h2" id="lens-{k}-h">{h}</h2>
-        <p class="muted" style="font-size:16px;line-height:1.55">{p}</p>
         <ul class="lens__stats">{''.join(f'<li><b data-count="{n}">{n}</b>{t}</li>' for n, t in stats)}</ul>
         <a class="btn btn--accent" href="{k}.html" style="justify-self:start">Go to {label.split()[0]} <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a>
       </article></div>

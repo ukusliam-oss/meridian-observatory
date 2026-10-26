@@ -18,17 +18,17 @@ gsap.ticker.add(sync);
 
 // ── command-word ladder ──
 const RUNGS = [
-  { name: 'Recall', words: ['Identify', 'State', 'Give', 'Define'], text: 'Give a short, precise answer. No explanation is needed.', c: '#9db7ff',
+  { name: 'Recall', words: ['Identify', 'State', 'Give', 'Define'], text: 'Give a short, precise answer. No explanation is needed.', 
     ex: [['History', 'Not used in History. History questions start at "describe".'], ['Economics', 'Define opportunity cost.'], ['Geography', 'Identify the landform at X on the photograph.']] },
-  { name: 'Describe', words: ['Describe', 'Compare', 'Calculate'], text: 'Say what something is like or what happened, using details and figures. Do not explain why.', c: '#46d6a0',
+  { name: 'Describe', words: ['Describe', 'Compare', 'Calculate'], text: 'Say what something is like or what happened, using details and figures. Do not explain why.', 
     ex: [['History', 'Describe the terms of the Munich Agreement.'], ['Economics', 'Describe the trend in the inflation rate shown in Figure 1.'], ['Geography', 'Compare the two climate graphs.']] },
-  { name: 'Explain', words: ['Explain', 'Analyse', 'Suggest'], text: 'Give reasons and show how one thing leads to another.', c: '#f0b45a',
+  { name: 'Explain', words: ['Explain', 'Analyse', 'Suggest'], text: 'Give reasons and show how one thing leads to another.', 
     ex: [['History', 'Why did the USA become involved in Korea in 1950?'], ['Economics', 'Analyse how a cut in interest rates could reduce unemployment.'], ['Geography', 'Explain how an oxbow lake forms.']] },
-  { name: 'Evaluate', words: ['Discuss', 'Evaluate', 'Assess', 'How far…?'], text: 'Consider both sides and reach a supported conclusion.', c: '#ff7a6b',
+  { name: 'Evaluate', words: ['Discuss', 'Evaluate', 'Assess', 'How far…?'], text: 'Consider both sides and reach a supported conclusion.', 
     ex: [['History', '"Hitler\'s foreign policy was the main cause of war in 1939." How far do you agree?'], ['Economics', 'Discuss whether a government should subsidise public transport.'], ['Geography', 'Assess how effective hard engineering has been on a coastline you have studied.']] },
 ];
 const ladder = $('.ladder'), detail = $('.ladder-detail');
-ladder.innerHTML = RUNGS.map((r, i) => `<button class="card rung" style="--i:${i};--rc:${r.c}" aria-pressed="${i === 2}" data-i="${i}">
+ladder.innerHTML = RUNGS.map((r, i) => `<button class="card rung" style="--i:${i}" aria-pressed="${i === 2}" data-i="${i}">
   <span class="rung__lvl">${i + 1}</span><span class="h3">${r.name}</span><p>${r.text}</p>
   <span class="rung__words">${r.words.map(w => `<span>${w}</span>`).join('')}</span></button>`).join('');
 const COLORS = { History: 'hist', Economics: 'econ', Geography: 'geo' };
