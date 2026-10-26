@@ -283,7 +283,9 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   the night's continents), the ocean's rim and the air glow on the sun's side with a warm band at the day's edge, and
   the subject's colour stays the air's. City lights on the night side were tried (Natural Earth places baked per dot)
   and dropped: they pulled the eye.
-- Phase left from the analysis: 6 one camera across pages.
+- Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
+  resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
+  opening. Do not retry a globe flight across pages without asking what felt wrong.
   motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):
