@@ -271,7 +271,7 @@ for k, (name, code, eyebrow, lede, stats) in HEROES.items():
   <div class="grain"></div>
   <div class="wrap">
     <p class="eyebrow">Cambridge IGCSE · {eyebrow}</p>
-    <div class="s-hero__title"><h1 class="h1" data-split="now">{name}</h1><span class="s-hero__code">{code}</span></div>
+    <div class="s-hero__title"><h1 class="h1">{name}</h1><span class="s-hero__code">{code}</span></div>
     <div class="s-hero__row"><p class="lede">{lede}</p>
       <div class="s-hero__stats">{''.join(f'<div><b data-count="{n}">{n}</b><span>{t}</span></div>' for n, t in stats)}</div></div>
   </div>

@@ -500,7 +500,7 @@ html.is-booting { overflow: hidden; }
 .inst__centre--low { left: auto; right: 0; top: -2px; translate: none; width: auto; justify-items: end; text-align: right; }
 .inst__centre--low .inst__cap { min-height: 0; color: rgb(255 255 255 / .7); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .inst__year { font-family: var(--serif); font-weight: 400; font-size: calc(var(--s) * .16); line-height: .9; color: #fff; font-variant-numeric: tabular-nums; }
-.inst__cap { min-height: 2.6em; font-size: 11px; line-height: 1.3; letter-spacing: .06em; color: rgb(255 255 255 / .62); }
+.inst__cap { min-height: 2.6em; max-width: 30ch; font-size: 11px; line-height: 1.3; letter-spacing: .06em; color: rgb(255 255 255 / .62); text-wrap: balance; }
 .inst__label { position: absolute; left: 0; top: -2px; font-size: 11px; letter-spacing: .06em; color: rgb(255 255 255 / .55); }
 .inst__grid line { stroke: rgb(255 255 255 / .06); stroke-width: .35; }
 .inst__ax { fill: none; stroke: rgb(255 255 255 / .45); stroke-width: .5; }
@@ -954,20 +954,15 @@ html.is-booting { overflow: hidden; }
 .js.no-motion [data-reveal], .js.reveal-fallback [data-reveal] { opacity: 1; }
 [data-split] .line { overflow: clip; padding-bottom: .06em; margin-bottom: -.06em; }
 @view-transition { navigation: auto; }
-/* the joins between pages (transitions.js): a subject link is carried into the hub's title; everything else dims out
-   and lights up, the bar staying put (a chapter card opening like a window onto the chapter was tried and dropped) */
-::view-transition-group(subj) { animation-duration: .85s; animation-timing-function: cubic-bezier(.5, 0, 0, 1); }
-::view-transition-old(subj) { animation: vt-fade-out .35s cubic-bezier(.445, .05, .55, .95) both; }
-::view-transition-new(subj) { animation: vt-fade-in .6s cubic-bezier(.445, .05, .55, .95) .15s both; }
-@keyframes vt-fade-out { to { opacity: 0; } }
-@keyframes vt-fade-in { from { opacity: 0; filter: blur(5px); } }
-/* between pages the old page dims out and the new one lights up, like the blocks inside them; the bar stays put */
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .42s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
-::view-transition-old(root) { animation-name: vt-out; }
-::view-transition-new(root) { animation-name: vt-in; }
-::view-transition-old(root) { animation-duration: .28s; }
+/* Between pages, one gesture: the old page dims to night, and only once it has gone does the new one light up out of
+   that night (Cartier's), its title then sharpening word by word; nothing travels across the screen. The bar stays
+   put. (Carrying the followed link into the hub's title, and a chapter card opening like a window, were tried and
+   dropped: a box flying across read as awkward next to the calm exit.) */
+::view-transition { background: var(--bg); }
+::view-transition-old(root) { animation: vt-out .38s cubic-bezier(.445, .05, .55, .95) both; }
+::view-transition-new(root) { animation: vt-in .8s cubic-bezier(.445, .05, .55, .95) .26s both; }
 @keyframes vt-out { to { opacity: 0; filter: brightness(.4); } }
-@keyframes vt-in { from { opacity: 0; filter: brightness(.4); transform: translateY(6px); } }
+@keyframes vt-in { from { opacity: 0; filter: brightness(.4); } }
 /* on the bar, not on .nav: a view-transition-name makes its element a backdrop root, and the bar's blur then saw
    nothing behind it (the page read sharp through the glass) */
 .nav__bar { view-transition-name: nav; }

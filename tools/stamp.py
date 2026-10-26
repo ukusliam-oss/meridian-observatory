@@ -23,8 +23,7 @@ def stamp(page):
     # after the 404 page's <base> script if it has one, else right after <meta charset>
     anchor = re.search(r'document\.write\(\'<base[^\n]*</script>', s) or re.search(r'<meta charset="utf-8">', s)
     s = re.sub(r'\n?<script src="(?:\.\./)*assets/js/transitions\.js[^"]*"></script>', '', s)
-    # the joins between pages: a small classic script, in the head, so it is listening before the first frame
-    s = s[:anchor.end()] + '\n' + tag + f'\n<script src="{up}assets/js/transitions.js"></script>' + s[anchor.end():]
+    s = s[:anchor.end()] + '\n' + tag + s[anchor.end():]
     # the entry scripts and stylesheets themselves
     def ver(m):
         path = m.group(2)

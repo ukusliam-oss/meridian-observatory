@@ -66,13 +66,11 @@ instrument($('[data-inst]'), id, d);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 boot();
 subnav($('.nav__sub'), $('.subnav-at'));
-// the opening: arriving through a link, the title has just been carried here (transitions.js) and stands; otherwise its
-// words sharpen out of a blur in a random order (Cartier's); the rest sharpens in after it
+// the opening, as the page lights up out of the night between pages: the title's letters sharpen out of a blur in a
+// random order (Cartier's, by letter since a hub's title is one word), then the code, the line and the figures
 if (!reduced) {
-  const carried = document.documentElement.dataset.vt === 'subj';
-  if (!carried) {
-    const words = window.SplitText.create($('.s-hero__title .h1'), { type: 'words' }).words;
-    gsap.utils.shuffle([...words]).forEach((w, k) => gsap.fromTo(w, { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'none', delay: 0.1 + k * 0.1, clearProps: 'filter' }));
-  }
-  gsap.fromTo('.s-hero__code, .s-hero .lede, .s-hero__stats > div', { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'm.sine', stagger: 0.1, delay: carried ? 0.35 : 0.6, clearProps: 'filter' });
+  const chars = window.SplitText.create($('.s-hero__title .h1'), { type: 'chars' }).chars;
+  gsap.set(chars, { opacity: 0, filter: 'blur(6px)' });
+  gsap.utils.shuffle([...chars]).forEach((c, k) => gsap.to(c, { opacity: 1, filter: 'blur(0px)', duration: 0.9, ease: 'none', delay: 0.4 + k * 0.06, clearProps: 'filter' }));
+  gsap.fromTo('.s-hero__code, .s-hero .lede, .s-hero__stats > div', { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'm.sine', stagger: 0.1, delay: 0.4 + chars.length * 0.06 + 0.3, clearProps: 'filter' });
 }

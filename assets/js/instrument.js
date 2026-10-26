@@ -162,7 +162,7 @@ export function instrument(box, id, data) {
   const ticks = [...box.querySelectorAll('.inst__ticks line')], ring = box.querySelector('.inst__ring');
   if (reduced) { ticks.forEach(l => l.classList.add('is-on')); ring.style.strokeDasharray = '100 100'; return; }
   const p = { v: 0 };
-  gsap.timeline({ delay: 0.15 })
+  gsap.timeline({ delay: 0.4 })
     .to(p, { v: 1, duration: 1.6, ease: 'm.smooth', onUpdate: () => {
       ring.style.strokeDasharray = `${f2(p.v * 100)} 100`;
       const n = Math.round(p.v * ticks.length);

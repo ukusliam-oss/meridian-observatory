@@ -331,10 +331,10 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   names each as it passes; Economics a market that never settles, read as P* and Q*; Geography contour lines under a
   turning sweep, read as an elevation. Upper right on wide screens, above the title on phones. Arriving through a link
   the title has been carried in (below); otherwise its words sharpen out of a blur. 60 fps on all three (DPR 2).
-- The joins between pages (`assets/js/transitions.js`, a classic script stamp.py puts in every <head>; cross-document
-  view transitions): a subject link becomes the hub's title (`subj`, the link's box grows into it); everything else,
-  entering a chapter included, dims out and lights up. (A chapter card opening like a window onto the chapter was
-  tried and dropped: the moving box read as awkward.)
+- The joins between pages: cross-document view transitions in site.css only. The old page dims to night (.38 s), the
+  new one lights up out of it after .26 s (.8 s); nothing travels across the screen; the hub's title letters then
+  sharpen out of a blur in random order. Carrying the followed link into the hub's title and a chapter card opening
+  like a window were both tried (transitions.js, removed) and dropped as awkward beside the calm exit.
 - Buttons stand still (`magnetic` in core.js no longer moves them; following the pointer read as a wobble): light
   gathers on the glass under the pointer (`.btn::after`, --mx/--my) and a press sinks them to 97.5% and lets them rise
   back with a slight give. Names are set in pageswap (old page) and pagereveal (new page) and cleared
