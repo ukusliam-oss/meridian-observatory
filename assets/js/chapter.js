@@ -3,7 +3,7 @@
 // The text works without WebGL: if the globe cannot start, the page is still a complete chapter.
 // The page names its data file in <body data-chapter>; anything a chapter does not set falls back to KQ6's values.
 
-import { $, $$, gsap, lenis, reduced, boot, esc } from './core.js';
+import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, decode } from './core.js';
 import { MT, strokeBorder, aurora, animIcon, drawIn, nudge } from './glass.js';
 const { default: data } = await import(document.body.dataset.chapter || './data/history/kq6.js');
 const usesValues = data.scenes.some(s => (s.map && (s.map.data || s.map.spikes)) || (s.chart && (s.chart.series || []).some(sr => sr.ind)));
@@ -27,6 +27,7 @@ const CFG = {
 const VALUES = CFG.values ? await fetch(CFG.values).then(r => r.json()).then(j => j.indicators).catch(() => null) : null;
 
 const root = document.documentElement;
+const phone = matchMedia('(max-width: 760px)').matches;
 const scenes = data.scenes;
 const N = scenes.length;
 const srcKeys = Object.keys(data.sources);
@@ -180,12 +181,84 @@ function sceneHTML(s, i) {
 }
 
 $('[data-scenes]').innerHTML = scenes.map(sceneHTML).join('');
+glossary();
 // a draft says so under the chapter title; a reviewed chapter shows nothing
 if (data.subject && data.status === 'draft' && $('.ch-hero .ch-wrap')) $('.ch-hero .ch-wrap').insertAdjacentHTML('beforeend', '<p class="mono ch-draft">Draft · not yet reviewed by a teacher</p>');
 
 // end of chapter: one-page summary, quick checks, every source
 $('[data-sum]').innerHTML = data.toolkit.summary.map(x => `<p>${x}</p>`).join('');
 $('[data-checks]').innerHTML = data.toolkit.checks.map(c => `<button class="sc__check" type="button" aria-expanded="false"><span class="mono"><span>Quick check</span><span>Tap</span></span><span class="q">${esc(c.q)}</span><span class="a">${esc(c.a)}</span></button>`).join('');
+// Glossary chips (after the inline notes of awarded long reads): a key term the chapter has already introduced is, in
+// a later scene, a chip that opens its definition on the glass, so the reader can recall it without leaving the scene.
+// The definitions are the chapter's own (toolkit) and the subject's flashcards. A term's first scene is left alone (it
+// is usually where the term is explained), then its first mention in each later scene becomes a chip, at most three
+// chips a scene.
+async function glossary() {
+  const subject = document.body.dataset.subject;
+  let cards = [];
+  try { cards = subject ? (await import(`./data/${subject}.js`)).default.cards || [] : []; } catch { /* the chips are a convenience */ }
+  const norm = t => t.toLowerCase().replace(/[’']/g, '').replace(/[–-]/g, ' ').replace(/s$/, '').trim();
+  const terms = new Map();
+  // a bare "demand" or "supply" in a macro chapter usually means the economy's total, not a market's: no chip for them
+  for (const c of cards) if (!/^(demand|supply)$/i.test(c.t)) terms.set(norm(c.t), { k: c.t, d: c.d });
+  for (const d of data.toolkit?.definitions || []) terms.set(norm(d.k), d);
+  if (!terms.size) return;
+  const names = [...terms.values()].map(t => t.k).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[–-]/g, '[–-]').replace(/s?$/, 's?'));
+  const re = new RegExp(`\\b(${names.join('|')})\\b`, 'i');
+  const met = new Set();
+  $$('.sc').forEach(sc => {
+    const body = $('.sc__body', sc); if (!body) return;
+    const here = new Set();
+    // the scene's text nodes, outside links and chips, in reading order
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement.closest('a, .gl') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+    const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    const seenBefore = new Set(met);
+    for (const node of nodes) {
+      let m; let rest = node;
+      while (rest && (m = re.exec(rest.textContent))) {
+        const key = norm(m[1]), t = terms.get(key) || terms.get(norm(m[1] + 's'));
+        if (!t) break;
+        met.add(key);
+        // "total demand" is aggregate demand, not the market's demand of the flashcard: such a qualified term is left alone
+        const qualified = /\b(total|aggregate)\s+$/i.test(rest.textContent.slice(0, m.index));
+        if (qualified || !seenBefore.has(key) || here.has(key) || here.size >= 3) { rest = rest.splitText(m.index + m[1].length); continue; }
+        here.add(key);
+        const word = rest.splitText(m.index); rest = word.splitText(m[1].length);
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'gl'; b.dataset.k = t.k; b.dataset.d = t.d; b.setAttribute('aria-expanded', 'false');
+        b.innerHTML = `${esc(word.textContent)}<i aria-hidden="true"></i>`;
+        // inside a bold run the chip keeps the weight
+        word.replaceWith(b);
+      }
+    }
+  });
+  const card = document.createElement('div');
+  card.className = 'gl-card'; card.id = 'gl-card'; card.setAttribute('role', 'note'); card.hidden = true;
+  document.body.append(card);
+  let open = null, hoverT = 0;
+  const show = b => {
+    if (open === b) return; hide();
+    open = b; b.setAttribute('aria-expanded', 'true'); b.setAttribute('aria-describedby', 'gl-card');
+    card.innerHTML = `<span class="gl-card__k">${esc(b.dataset.k)}</span><span class="gl-card__d">${esc(b.dataset.d)}</span>`;
+    card.hidden = false;
+    const r = b.getBoundingClientRect(), w = Math.min(320, innerWidth - 32), left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2));
+    card.style.width = `${w}px`; card.style.left = `${left}px`;
+    const below = r.bottom + 10 + card.offsetHeight < innerHeight - 90;
+    card.style.top = `${below ? r.bottom + 10 : r.top - 10 - card.offsetHeight}px`;
+    if (!reduced) gsap.fromTo(card, { opacity: 0, y: below ? -4 : 4, filter: 'brightness(.4)' }, { opacity: 1, y: 0, filter: 'brightness(1)', duration: 0.45, ease: 'm.out', clearProps: 'filter' });
+  };
+  const hide = () => { if (!open) return; open.setAttribute('aria-expanded', 'false'); open.removeAttribute('aria-describedby'); open = null; card.hidden = true; };
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  document.addEventListener('click', e => { const b = e.target.closest('.gl'); if (b) { open === b ? hide() : show(b); } else if (!card.contains(e.target)) hide(); });
+  if (fine) {
+    document.addEventListener('pointerover', e => { const b = e.target.closest('.gl'); if (!b) return; clearTimeout(hoverT); hoverT = setTimeout(() => show(b), 140); });
+    document.addEventListener('pointerout', e => { if (e.target.closest('.gl') && !e.relatedTarget?.closest?.('.gl')) { clearTimeout(hoverT); hoverT = setTimeout(hide, 160); } });
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+  addEventListener('scroll', hide, { passive: true });
+  addEventListener('wheel', hide, { passive: true });
+}
+
 // the policy lab, for chapters that name a model
 const labSec = $('#lab');
 if (labSec && data.lab) {
@@ -416,7 +489,7 @@ function updateUI(p) {
   if (key !== lastShown) {
     lastShown = key;
     const s = scenes[near];
-    hudN.textContent = key < 0 ? `${N} SCENES` : `SCENE ${String(near + 1).padStart(2, '0')} / ${N}`;
+    decode(hudN, key < 0 ? `${N} SCENES` : `SCENE ${String(near + 1).padStart(2, '0')} / ${N}`, 420);
     labelEl.textContent = s.dateLabel;
     roll(pillPart, esc(p < -0.5 ? CFG.pill.part : s.part));
     roll(pillDate, p < -0.5 ? CFG.pill.date : esc(s.dateLabel));
@@ -552,7 +625,9 @@ async function start() {
     buildEngineScenes();
     setPct(0.96);
     world = await createWorld($('[data-world]'), { scenes: eScenes, hero, data: borders, dataUrl: CFG.borders, values: VALUES, accent: CFG.accent, reduced, relief: CFG.relief, terrain: CFG.terrain, layers: CFG.layers, light: CFG.light,
-      look: +(new URLSearchParams(location.search).get('look') ?? 1) }); // 1: the light's shaders; ?look=2 adds post.js, ?look=0 neither
+      // the settings menu's quality (?look= overrides the light: 1 its shaders, 2 adds post.js, 0 neither)
+      look: +(new URLSearchParams(location.search).get('look') ?? QUALITY[quality()].look), dprCap: QUALITY[quality()].dpr[phone ? 0 : 1] });
+    addEventListener('meridian:quality', e => { const Q = QUALITY[e.detail]; world?.setQuality({ dpr: Q.dpr[phone ? 0 : 1], look: Q.look }); });
     window.__meridianWorld = world; // stats for checks in the preview
     if (world) for (const s of scenes) if (s.map && s.map.section && s.map.relief3d) {
       const fig = $(`[data-xs="${s.id}"]`), x = s.map.section;

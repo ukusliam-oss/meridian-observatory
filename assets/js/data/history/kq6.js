@@ -1255,6 +1255,17 @@ export default {
   },
 
   toolkit: {
+    // key terms of this question; the chapter also recalls them in its scenes (glossary chips in chapter.js)
+    definitions: [
+      { k: 'Cominform', d: 'The Communist Information Bureau, set up by Stalin in 1947 to bring the communist parties of Europe under Moscow\'s direction.' },
+      { k: 'Comecon', d: 'The Council for Mutual Economic Assistance, set up in 1949 to tie the economies of the Eastern bloc to the USSR.' },
+      { k: 'Warsaw Pact', d: 'The military alliance of the USSR and its satellite states, signed in 1955 after West Germany joined NATO.' },
+      { k: 'Secret Speech', d: 'Khrushchev\'s speech to the Soviet Communist Party in February 1956, attacking Stalin\'s crimes and his cult of personality.' },
+      { k: 'De-Stalinisation', d: 'The move away from Stalin\'s methods after his death, begun openly by Khrushchev\'s Secret Speech in 1956.' },
+      { k: 'Prague Spring', d: 'The reforms of Alexander Dubček in Czechoslovakia in 1968, "socialism with a human face", ended by the Warsaw Pact invasion in August.' },
+      { k: 'Solidarity', d: 'The independent trade union founded at the Gdańsk shipyard in Poland in 1980 and led by Lech Wałęsa.' },
+      { k: 'Martial law', d: 'Rule by the army in place of the normal law. General Jaruzelski declared it in Poland in December 1981 to crush Solidarity.' },
+    ],
     summary: [
       '<b>Control by 1948.</b> Communist parties loyal to Moscow ruled the satellite states. Control rested on Soviet troops, secret police, loyal parties, Comecon (1949) and the Warsaw Pact (1955). Yugoslavia broke away in 1948.',
       '<b>Hungary, 1956.</b> Repression and hardship, then hope (Austria\'s neutrality, the Secret Speech, Poland). A rising on 23 October; Nagy ended one-party rule and left the Warsaw Pact. Soviet forces invaded on 4 November. About 2,500 Hungarians died and about 200,000 fled. Kádár took over; Nagy was executed in 1958.',

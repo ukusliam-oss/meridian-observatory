@@ -1,5 +1,5 @@
 // Home: the globe scrollytelling, the command-word ladder and a daily mixed quiz.
-import { boot, $, $$, gsap, ScrollTrigger, reduced } from './core.js';
+import { boot, $, $$, gsap, ScrollTrigger, reduced, QUALITY, quality } from './core.js';
 import { quiz, seeded } from './ui.js';
 import H from './data/history.js';
 import E from './data/economics.js';
@@ -9,11 +9,12 @@ import G from './data/geography.js';
 const host = $('.globe');
 let globe = null;
 import('./globe.js')
-  .then(({ createGlobe }) => { globe = createGlobe(host, { reduced }); if (!globe) host.classList.add('is-fallback'); else sync(); })
+  .then(({ createGlobe }) => { globe = createGlobe(host, { reduced, dpr: QUALITY[quality()].dpr }); if (!globe) host.classList.add('is-fallback'); else sync(); })
   .catch(() => host.classList.add('is-fallback'));
 // read progress every tick: onUpdate is skipped when a jump lands outside the trigger
 const st = ScrollTrigger.create({ trigger: '.scope__content', start: 'top top', end: 'bottom bottom' });
 function sync() { globe?.setProgress(st.progress * 3); }
+addEventListener('meridian:quality', e => globe?.setDpr(QUALITY[e.detail].dpr));
 gsap.ticker.add(sync);
 
 // ── command-word ladder ──

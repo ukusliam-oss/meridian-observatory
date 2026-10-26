@@ -206,6 +206,36 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .nav__glow { position: absolute; left: 10%; right: 10%; bottom: 0; z-index: -2; height: 50%; border-radius: 999px; background: rgb(255 255 255 / .5);
   filter: blur(18px); opacity: 0; transform: scale(.6); pointer-events: none; transition: opacity .4s, transform .4s; }
 .nav__cta:hover .nav__glow { opacity: .3; transform: scale(1); }
+/* the settings (bar.js): a dial that opens the pill's black glass with the sound, the light theme and the quality */
+.nav__end { position: relative; } /* the settings open under the whole end, flush right */
+.nav__dial { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; color: var(--text); transition: background-color .3s, transform .6s var(--ease); }
+.nav__dial svg { width: 1.2rem; height: 1.2rem; }
+.nav__dial svg path:nth-of-type(2) { transform-origin: 10px 10px; transition: transform .6s var(--ease); }
+.nav__dial:hover svg path:nth-of-type(2), .nav__set.is-open svg path:nth-of-type(2) { transform: rotate(-80deg); }
+.nav__dial:hover, .nav__set.is-open .nav__dial { background: color-mix(in oklab, var(--text) 10%, transparent); }
+.setmenu { position: absolute; right: 0; top: calc(100% + 10px); z-index: 2; width: 17.5rem; padding: .875rem .875rem .75rem; border-radius: 1.25rem; isolation: isolate;
+  color: #fff; background: rgb(5 5 8 / .86); -webkit-backdrop-filter: blur(20px) saturate(1.2); backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 18px 40px -14px rgb(0 0 0 / .6); text-transform: uppercase;
+  --rim: linear-gradient(var(--btn-stroke-angle, 90deg), rgb(255 255 255 / .06) 0%, rgb(255 255 255 / .5) 31% 60%, rgb(255 255 255 / .18) 85%, rgb(255 255 255 / .06) 100%); }
+.setmenu[hidden] { display: none !important; }
+.setmenu.stroke-border::before { inset: 0; --rim-o: .7; }
+.setmenu .nav__aurora { opacity: .35; }
+.setmenu__label { margin: 0 0 .5rem; font-size: 11px; color: rgb(255 255 255 / .62); letter-spacing: .06em; }
+.setmenu__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 2.5rem; border-top: 1px solid rgb(255 255 255 / .09); }
+.setmenu__row--q { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 0 2px; }
+.setmenu__seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; border-radius: 999px; background: rgb(255 255 255 / .06); }
+.setmenu__seg button { height: 1.875rem; border-radius: 999px; font: inherit; font-size: 11px; text-transform: inherit; letter-spacing: .04em; color: rgb(255 255 255 / .62); transition: background-color .3s, color .3s; }
+.setmenu__seg button:hover { color: #fff; }
+.setmenu__seg button[aria-checked="true"] { color: #fff; background: rgb(255 255 255 / .14); box-shadow: inset 0 1px 0 rgb(255 255 255 / .1); }
+.setmenu__note { margin: 8px 0 0; font: 400 12px/1.4 var(--sans); text-transform: none; color: rgb(255 255 255 / .62); }
+/* the theme and sound buttons, as switches */
+.nav .setmenu__sw { position: relative; flex: none; width: 2.25rem; height: 1.25rem; border-radius: 999px; background: rgb(255 255 255 / .16); color: transparent; transition: background-color .3s; }
+.nav .setmenu__sw > * { display: none !important; }
+.nav .setmenu__sw::after { content: ""; position: absolute; left: 3px; top: 3px; width: .875rem; height: .875rem; border-radius: 50%; background: #fff; transition: transform .4s var(--ease); }
+.nav .setmenu__sw:hover { background: rgb(255 255 255 / .24); }
+.nav .setmenu__sw[aria-checked="true"] { background: rgb(255 255 255 / .5); }
+.nav .setmenu__sw[aria-checked="true"]::after { transform: translateX(1rem); }
+.setmenu :focus-visible { outline: 1px solid rgb(255 255 255 / .8); outline-offset: 2px; }
 
 /* ── Chrome: phone tab bar ──────────────────────────────────────────────── */
 .tabbar { display: none; }
@@ -845,11 +875,13 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .js.no-motion [data-reveal], .js.reveal-fallback [data-reveal] { opacity: 1; }
 [data-split] .line { overflow: clip; padding-bottom: .06em; margin-bottom: -.06em; }
 @view-transition { navigation: auto; }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .5s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+/* between pages the old page dims out and the new one lights up, like the blocks inside them; the bar stays put */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .42s; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
 ::view-transition-old(root) { animation-name: vt-out; }
 ::view-transition-new(root) { animation-name: vt-in; }
-@keyframes vt-out { to { opacity: 0; transform: scale(.985); filter: blur(4px); } }
-@keyframes vt-in { from { opacity: 0; transform: translateY(16px); } }
+::view-transition-old(root) { animation-duration: .28s; }
+@keyframes vt-out { to { opacity: 0; filter: brightness(.4); } }
+@keyframes vt-in { from { opacity: 0; filter: brightness(.4); transform: translateY(6px); } }
 /* on the bar, not on .nav: a view-transition-name makes its element a backdrop root, and the bar's blur then saw
    nothing behind it (the page read sharp through the glass) */
 .nav__bar { view-transition-name: nav; }
@@ -858,6 +890,9 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 .js [data-split]:not(.is-split) { opacity: 0; }
+/* a headline's line masks clip at the line box, which cut the italic descenders (the y of "Geography"): the clip
+   reaches a little below and to the right of each line without moving it */
+.line-mask { padding: 0 .12em .3em 0; margin: 0 -.12em -.3em 0; }
 .js.reveal-fallback [data-split] { opacity: 1; }
 .theme-vt::view-transition-old(root), .theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-vt::view-transition-group(nav) { animation: none; }
@@ -910,3 +945,19 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .chapter-card__text { max-width: 46ch; font-size: 15.5px; line-height: 1.55; color: rgb(255 255 255 / .78); }
 .chapter-card__go { font: 500 var(--fs-label)/1.2 var(--mono); text-transform: uppercase; color: var(--accent); }
 @media (max-width: 900px) { .chapters__grid { grid-template-columns: 1fr; } }
+
+/* ── 404: off the map ── */
+.lost { position: relative; min-height: 100svh; display: grid; align-items: center; padding-block: calc(var(--nav-h) + 40px) 80px; overflow: hidden;
+  background: radial-gradient(60% 50% at 75% 45%, rgb(95 130 255 / .1), transparent 70%), var(--bg); }
+.lost .wrap { position: relative; display: grid; gap: 26px; }
+.lost .display { font-size: clamp(3.2rem, 1rem + 8vw, 9rem); max-width: 10ch; }
+.lost .lede { max-width: 44ch; }
+.lost__go { display: flex; flex-wrap: wrap; gap: 10px; }
+/* the logo's meridian, large and faint, turning as if it searched for the page */
+.lost__globe { position: absolute; right: -8vw; top: 50%; width: min(64vw, 820px); translate: 0 -50%; fill: none; stroke: rgb(255 255 255 / .09); stroke-width: .5; }
+.lost__m { transform-origin: 100px 100px; animation: lost-turn 9s linear infinite; }
+.lost__m--2 { animation-delay: -4.5s; }
+.lost__dot { fill: #9db7ff; stroke: none; opacity: .7; animation: lost-ping 2.4s var(--ease) infinite; transform-origin: 100px 100px; }
+@keyframes lost-turn { 0% { transform: scaleX(1); } 25% { transform: scaleX(0); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
+@keyframes lost-ping { 0% { transform: scale(1); opacity: .8; } 70%, 100% { transform: scale(5); opacity: 0; } }
+@media (max-width: 760px) { .lost__globe { right: -30vw; width: 110vw; } }

@@ -36,6 +36,16 @@ export const store = {
   set(k, v) { try { localStorage.setItem('meridian:' + k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
 
+// quality (the settings menu, bar.js): how much the globes draw. dpr caps the pixel ratio (phones / wider screens),
+// look is the world's light (0 none, 1 its shaders, 2 shaders and the post pipeline, ~11 ms of GPU at DPR 2 on an M5)
+export const QUALITY = {
+  high: { dpr: [2, 2], look: 2 },
+  standard: { dpr: [1.5, 1.75], look: 1 },
+  saver: { dpr: [1, 1.25], look: 0 },
+};
+export const quality = () => { const q = store.get('quality', 'standard'); return QUALITY[q] ? q : 'standard'; };
+export function setQuality(q) { store.set('quality', q); dispatchEvent(new CustomEvent('meridian:quality', { detail: q })); }
+
 export const navOffset = () => (parseFloat(getComputedStyle(root).getPropertyValue('--nav-h')) || 64) + 56;
 export function scrollToEl(el, offset = navOffset()) {
   if (!el) return;
@@ -58,6 +68,32 @@ export function reveal(scope = document) {
   });
   // anything already scrolled past (reload mid-page) shows at once
   requestAnimationFrame(() => els.forEach(el => { if (el.getBoundingClientRect().bottom < 0) gsap.set(el, { opacity: 1 }); }));
+}
+
+// An instrument's label decodes as it comes on (after awarded instrument interfaces): for half a second its letters
+// run through random capitals and settle one by one, left to right with a little scatter. Mono labels only, so the
+// width never moves; the text itself is set at once for anything that reads it.
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+export function decode(el, text = el.textContent, ms = 520) {
+  if (reduced || !text) { el.textContent = text; return; }
+  el.setAttribute('aria-label', text);
+  const t0 = performance.now(), at = [...text].map((c, i) => (i / text.length) * 0.6 + Math.random() * 0.4);
+  cancelAnimationFrame(el._dec);
+  const step = now => {
+    const u = (now - t0) / ms;
+    el.textContent = [...text].map((c, i) => (u >= at[i] || /[\s·/.,:–-]/.test(c) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join('');
+    if (u < 1) el._dec = requestAnimationFrame(step); else { el.textContent = text; el.removeAttribute('aria-label'); }
+  };
+  el._dec = requestAnimationFrame(step);
+}
+// section labels decode once, as they come into view
+export function decodes(scope = document) {
+  $$('.eyebrow:not([data-decoded])', scope).forEach(el => {
+    el.setAttribute('data-decoded', '');
+    if (reduced || el.children.length) return; // a label with markup inside (a lower-case c.) keeps it
+    const text = el.textContent;
+    ScrollTrigger.create({ trigger: el, start: 'top 92%', once: true, onEnter: () => decode(el, text) });
+  });
 }
 
 export function splitHeads(scope = document) {
@@ -253,6 +289,7 @@ export function subnav(el, from) {
 let booted = false;
 export function boot(scope = document) {
   splitHeads(scope);
+  decodes(scope);
   reveal(scope);
   counters(scope);
   magnetic(scope);

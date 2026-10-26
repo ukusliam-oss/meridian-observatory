@@ -223,7 +223,7 @@ function arc(a, b, uniforms) {
 }
 
 // ── Public ───────────────────────────────────────────────────────────────────
-export function createGlobe(host, { reduced = false } = {}) {
+export function createGlobe(host, { reduced = false, dpr = null } = {}) {
   const canvas = document.createElement('canvas');
   canvas.setAttribute('aria-hidden', 'true');
   const labelsEl = document.createElement('div');
@@ -294,6 +294,7 @@ export function createGlobe(host, { reduced = false } = {}) {
   HAZARDS.forEach(([a, b, n, t, s]) => addLabel(a, b, n, t, s, 2));
 
   // ── State ──
+  let cap = dpr;
   let f = 0, spin = 0, W = 1, H = 1, phone = false, visible = true, raf = 0, last = performance.now();
   const cur = { lat: VIEWS[0].lat, lon: VIEWS[0].lon, dist: 6.5, sx: 0.2, sy: 0, w0: 1, w1: 0, w2: 0, w3: 0 };
   const drag = { on: false, x: 0, y: 0, lon: 0, lat: 0 };
@@ -318,7 +319,7 @@ export function createGlobe(host, { reduced = false } = {}) {
     const r = host.getBoundingClientRect();
     W = Math.max(1, r.width); H = Math.max(1, r.height);
     phone = W < 760;
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, phone ? 2 : 1.75));
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap ? cap[phone ? 0 : 1] : (phone ? 2 : 1.75)));
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
     // keep the planet's size tied to the shorter side so phones don't get a sliver
@@ -409,6 +410,8 @@ export function createGlobe(host, { reduced = false } = {}) {
 
   return {
     setProgress(v) { f = v; },
+    // the settings menu's quality: [phone, wider screen] caps on the pixel ratio
+    setDpr(c) { cap = c; resize(); },
     destroy() {
       cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
       removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp);

@@ -400,7 +400,7 @@ function painter(feats, dataUrl, onDone) {
 
 // ── engine ──────────────────────────────────────────────────────────────────
 // scenes: engine scenes; a chapter panel that steps through several years has one per year, all with the same `panel`.
-export async function createWorld(host, { scenes, hero, data, dataUrl, relief, terrain = null, layers = null, light: lightMode = 'fixed', values = null, accent = null, reduced = false, look = 0, onFrame } = {}) {
+export async function createWorld(host, { scenes, hero, data, dataUrl, relief, terrain = null, layers = null, light: lightMode = 'fixed', values = null, accent = null, reduced = false, look = 0, dprCap = null, onFrame } = {}) {
   if (accent) PALETTE.focus = accent;
   const canvas = document.createElement('canvas');
   canvas.className = 'world__canvas';
@@ -971,7 +971,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   // ── light: with `look` the frame goes through the post pipeline (bloom, shoulder, grade, vignette, grain) ──────
   // look 1: the light's shaders only (the sun-side rim and air, the sea's glint); look 2 adds the post pipeline, which
   // measured 10.7 ms of GPU a frame at DPR 1.75 on an M5 (KQ6 hero: 7.2 → 17.9 ms median), too much for smaller Macs
-  const post = look >= 2 ? createPost(renderer, { phone }) : null;
+  let cap = dprCap;
+  let post = look >= 2 ? createPost(renderer, { phone }) : null;
   const draw = () => (post ? post.render(scene, camera) : renderer.render(scene, camera));
 
   // ── camera ────────────────────────────────────────────────────────────────
@@ -981,7 +982,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
   function resize() {
     W = host.clientWidth || innerWidth; H = host.clientHeight || innerHeight;
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, phone ? 1.5 : 1.75));
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap ?? (phone ? 1.5 : 1.75)));
     renderer.setSize(W, H, false);
     setViewport(camera, W, H);
     if (post) post.setSize(W, H, renderer.getPixelRatio());
@@ -1108,10 +1109,17 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     prepare(i) { if (i >= -1 && i < scenes.length) { texturesOf(i); terrainOf(i); overlayFor(i); markersFor(i); patchOf(i); } },
     // start the playing clock again from its first year (the reader has just entered the chapter)
     replay() { playT0 = null; dirty = true; },
+    // the settings menu's quality: the pixel ratio's cap and the light (0 none, 1 shaders, 2 shaders and post)
+    setQuality({ dpr, look: l }) {
+      cap = dpr; earthU.uLook.value = air.material.uniforms.uLook.value = l ? 1 : 0;
+      if (l >= 2 && !post) post = createPost(renderer, { phone });
+      if (l < 2 && post) { post.dispose(); post = null; }
+      resize();
+    },
     // the height profile along a section line: { prof: [{ d km, h m }], total km }, or null without the site's heights
     async profile(site, from, to) { const dem = await demOf(site); return dem ? sectionOf(dem, from, to, 1) : null; },
     stats,
-    post, // the light's settings, when `look` is on
+    get post() { return post; }, // the light's settings, when `look` is 2
     camera, // for checks in the preview
     destroy() { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); paint.destroy(); renderer.dispose(); },
   };

@@ -285,6 +285,23 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   the night's continents), the ocean's rim and the air glow on the sun's side with a warm band at the day's edge, and
   the subject's colour stays the air's. City lights on the night side were tried (Natural Earth places baked per dot)
   and dropped: they pulled the eye.
+- Awwwards pass (2026-10-26, compared with drone.riotters.com, opportunity.waltonfamilyfoundation.org, emotion-agency.com
+  and a24.raviklaassens.com; notes in `../Meridian 1 Awwwards 비교.md`):
+  - Settings (bar.js): a dial at the nav's right end opens the black glass with Sound (chapters), Light theme (outside
+    chapters) and Quality. The theme and sound buttons move into it as switches. Quality (`QUALITY` in core.js, store
+    'quality', event `meridian:quality`): high = DPR 2 and look 2 (post), standard = DPR 1.75 (phones 1.5) and look 1,
+    saver = DPR 1.25 (phones 1) and look 0; the home globe (`setDpr`) and the chapter world (`setQuality`) follow live.
+  - Glossary chips (chapter.js `glossary()`): a key term from the chapter's toolkit definitions or the subject's
+    flashcards becomes, in scenes after the one that introduces it, a dotted chip (first mention per scene, at most
+    three) that opens its definition on the glass (hover or tap). Bare "demand"/"supply" and terms after "total" or
+    "aggregate" are left alone (macro meaning). KQ6 gained eight toolkit definitions for this.
+  - Mono labels decode (`decode`, `decodes` in core.js): section eyebrows and the HUD's scene number run through random
+    capitals for ~0.5 s as they come on; labels with markup inside are left alone; none with reduced motion.
+  - Between pages the old page dims out and the new one lights up (cross-document view transitions; the bar stays).
+  - `404.html` (pages.py, `lost.js`): sets its `<base>` from the address (GitHub Pages serves it at any depth);
+    share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen; og:image is relative until
+    the site has an address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
+    italic descenders (the y of "Geography").
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

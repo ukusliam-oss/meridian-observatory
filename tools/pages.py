@@ -13,7 +13,7 @@ LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 FAV = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b45a' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cellipse cx='12' cy='12' rx='4' ry='9.5'/%3E%3C/svg%3E"
 SUBJ = [('history', 'History', 'hist'), ('economics', 'Economics', 'econ'), ('geography', 'Geography', 'geo')]
 
-def shell(page, title, desc, main, script, subject=''):
+def shell(page, title, desc, main, script, subject='', head=''):
     links = ''.join(f'<a class="nav__link" href="{k}.html" style="--c:var(--{c})"{" aria-current=\"page\"" if page == k else ""}>{n}</a>' for k, n, c in SUBJ)
     tabs = ''.join(f'<a href="{h}" style="--c:var(--{c})"{" aria-current=\"page\"" if page == k else ""}>{svg(k)}<span>{n}</span></a>'
                    for k, h, n, c in [('home', 'index.html', 'Home', 'text')] + [(k, f'{k}.html', n[:4] + '.' if n == 'Economics' else n[:4] + '.' if n == 'Geography' else n, c) for k, n, c in SUBJ])
@@ -21,11 +21,19 @@ def shell(page, title, desc, main, script, subject=''):
     return f'''<!doctype html>
 <html lang="en" data-theme="dark">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">{head}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <meta name="theme-color" content="#07080b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Meridian">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:image" content="assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{FAV}">
 <link rel="preload" href="assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/site.css">
@@ -251,4 +259,19 @@ for k, (name, code, eyebrow, lede, stats) in HEROES.items():
   </div>
 </section>''' + SUBJECT_CHAPTERS.get(k, '')
     (ROOT / f'{k}.html').write_text(shell(k, f'{name} {code} | Meridian', f'Cambridge IGCSE {name} {code} revision: assessment overview, syllabus content, an interactive diagram, exam technique, command words, flashcards and a quiz.', main, 'subject.js', k))
-print('wrote 4 pages')
+# a page for an address that is not on the site (GitHub Pages serves /404.html for any of them, at any depth): it
+# sets its <base> from the address first, so its relative links and assets work wherever it is shown
+BASE = "\n<script>(function(){var s=location.pathname.split('/')[1],b=/github\\.io$/.test(location.hostname)&&s?'/'+s+'/':'/';document.write('<base href=\"'+b+'\">')})();</script>"
+lost = f'''
+<section class="lost" data-tone="dark">
+  <div class="grain"></div>
+  <svg class="lost__globe" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96"/><ellipse class="lost__m" cx="100" cy="100" rx="40" ry="96"/><ellipse class="lost__m lost__m--2" cx="100" cy="100" rx="40" ry="96"/><path d="M4 100h192M14 58h172M14 142h172"/><circle class="lost__dot" cx="100" cy="100" r="2.5"/></svg>
+  <div class="wrap">
+    <p class="eyebrow">Signal lost · 404</p>
+    <h1 class="display" data-split="now"><em>Off</em>the map</h1>
+    <p class="lede">This page is not on Meridian. It may have moved, or the address may be mistyped. The subjects are all here.</p>
+    <div class="lost__go">{''.join(f'<a class="btn btn--accent" href="{k}.html" style="--accent:var(--{c})">{n}</a>' for k, n, c in SUBJ)}<a class="btn btn--primary" href="index.html">Home</a></div>
+  </div>
+</section>'''
+(ROOT / '404.html').write_text(shell('lost', 'Off the map | Meridian', 'This page is not on Meridian.', lost, 'lost.js', head=BASE))
+print('wrote 5 pages')
