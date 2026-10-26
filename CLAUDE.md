@@ -278,7 +278,12 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   frame). The panel no longer repeats the part tag and the count, the pill no longer repeats the count. Reveals light
   up (`brightness(.4)` → 1, 6 px, `DUR.text`) instead of rising 36 px; headlines keep their mask rise.
   The scene's date still shows three times (panel, ribbon, pill).
-- Phases left from the analysis: 5 the dot globe's physics, 6 one camera across pages.
+- Phase 5 (2026-10-26): the home's dot globe (`src/globe.js`, `npm run build`) has one sun, from the upper left and
+  a little behind (`light`, in view space): dots are lit on its side and all but go out across the terminator (6% keeps
+  the night's continents), the ocean's rim and the air glow on the sun's side with a warm band at the day's edge, and
+  the subject's colour stays the air's. City lights on the night side were tried (Natural Earth places baked per dot)
+  and dropped: they pulled the eye.
+- Phase left from the analysis: 6 one camera across pages.
   motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):

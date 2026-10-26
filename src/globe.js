@@ -1,6 +1,8 @@
 // Meridian globe — one planet, three lenses.
 // Land is a baked dot matrix (tools/build-dots.mjs). Everything else is drawn in shaders:
 // lit dots, a fresnel ocean, a back-face atmosphere, trade arcs and hazard pulses.
+// One sun lights it all: the dots are bright on its side and go out across the terminator (a trace keeps the night's
+// continents); the ocean's rim and the air glow on the sun's side, with a warm band at the day's edge.
 // The page drives it with setProgress(f): f = 0 hero, 1 History, 2 Economics, 3 Geography.
 
 import {
@@ -75,12 +77,12 @@ const PHONE = [{ sx: 0, sy: 0.2 }, { sx: 0, sy: -0.16 }, { sx: 0, sy: -0.16 }, {
 const dotVert = /* glsl */`
   uniform float uScale, uSize; uniform vec3 uLight;
   attribute float aRand;
-  varying float vLight, vFacing, vRand;
+  varying float vSun, vFacing, vRand;
   void main() {
     vec4 world = modelMatrix * vec4(position, 1.0);
     vec3 n = normalize(mat3(viewMatrix) * normalize(world.xyz));
     vec4 mv = viewMatrix * world;
-    vLight = max(dot(n, uLight), 0.0);
+    vSun = dot(n, uLight);
     vFacing = n.z;
     vRand = aRand;
     gl_PointSize = uSize * (0.8 + 0.4 * aRand) * uScale / -mv.z;
@@ -88,16 +90,18 @@ const dotVert = /* glsl */`
   }`;
 const dotFrag = /* glsl */`
   uniform vec3 uLit, uShade, uAccent; uniform float uTint;
-  varying float vLight, vFacing, vRand;
+  varying float vSun, vFacing, vRand;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
     float a = smoothstep(0.5, 0.32, d);
-    float l = pow(vLight, 0.75);
+    float l = pow(max(vSun, 0.0), 0.75), day = smoothstep(-0.12, 0.22, vSun);
     vec3 c = mix(uShade, uLit, l);
     c = mix(c, uAccent, uTint * (0.15 + 0.55 * vRand) * (0.3 + 0.7 * l));
+    // night: the land all but goes out, a trace keeps the continents
+    float alpha = day * (0.3 + 0.7 * l) + (1.0 - day) * 0.06;
     float limb = smoothstep(-0.02, 0.3, vFacing);
-    gl_FragColor = vec4(c, a * (0.28 + 0.72 * l) * limb);
+    gl_FragColor = vec4(c, a * alpha * limb);
   }`;
 const shellVert = /* glsl */`
   varying vec3 vN, vV;
@@ -111,9 +115,10 @@ const oceanFrag = /* glsl */`
   uniform vec3 uLight, uBase, uLift, uAccent;
   varying vec3 vN, vV;
   void main() {
-    float l = max(dot(vN, uLight), 0.0);
+    float s = dot(vN, uLight), l = max(s, 0.0);
     float f = pow(1.0 - max(dot(vN, vV), 0.0), 2.6);
-    gl_FragColor = vec4(uBase + uLift * l + uAccent * f * 0.32, 1.0);
+    // the rim is the air lit by the sun: bright on its side, almost nothing on the night's
+    gl_FragColor = vec4(uBase + uLift * l + uAccent * f * 0.32 * (0.08 + 0.92 * smoothstep(-0.3, 0.5, s)), 1.0);
   }`;
 const airFrag = /* glsl */`
   uniform vec3 uLight, uAccent; uniform float uPower;
@@ -121,8 +126,10 @@ const airFrag = /* glsl */`
   void main() {
     float d = -dot(vN, vV);
     float i = pow(smoothstep(0.0, 0.58, d), 2.4) * uPower;
-    i *= 0.45 + 0.55 * clamp(dot(vN, uLight) + 0.5, 0.0, 1.0);
-    gl_FragColor = vec4(uAccent, i);
+    // one scattering, cheaply: the air glows where the sun is and fades into the night, warm at the day's edge
+    float sun = dot(vN, uLight), edge = exp(-pow((sun + 0.05) / 0.2, 2.0));
+    i *= 0.06 + 1.04 * smoothstep(-0.4, 0.45, sun);
+    gl_FragColor = vec4(mix(uAccent, vec3(1.0, 0.62, 0.4), edge * 0.45), i);
   }`;
 const arcVert = /* glsl */`
   varying float vU;
@@ -237,7 +244,8 @@ export function createGlobe(host, { reduced = false } = {}) {
   const globe = new Group();
   scene.add(globe);
 
-  const light = new Vector3(-0.55, 0.62, 0.56).normalize();
+  // the sun from the upper left and a little behind, so the terminator crosses the disc
+  const light = new Vector3(-0.78, 0.5, 0.36).normalize();
   const accent = new Color(VIEWS[0].accent);
   const time = { value: 0 };
 
