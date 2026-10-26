@@ -6,8 +6,14 @@ Geography 0460 for the 2027 exams. A calmer sibling built in a parallel session 
 is in mainland China, so nothing loads from a CDN (fonts and libraries are vendored); nothing needs
 an account or typed input; ask before deploying.
 
-Plain HTML/CSS/JS, no runtime framework. Preview: the `meridian` entry in `../.claude/launch.json`
-(python http.server on :5183).
+**This folder is `meridian-observatory`** (2026-10-26): Meridian 1 (the dark "night observatory" design, commit
+af7a163 of github.com/ukusliam-oss/meridian) refined in its own project, phase by phase, after
+`../Meridian 1 정제 분석.md`. It has no remote yet: ask before creating one or pushing. `node_modules` and
+`tools/.cache` are symlinks to `../meridian`'s. The paper-and-ink redesign (`../meridian`, remote meridian2) is a
+different work: take techniques from it, never its paper, ink, overture or fonts, and do not edit it.
+
+Plain HTML/CSS/JS, no runtime framework. Preview: the `observatory` entry in `../.claude/launch.json`
+(python http.server on :5187).
 
 ```
 npm run build          # bake land dots + bundle the three.js globe → assets/js/globe.js
@@ -19,8 +25,15 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   `data-theme`, `data-tone="dark"` forces dark inside light pages), nav + phone tab bar, home, subject, labs.
   One type system everywhere: `.display/.h1/.h2` are light serif capitals whose `<em>` lead phrase sits on its own
   line in grey italic (only chapter openings, part titles and the Paper 2 title colour it); `.mono`/`.eyebrow`/`.tag` are Plex Mono capitals; Inter for reading.
-  The nav bar, tab bar and sub-nav are grey glass; the chapter pill and scene menu are violet glass (`--brand`, the
-  pill with `glass.js`'s pointer-lit `.stroke-border` rim); `--accent`/`--accent-deep` is the subject colour for
+  Glass comes in three grades only (`--glass-bar|card|panel` and their `-fx` blurs): the phone tab bar, cards (lenses,
+  chips), panels (scene panels, legend, map labels, policy lab). The nav has no bar (`bar.js`): Plex Mono words floating
+  on the page (brand left, subjects centred with a hairline under the current one, buttons right) and one black glass
+  pill at the right end with a faint white aurora and a white pointer-lit rim, going to the page's next thing (daily
+  quiz, practice, toolkit). A hub's sections take the subjects' place once the four steps pass (`subnav(el, from)`).
+  Outside chapters the nav leaves on the way down and returns on the way up; in a chapter it stays and dims to 36%
+  as the first screen leaves (`--study`, set by `chapter.js`; a hover wakes it). When the page has moved, a 16 px band
+  under the nav blurs and fades what scrolls up. The chapter pill and scene menu are violet glass (`--brand`, the
+  pill with `glass.js`'s pointer-lit `.stroke-border` rim; `aurora(canvas, { white, speed })`); `--accent`/`--accent-deep` is the subject colour for
   content. Small labels (eyebrows, mono headings, "Step 0n", panel labels, table heads, practice part letters) are one
   grey, `--text-3`, never the subject colour: colour is kept for headings' accents, links, tags and data, so the eye
   is not pulled around. Reading floor: labels 12px (`--fs-label`), notes 13px, nothing below 11px; small accent
@@ -216,6 +229,9 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
 - **Map colours stay the engine's own**: KQ6's focus fills, halos and marker glows are violet (`PALETTE.focus`
   `#a084ee`), not History amber. A chapter can name `accent` (Economics does); the engine sends it to the paint
   worker in its `init` message.
+- **A view-transition-name makes its element a backdrop root**: on `.nav` it left the bar's backdrop blur with nothing
+  behind it, so the page read sharp through the glass. **`[data-tone="dark"]` paints `--bg`**: on the nav it drew an
+  opaque 64 px band that cut the hero's light (`.nav[data-tone] { background: none }`).
 - **The preview pane throttles requestAnimationFrame** while nothing drives it, so the globe can
   look dim or mid-zoom in screenshots. Run a short rAF loop in the page before screenshotting.
 - **Headless checks beat the pane** when the user hides it (rAF stops): `agent-browser --session kq6` (Chrome for
@@ -246,8 +262,10 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
 - Mono labels are upper-case; wrap "c." in `<span class="lc">` so "c.1989" stays lower-case.
 
 ## Not done
-- Deployed 2026-10-22 with GitHub Pages from `main` (root): https://ukusliam-oss.github.io/meridian/
-  The repo is public. Every push to `main` redeploys the live site.
+- Not deployed. The original Meridian 1 is still live at https://ukusliam-oss.github.io/meridian/ (af7a163); this
+  project has no remote.
+- Phases left from the analysis: 2 colour and hierarchy, 3 light pipeline and map saturation, 4 HUD and lighting-up
+  motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):
   it lists text under WCAG AA. Load the theme fresh (localStorage `meridian:theme`) and turn transitions off first: a

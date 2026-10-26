@@ -15,7 +15,7 @@
 
 .plab__grid { display: grid; grid-template-columns: minmax(250px, 300px) 1fr; gap: 18px; align-items: start; }
 @media (max-width: 900px) { .plab__grid { grid-template-columns: 1fr; } .plab__dials { order: 2; } } /* on phones the aims come first */
-.plab__dials, .plab__main { border-radius: var(--r-md, 20px); background: rgb(10 12 18 / .78); border: 1px solid var(--lab-line); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.plab__dials, .plab__main { border-radius: var(--r-md, 20px); background: var(--glass-panel); border: 1px solid var(--lab-line); -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx); }
 .plab__dials { padding: 14px 16px; display: grid; gap: 10px; }
 .plab__group { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
 .plab__group legend { color: var(--text-3, rgb(243 241 235 / .58)); margin-bottom: 8px; }

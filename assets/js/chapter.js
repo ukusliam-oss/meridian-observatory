@@ -382,6 +382,7 @@ function roll(el, html) {
   gsap.fromTo(nu, { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' });
 }
 let lastShown = -2, lastFr = -1;
+const navBar = $('.nav');
 function updateUI(p) {
   const i = Math.max(0, Math.floor(p)), f = p - Math.floor(p);
   const near = p < 0 ? 0 : Math.min(N - 1, Math.round(p));
@@ -393,6 +394,9 @@ function updateUI(p) {
   const shown = ep >= -0.5 && es && es.map && (es.map.spikes || es.map.data);
   yearEl.textContent = shown ? (shown.month ? shown.month.replace(/-(\d\d)$/, (m, mm) => ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+mm - 1]).split(' ').reverse().join(' ') : shown.year) : new Date(d * 864e5).getUTCFullYear();
   ribbon.classList.toggle('is-on', p > -0.6 && p < N - 0.6);
+  // the bar dims for study as the first screen leaves (p from -0.7 to -0.1), and comes back with it
+  const st = Math.min(1, Math.max(0, (p + 0.7) / 0.6));
+  navBar?.style.setProperty('--study', (st * st * (3 - 2 * st)).toFixed(3));
   const key = p < -0.5 ? -1 : near;
   if (key !== lastShown) {
     lastShown = key;
@@ -519,7 +523,7 @@ function soundToggle() {
   show(snd.sound.enabled);
   b.addEventListener('click', () => snd.toggle());
   snd.sound.onChange(show);
-  bar.insertBefore(b, $('[data-theme-toggle]', bar));
+  $('[data-theme-toggle]', bar).before(b);
 }
 
 async function start() {

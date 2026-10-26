@@ -41,7 +41,10 @@ const LAYERS = [
   { amplitude: 0.22, frequency: 1.4, speed: 0.7, phase: 2.5, color: [175, 130, 255], opacity: 0.3, yOffset: 0.6, direction: 1 },
   { amplitude: 0.18, frequency: 1.7, speed: 0.9, phase: 5.5, color: [200, 160, 255], opacity: 0.25, yOffset: 0.45, direction: -1 },
 ];
-export function aurora(canvas) {
+// { white, speed }: the top bar's version, the same waves in white light (each layer's own brightness) and slower
+export function aurora(canvas, { white = false, speed = 1 } = {}) {
+  const layers = white ? LAYERS.map(L => { const v = Math.round((L.color[0] + L.color[1] + L.color[2]) / 3 * 0.35 + 255 * 0.65); return { ...L, color: [v, v, v], speed: L.speed * speed }; })
+    : LAYERS.map(L => ({ ...L, speed: L.speed * speed }));
   const ctx = canvas.getContext('2d', { alpha: true }); if (!ctx) return;
   let w = 0, h = 0, on = false, live = false;
   const t0 = performance.now();
@@ -71,7 +74,7 @@ export function aurora(canvas) {
     grad.addColorStop(0, `rgba(${r},${g},${b},${L.opacity})`); grad.addColorStop(0.4, `rgba(${r},${g},${b},${L.opacity * 0.6})`); grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
     ctx.fillStyle = grad; ctx.fill();
   };
-  const draw = t => { ctx.clearRect(0, 0, w, h); for (const L of LAYERS) layer(L, t); };
+  const draw = t => { ctx.clearRect(0, 0, w, h); for (const L of layers) layer(L, t); };
   const tick = () => draw((performance.now() - t0) / 1000);
   const sync = () => { const want = on && !reduced && !document.hidden; if (want !== live) { live = want; want ? gsap.ticker.add(tick) : gsap.ticker.remove(tick); } };
   new ResizeObserver(size).observe(canvas.parentElement); size();

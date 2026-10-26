@@ -42,7 +42,7 @@ $('#content').insertAdjacentHTML('beforeend', `
       <span class="path__n">${num(k)}</span><span class="path__t"><em>${st.em}</em> ${st.rest}</span>
       <span class="path__d">${st.text}</span><span class="path__in mono">${st.secs.map(x => x[1]).join(' · ')}</span></a></li>`).join('')}</ol>
   </div></section>
-  <nav class="subnav" aria-label="On this page"><div class="wrap"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></div></nav>
+  <div class="subnav-at" aria-hidden="true"></div>
   ${STEPS.map((st, k) => st.secs.map((sec, j) => section(sec, k, j === st.secs.length - 1)).join('')).join('')}
   <section class="section section--tight"><div class="wrap">
     <a class="card next" href="${nid}.html" data-spot data-reveal style="--accent:var(--${ncolor})">
@@ -63,6 +63,7 @@ const lab = await import(`./labs/${d.lab.kind}.js`);
 lab.mount(m('lab'), d.lab);
 
 heroArt($('[data-art]'), id, d);
+$('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 boot();
-subnav($('.subnav'));
+subnav($('.nav__sub'), $('.subnav-at'));
 if (!reduced) gsap.from('.s-hero .lede, .s-hero__stats > div, .s-hero .eyebrow, .s-hero__code', { y: 24, opacity: 0, duration: 1.2, stagger: 0.08, delay: 0.25 });

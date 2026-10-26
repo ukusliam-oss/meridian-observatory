@@ -163,7 +163,10 @@ function navTone() {
     onToggle: s => { s.isActive ? live.add(z) : live.delete(z); apply(); },
   }));
   const bar = $('.nav__progress');
-  if (bar) ScrollTrigger.create({ start: 0, end: 'max', onUpdate: s => gsap.set(bar, { scaleX: s.progress }) });
+  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: s => {
+    if (bar) gsap.set(bar, { scaleX: s.progress });
+    nav.classList.toggle('is-scrolled', s.scroll() > 8);
+  } });
   // tab bar tucks away while scrolling down, returns on scroll up
   if (tabbar && !reduced) {
     let shown = true;
@@ -218,9 +221,11 @@ function spotlight() {
   }, { passive: true });
 }
 
-// sticky sub-navigation with a scroll-spy pill
-export function subnav(el) {
+// a hub's sections in the bar, with a scroll-spy pill: they take the subjects' place once the page passes `from`
+export function subnav(el, from) {
   if (!el) return;
+  const nav = $('.nav');
+  if (from) ScrollTrigger.create({ trigger: from, start: () => `top ${nav.offsetHeight}px`, end: 'max', onToggle: s => nav.classList.toggle('has-sub', s.isActive) });
   const links = $$('a', el), seg = $('.seg', el);
   const pill = document.createElement('span');
   pill.className = 'seg__pill';
@@ -251,6 +256,7 @@ export function boot(scope = document) {
   if (!booted) {
     booted = true;
     navTone(); theme(); anchors(); spotlight();
+    import('./bar.js').then(m => m.bar()); // after this module: bar.js imports it
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
     addEventListener('load', () => ScrollTrigger.refresh());
     if (location.hash) {

@@ -5,7 +5,7 @@
 
 .chapter {
   --acc: var(--accent); --acc-deep: var(--accent-deep);
-  --ink: #05060a; --glass-ch: rgb(9 10 16 / .7);
+  --ink: #05060a; --glass-ch: var(--glass-panel);
   --line-ch: rgb(255 255 255 / .1);
   --read: rgb(238 237 246 / .84); --read-2: rgb(238 237 246 / .72);
   background: var(--ink); color: #f3f1eb;
@@ -27,7 +27,7 @@
 .world__marker.is-left { flex-direction: row-reverse; transform-origin: right; }
 .world__marker.is-left { translate: -100% 0; }
 .world__marker.is-left i { transform: translate(3.5px, 0); }
-.world__marker span { padding: 5px 8px; border-radius: 7px; background: rgb(6 7 12 / .74); border: 1px solid rgb(255 255 255 / .08); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.world__marker span { padding: 5px 8px; border-radius: 7px; background: var(--glass-panel); border: 1px solid rgb(255 255 255 / .08); -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx); }
 .no-webgl .world { background: radial-gradient(80% 60% at 70% 45%, #1a1636, var(--ink)); }
 
 .ch { position: relative; z-index: 1; }
@@ -71,8 +71,8 @@
 .part__fps span { color: #fff; }
 
 .sc__panel { position: relative; width: min(520px, 100%); padding: 28px 30px 26px; border-radius: var(--r-lg); background: var(--glass-ch);
-  -webkit-backdrop-filter: blur(22px) saturate(1.25); backdrop-filter: blur(22px) saturate(1.25);
-  border: 1px solid var(--line-ch); box-shadow: 0 1px 0 rgb(255 255 255 / .06) inset, 0 40px 120px -40px rgb(0 0 0 / .9); }
+  -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx);
+  border: 1px solid var(--line-ch); box-shadow: 0 1px 0 var(--glass-hi) inset, 0 40px 120px -40px rgb(0 0 0 / .9); }
 .sc__meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .sc__n { color: var(--text-3); }
 .sc__date { margin: 20px 0 8px; font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1.1; color: var(--acc); }
@@ -382,7 +382,7 @@
 
 /* ── Economics: data legend, line charts, chains ─────────────────────────────────────── */
 .world__legend { position: absolute; right: max(var(--gutter), 24px); top: calc(var(--nav-h) + 18px); z-index: 2; width: min(300px, 70vw); padding: 14px 16px 12px;
-  border-radius: 14px; background: rgb(6 7 12 / .72); border: 1px solid rgb(255 255 255 / .09); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-radius: 14px; background: var(--glass-panel); border: 1px solid rgb(255 255 255 / .09); -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx);
   color: #fff; opacity: 0; transform: translateY(8px); transition: opacity .5s var(--ease), transform .5s var(--ease); pointer-events: none; }
 .world__legend.is-on { opacity: 1; transform: none; }
 .world__legend .mono { color: rgb(255 255 255 / .9); }

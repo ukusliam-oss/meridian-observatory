@@ -23,6 +23,8 @@
   --ease: cubic-bezier(.16, 1, .3, 1);
   --ease-io: cubic-bezier(.65, 0, .35, 1);
   --nav-h: 64px;
+  /* glass comes in three grades and no others: the bar (nav, tab bar), the card (lenses, chips), the panel (reading) */
+  --glass-bar-fx: blur(28px) saturate(160%); --glass-card-fx: blur(18px) saturate(140%); --glass-panel-fx: blur(22px) saturate(150%);
   --fs-display: clamp(3.1rem, 1.2rem + 7.4vw, 9rem);
   --fs-h1: clamp(2.7rem, 1.3rem + 5.6vw, 7rem);
   --fs-h2: clamp(2.4rem, 1.3rem + 3.6vw, 4.8rem);
@@ -37,7 +39,9 @@
   --brand: #b693ff; --brand-deep: #6d3fd0; --brand-glow: #9047ff;
   --rim: linear-gradient(var(--btn-stroke-angle, 90deg), #2d257d 0%, #8e2de2 4%, #f5efff 31%, #f5efff 60%, #cbd5e1 85%, #8e2de2 100%);
   --good: #46d6a0; --bad: #ff7a6b;
-  --glass: rgb(13 15 20 / .66);
+  --glass: var(--glass-bar);
+  --glass-bar: rgb(9 10 14 / .78); --glass-card: rgb(12 14 19 / .62); --glass-panel: rgb(9 10 16 / .72);
+  --glass-hi: rgb(255 255 255 / .06);
   --shadow: 0 1px 0 rgb(255 255 255 / .05) inset, 0 30px 80px -30px rgb(0 0 0 / .75);
   --ink-on-accent: #0a0b0d;
   color-scheme: dark;
@@ -50,7 +54,9 @@
   --hist-deep: #7a4508; --econ-deep: #066343; --geo-deep: #1a5bb5;
   --brand: #6d3fd0; --brand-deep: #5a2fc2; --brand-glow: #9047ff;
   --good: #087a50; --bad: #b8322a;
-  --glass: rgb(250 248 244 / .74);
+  --glass: var(--glass-bar);
+  --glass-bar: rgb(250 248 244 / .8); --glass-card: rgb(255 255 255 / .62); --glass-panel: rgb(250 248 244 / .78);
+  --glass-hi: rgb(255 255 255 / .7);
   --shadow: 0 1px 2px rgb(22 20 12 / .05), 0 30px 70px -34px rgb(22 20 12 / .28);
   --ink-on-accent: #ffffff;
   color-scheme: light;
@@ -94,6 +100,7 @@ ul, ol { padding: 0; list-style: none; }
 .section { position: relative; padding-block: clamp(88px, 12vw, 168px); }
 .section--tight { padding-block: clamp(64px, 8vw, 112px); }
 [data-tone="dark"] { background: var(--bg); color: var(--text); }
+.nav[data-tone], .tabbar[data-tone] { background: none; } /* the tone is for their ink: as a band it cut the hero's light off under the bar */
 
 /* ── Type ───────────────────────────────────────────────────────────────── */
 /* Headings: light serif capitals; an <em> lead phrase sits on its own line in grey italic (chapter openings and
@@ -126,53 +133,93 @@ ul, ol { padding: 0; list-style: none; }
 
 /* ── Chrome: nav ────────────────────────────────────────────────────────── */
 .nav { position: fixed; inset: 0 0 auto; z-index: 60; height: var(--nav-h); display: flex; align-items: center; pointer-events: none; }
+/* once the page moves, what scrolls up behind the bar blurs and fades out in the 16 px under it, so no text is read
+   through the glass */
+.nav::before { content: ""; position: absolute; inset: 0 0 -16px; z-index: -1; pointer-events: none; opacity: 0;
+  background: linear-gradient(var(--bg) 30%, color-mix(in srgb, var(--bg) 70%, transparent) 70%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  -webkit-mask: linear-gradient(#000 70%, transparent); mask: linear-gradient(#000 70%, transparent);
+  transition: opacity .3s var(--ease); }
+.nav.is-scrolled::before { opacity: 1; }
+/* No bar: the nav is words floating on the night, like an instrument's readings (after emotion-agency's header), and
+   one piece of glass, the pill at the right end (bar.js): the chapter pill's glass in black and white, a faint white
+   aurora drifting slowly inside, a white rim whose light turns towards the pointer, a soft glow beneath on hover. Plex
+   Mono capitals; colour is left to the subjects' dots. The words take the page's ink (navTone turns them light over
+   dark zones); the pill is always black glass. While a chapter is read the whole row steps back (--study, from
+   chapter.js) and a hover wakes it; elsewhere it leaves on the way down and comes back on the way up. */
 .nav__bar {
-  pointer-events: auto; position: relative;
-  width: min(var(--wrap), 100% - 2 * var(--gutter)); margin-inline: auto; height: 48px;
-  display: flex; align-items: center; gap: 6px; padding: 0 6px 0 16px; border-radius: 999px;
-  background: var(--glass); border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
-  box-shadow: 0 10px 40px -20px rgb(0 0 0 / .5);
-  color: var(--text);
-  transition: background .5s var(--ease), border-color .5s var(--ease), color .5s var(--ease);
+  pointer-events: none; position: relative;
+  width: min(var(--wrap), 100% - 2 * var(--gutter)); margin-inline: auto; height: 3rem;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; color: var(--text);
+  font: 500 12px/1.15 var(--mono); text-transform: uppercase; letter-spacing: .02em;
+  --d: calc(var(--study, 0) * (1 - var(--wake)));
+  opacity: calc(1 - .64 * var(--d)); transition: --wake .6s var(--ease);
 }
+.nav__bar > * { pointer-events: auto; }
+@property --wake { syntax: '<number>'; inherits: true; initial-value: 0; }
+.nav__bar:hover, .nav__bar:focus-within { --wake: 1; }
+.nav__end { grid-column: 3; grid-row: 1; display: flex; align-items: center; justify-content: flex-end; gap: .5rem; }
 /* The chapter pill's 1px rim (emotion-agency's v-stroke-border): its light turns towards the pointer; glass.js
    adds the class and drives --btn-stroke-angle. */
 .stroke-border { border-color: transparent !important; }
 .stroke-border::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: var(--rim); pointer-events: none; opacity: var(--rim-o, .7);
   -webkit-mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0); }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -.03em; font-size: 16px; margin-right: auto; }
-.brand svg { width: 22px; height: 22px; }
-.brand small { font-weight: 500; color: var(--text-3); letter-spacing: -.01em; font-size: 13px; }
-.nav__links { display: flex; align-items: center; gap: 2px; }
-.nav__link {
-  position: relative; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px;
-  border-radius: 999px; font-size: 14px; font-weight: 520; color: var(--text-2);
-  transition: color .25s, background .25s;
-}
-.nav__link::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--text-3)); }
-.nav__link:hover { color: var(--text); background: var(--line); }
-.nav__link[aria-current="page"] { color: var(--text); background: var(--line); }
+.brand { grid-column: 1; grid-row: 1; justify-self: start; display: grid; grid-template-columns: 22px auto; column-gap: .75rem; row-gap: 4px; align-items: center; }
+.brand svg { grid-row: 1 / 3; width: 22px; height: 22px; }
+.brand small { grid-row: 1; grid-column: 2; font-size: 11px; color: var(--text-3); }
+.brand span { grid-row: 2; grid-column: 2; letter-spacing: .08em; }
+.nav__links { position: relative; display: flex; align-items: center; gap: 2px; }
+/* one hairline under the current page's link, gliding to the one under the pointer */
+.nav__hl { position: absolute; left: 0; bottom: 4px; width: 0; height: 1px; opacity: 0; background: currentColor; pointer-events: none; }
+.nav__link { position: relative; display: inline-flex; align-items: center; gap: 9px; height: 2.25rem; padding: 0 1rem; color: var(--text-2); transition: color .3s; }
+.nav__link::before { content: ""; flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--c, currentColor); transition: box-shadow .4s var(--ease); }
+.nav__link:hover, .nav__link:focus-visible, .nav__link[aria-current="page"] { color: var(--text); outline: none; }
+.nav__link:hover::before, .nav__link[aria-current="page"]::before { box-shadow: 0 0 0 3px color-mix(in oklab, var(--c, #fff) 22%, transparent), 0 0 10px var(--c, #fff); }
+/* the pill's roll: the label slides up and its copy comes in from below */
+.nav__roll { position: relative; display: block; height: 1.15em; overflow: hidden; }
+.nav__roll > span { display: block; transition: transform calc(.618s * .6) var(--ease); }
+.nav__roll > span + span { position: absolute; inset: 0; transform: translateY(110%); }
+a:hover > .nav__roll > span:first-child, a:focus-visible > .nav__roll > span:first-child { transform: translateY(-110%); }
+a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span { transform: none; }
 .icon-btn { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: var(--text-2); transition: background .25s, color .25s; }
 .icon-btn:hover { background: var(--line); color: var(--text); }
 .icon-btn svg { width: 18px; height: 18px; }
+.nav__bar .icon-btn { color: var(--text); }
+.nav__bar .icon-btn svg { width: 1.0625rem; height: 1.0625rem; }
 .theme-ico-sun { display: none; }
 [data-theme="light"] .nav:not([data-tone]) .theme-ico-sun { display: block; }
 [data-theme="light"] .nav:not([data-tone]) .theme-ico-moon { display: none; }
-.nav__progress { position: absolute; left: 22px; right: 22px; bottom: -1px; height: 1px; background: var(--accent); transform-origin: left; transform: scaleX(0); opacity: .8; }
+.nav__progress { display: none; }
+.nav__bar :focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+/* the one glass: the chapter pill in black and white */
+.nav__cta { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: .625rem; height: 2.75rem; padding: 0 .4rem 0 1.25rem;
+  border-radius: 999px; color: #fff; background: rgb(5 5 8 / .72); -webkit-backdrop-filter: blur(20px) saturate(1.2); backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 12px 32px -12px rgb(0 0 0 / .55);
+  --rim: linear-gradient(var(--btn-stroke-angle, 90deg), rgb(255 255 255 / .06) 0%, rgb(255 255 255 / .6) 31% 60%, rgb(255 255 255 / .2) 85%, rgb(255 255 255 / .06) 100%); }
+.nav__cta.stroke-border::before { inset: 0; --rim-o: .8; }
+[data-theme="light"] .nav:not([data-tone]) .nav__cta { background: rgb(10 10 14 / .92); } /* over paper the glass keeps the night's black */
+.nav__cta > i { position: relative; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: rgb(255 255 255 / .08); transition: background-color .4s var(--ease); }
+.nav__cta:hover > i, .nav__cta:focus-visible > i { background: rgb(255 255 255 / .16); }
+.nav__cta svg { width: .875rem; height: .875rem; }
+.nav__aurora { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: .55; }
+.nav__aurora canvas { display: block; filter: blur(6px); transform: scale(1.2); }
+.nav__glow { position: absolute; left: 10%; right: 10%; bottom: 0; z-index: -2; height: 50%; border-radius: 999px; background: rgb(255 255 255 / .5);
+  filter: blur(18px); opacity: 0; transform: scale(.6); pointer-events: none; transition: opacity .4s, transform .4s; }
+.nav__cta:hover .nav__glow { opacity: .3; transform: scale(1); }
 
 /* ── Chrome: phone tab bar ──────────────────────────────────────────────── */
 .tabbar { display: none; }
 @media (max-width: 760px) {
   :root { --nav-h: 58px; }
   .nav__links { display: none; }
-  .nav__bar { height: 44px; }
+  .nav__bar { height: 2.875rem; }
+  .nav__hl { display: none; }
   .tabbar {
     position: fixed; z-index: 60; left: 50%; transform: translateX(-50%);
     bottom: max(12px, env(safe-area-inset-bottom)); display: flex; gap: 2px; padding: 5px;
-    border-radius: 999px; background: var(--glass); border: 1px solid var(--line);
-    -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
-    box-shadow: 0 16px 40px -16px rgb(0 0 0 / .6); color: var(--text);
+    border-radius: 999px; background: var(--glass-bar); border: 1px solid var(--line);
+    -webkit-backdrop-filter: var(--glass-bar-fx); backdrop-filter: var(--glass-bar-fx);
+    box-shadow: inset 0 1px 0 var(--glass-hi), 0 16px 40px -16px rgb(0 0 0 / .6); color: var(--text);
   }
   .tabbar a { display: grid; justify-items: center; gap: 2px; min-width: 70px; padding: 7px 10px 6px; border-radius: 999px; font-size: 13px; font-weight: 560; color: var(--text-2); transition: background .25s, color .25s; }
   .tabbar a svg { width: 20px; height: 20px; }
@@ -248,8 +295,8 @@ ul, ol { padding: 0; list-style: none; }
 .globe-label > span {
   display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; transform: translate(12px, -50%);
   padding: 5px 9px; border-radius: 8px; font: 500 11.5px/1.2 var(--mono); letter-spacing: .03em; text-transform: uppercase;
-  background: rgb(6 8 12 / .7); border: 1px solid rgb(255 255 255 / .09);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  background: var(--glass-panel); border: 1px solid rgb(255 255 255 / .09);
+  -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx);
 }
 .globe-label--l > span { transform: translate(calc(-100% - 12px), -50%); }
 .globe-label b { font-weight: 500; color: #fff; }
@@ -267,7 +314,7 @@ ul, ol { padding: 0; list-style: none; }
 .hero__foot { position: absolute; left: 0; right: 0; bottom: 28px; }
 .hero__foot .wrap { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .codes { display: flex; flex-wrap: wrap; gap: 8px; }
-.code-chip { display: inline-flex; align-items: center; gap: 9px; height: 34px; padding: 0 14px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: rgb(10 12 16 / .5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 13px; color: var(--text-2); transition: border-color .3s, color .3s; }
+.code-chip { display: inline-flex; align-items: center; gap: 9px; height: 34px; padding: 0 14px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass-card); -webkit-backdrop-filter: var(--glass-card-fx); backdrop-filter: var(--glass-card-fx); font-size: 13px; color: var(--text-2); transition: border-color .3s, color .3s; }
 .code-chip:hover { border-color: var(--line-3); color: var(--text); }
 .code-chip b { color: var(--text); font-weight: 600; }
 .code-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 12px var(--c); }
@@ -285,9 +332,9 @@ ul, ol { padding: 0; list-style: none; }
 .lens { position: relative; min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding-block: 120px; }
 .lens__card {
   --accent: var(--c); max-width: 460px; display: grid; gap: 18px; padding: clamp(24px, 3vw, 34px);
-  border-radius: var(--r-lg); background: rgb(9 11 15 / .58); border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: 0 40px 80px -40px rgb(0 0 0 / .8);
+  border-radius: var(--r-lg); background: var(--glass-card); border: 1px solid var(--line);
+  -webkit-backdrop-filter: var(--glass-card-fx); backdrop-filter: var(--glass-card-fx);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 40px 80px -40px rgb(0 0 0 / .8);
 }
 .lens__num { display: flex; align-items: center; gap: 12px; font: 500 var(--fs-label)/1.2 var(--mono); text-transform: uppercase; color: var(--text-3); letter-spacing: .02em; }
 .lens__num b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 30px; line-height: 1; }
@@ -365,9 +412,24 @@ ul, ol { padding: 0; list-style: none; }
 .s-hero__stats b { font-family: var(--serif); font-size: clamp(2.4rem, 1.6rem + 2.4vw, 3.8rem); font-weight: 400; letter-spacing: 0; line-height: .9; font-variant-numeric: tabular-nums; }
 .s-hero__stats span { font-size: 13.5px; color: var(--text-2); max-width: 14ch; line-height: 1.3; }
 
-/* subnav */
-.subnav { position: sticky; top: calc(var(--nav-h) - 2px); z-index: 40; padding-block: 10px; pointer-events: none; }
-.subnav .seg { pointer-events: auto; background: var(--glass); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%); box-shadow: 0 10px 30px -18px rgb(0 0 0 / .5); }
+/* a hub's sections live in the bar: past the four steps they take the subjects' place, so there is one glass */
+.nav__sub { grid-column: 2; grid-row: 1; justify-self: center; max-width: 100%; opacity: 0; visibility: hidden; transition: opacity .3s var(--ease), visibility .3s; }
+.nav__links { grid-column: 2; grid-row: 1; justify-self: center; transition: opacity .3s var(--ease), visibility .3s; }
+.nav.has-sub .nav__sub { opacity: 1; visibility: visible; }
+.nav.has-sub .nav__links { opacity: 0; visibility: hidden; }
+.nav__sub .seg { padding: 0; background: none; border: 0; }
+.nav__sub .seg__pill { top: auto; bottom: 4px; height: 1px; background: currentColor; border: 0; box-shadow: none; }
+.nav .nav__sub .seg a { height: 2.25rem; padding: 0 .75rem; font: inherit; color: var(--text-2); }
+.nav .nav__sub .seg a.is-active, .nav .nav__sub .seg a:hover { color: var(--text); }
+.nav__sub .seg__sep { background: var(--line-2); }
+@media (max-width: 760px) {
+  .nav__bar { grid-template-columns: auto minmax(0, 1fr) auto; gap: .5rem; }
+  .nav__sub { min-width: 0; justify-self: stretch; }
+  .nav.has-sub .brand > :not(svg) { display: none; }
+  .nav.has-sub .nav__end { opacity: 0; visibility: hidden; }
+  .nav.has-sub .nav__sub { grid-column: 2 / 4; }
+  .nav__sub .seg { -webkit-mask: linear-gradient(90deg, transparent, #000 12px calc(100% - 12px), transparent); mask: linear-gradient(90deg, transparent, #000 12px calc(100% - 12px), transparent); }
+}
 .subnav .seg a { position: relative; z-index: 1; display: inline-flex; align-items: center; height: 34px; padding: 0 15px; border-radius: 999px; font-size: 13.5px; font-weight: 560; color: var(--text-2); white-space: nowrap; transition: color .3s; }
 .subnav .seg a.is-active { color: var(--text); }
 .seg__sep { flex: none; align-self: center; width: 1px; height: 16px; margin: 0 4px; background: var(--line-2); }
@@ -777,7 +839,9 @@ ul, ol { padding: 0; list-style: none; }
 ::view-transition-new(root) { animation-name: vt-in; }
 @keyframes vt-out { to { opacity: 0; transform: scale(.985); filter: blur(4px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(16px); } }
-.nav { view-transition-name: nav; }
+/* on the bar, not on .nav: a view-transition-name makes its element a backdrop root, and the bar's blur then saw
+   nothing behind it (the page read sharp through the glass) */
+.nav__bar { view-transition-name: nav; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
