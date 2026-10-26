@@ -268,7 +268,12 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   faint outline in the subject colour (never a fill), the command-word ladder is one white light rising by level; lens
   cards speak in serif and mono only; chapter titles keep their lead on one line and the question in two (at most three
   lines, at most half the screen wide). History's colour (amber outside, violet inside) is still undecided.
-- Phases left from the analysis: 3 light pipeline and map saturation, 4 HUD and lighting-up
+- Phase 3 (2026-10-26): chapters draw through `src/world/post.js` (bloom, shoulder, grade, reading grade; taken from
+  the paper-and-ink engine without its paper or wash) with `look` on (`?look=0` off): the rim and air scatter on the
+  sun's side, the sea glints. post.js encodes the clear colour into its target, or the stage comes out black. Berlin
+  flags are a 42% glaze (were 72%) and the focus fill 40% (was 62%): measured, ordinary fills were already dark
+  (L* 1–12); only the flags (Union Flag red C* 60) and the focus (C* 42–47) read as paint. Data maps move ΔE 0.5–1.5.
+- Phases left from the analysis: 4 HUD and lighting-up
   motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):

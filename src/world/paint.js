@@ -15,7 +15,7 @@ export const PALETTE = {
 };
 // Berlin's four sectors carry the flag of the power that held each, from 1945 to 1990 (West Berlin stayed under the
 // three Western Allies, East Berlin was the Soviet sector), a glaze over a dark ground, named at a hand-placed point
-const FLAG_ALPHA = 0.72, SECTOR_GROUND = '#151925';
+const FLAG_ALPHA = 0.42, SECTOR_GROUND = '#151925'; // 0.72 read as paint (the Union Flag's red at chroma 60); 0.42 is an emblem in the night
 const star = (ctx, x, y, r, inner = 0.382) => { // a five-pointed star, point up
   ctx.beginPath();
   for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, q = k % 2 ? r * inner : r; ctx.lineTo(x + Math.cos(a) * q, y + Math.sin(a) * q); }
@@ -66,7 +66,7 @@ const FLAGS = {
 };
 const SECTOR_NAMES = { us: [52.43, 13.36, 'AMERICAN SECTOR'], uk: [52.49, 13.19, 'BRITISH SECTOR'], fr: [52.6, 13.31, 'FRENCH SECTOR'], su: [52.47, 13.52, 'SOVIET SECTOR'] };
 // how much of a state colour covers the land beneath it; the focus colour is bright, so it is the thinnest glaze
-const GLAZE = { focus: 0.62, soviet: 0.82, bloc: 0.8, west: 0.85, neutral: 0.8 };
+const GLAZE = { focus: 0.4, soviet: 0.82, bloc: 0.8, west: 0.85, neutral: 0.8 }; // the focus is lit by its glow and outline, its fill stays faint
 // water colours, with alpha 254/255 (see paintTexture): the shallow sea, and rivers and lakes
 const SHELF = 'rgba(44, 52, 70, 0.996)', WATERC = 'rgba(76, 122, 172, 0.996)';
 const lighter = hex => { const n = parseInt(hex.slice(1), 16), m = c => Math.round(c + (255 - c) * 0.38); return `rgb(${m(n >> 16)},${m((n >> 8) & 255)},${m(n & 255)})`; };

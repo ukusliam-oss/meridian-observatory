@@ -23,6 +23,7 @@ import { R_KM, clamp, smooth, ll, setViewport, placeCamera, footprint, textureSi
 import { geoInterpolate, geoDistance } from 'd3-geo';
 import { mesh } from 'topojson-client';
 import { DEG, dayNum, PALETTE, WALL_DOWN, featuresOf, countriesAt, runJob } from './paint.js';
+import { createPost } from './post.js';
 import { pointsLayer, plateLines, loadDem, terrainPatch, sectionOf, cutaway, PLATE_COLOR, DEPTH_STOPS, VOLCANO_COLOR, MMI_COLOR, MMI_ROMAN } from './layers.js';
 
 export { PALETTE, ll };
@@ -92,7 +93,7 @@ const earthFrag = /* glsl */`
 #endif
   uniform vec4 uSlotA, uSlotB;      // x: value row (< 0: no data layer), y: d0, z: d1, w: ramp row
   uniform float uWA, uWB;           // inside each state, how far its values have moved towards the other state's row
-  uniform float uMix, uHatch; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
+  uniform float uMix, uHatch, uLook; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
   vec2 lonlat() { return vec2(vUv.x * 360.0 - 180.0, vUv.y * 180.0 - 90.0); }
   vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
@@ -200,15 +201,33 @@ const earthFrag = /* glsl */`
     // a fine film grain on land, one device pixel per grain, so large fills read as a surface and not as plastic
     float grain = fract(sin(dot(floor(gl_FragCoord.xy), vec2(12.9898, 78.233))) * 43758.5453);
     col *= 1.0 + (grain - 0.5) * 0.05 * land.a;
-    col += uRim * rim * 0.55;
+    if (uLook > 0.5) {
+      // the light's look (design plan §8.3): the sun glints on open water and painted water, its roughness swaying
+      // slowly like wind on the sea, and the rim glows only on the lit side
+      vec3 L = normalize(uLight), hv = normalize(L + v);
+      float wm = max(1.0 - clamp(land.a / 0.996, 0.0, 1.0), water);
+      vec2 g = vUv * vec2(720.0, 360.0);
+      float wind = fract(sin(dot(floor(g), vec2(127.1, 311.7))) * 43758.5453);
+      float a = 0.11 + 0.06 * wind, a2 = a * a, nh = max(dot(n, hv), 0.0);
+      float D = a2 / (3.14159 * pow(nh * nh * (a2 - 1.0) + 1.0, 2.0));
+      float F = 0.02 + 0.98 * pow(1.0 - max(dot(v, hv), 0.0), 5.0);
+      col += vec3(1.0, 0.95, 0.86) * D * F * max(dot(n, L), 0.0) * 0.22 * wm;
+      col += uRim * rim * 0.55 * (0.3 + 0.7 * smoothstep(-0.3, 0.5, dot(n, L)));
+    } else col += uRim * rim * 0.55;
     gl_FragColor = vec4(col, 1.0);
   }`;
 const airFrag = /* glsl */`
-  uniform vec3 uRim; varying vec3 vN; varying vec3 vW;
+  uniform vec3 uRim, uLight; uniform float uLook; varying vec3 vN; varying vec3 vW;
   void main() {
     vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
     float f = pow(clamp(1.0 - abs(dot(n, v)), 0.0, 1.0), 2.4);
-    gl_FragColor = vec4(uRim, f * 0.9);
+    if (uLook > 0.5) {
+      // one scattering, cheaply: bright where the sun is, a warm band at the day's edge, a thin bright limb
+      float sun = dot(n, normalize(uLight));
+      float day = smoothstep(-0.35, 0.3, sun), edge = exp(-pow((sun + 0.05) / 0.18, 2.0));
+      vec3 c = mix(uRim, vec3(1.0, 0.62, 0.4), edge * 0.55);
+      gl_FragColor = vec4(c * (1.0 + 0.6 * pow(f, 6.0)), f * 0.9 * mix(0.22, 1.1, day));
+    } else gl_FragColor = vec4(uRim, f * 0.9);
   }`;
 const tubeVert = /* glsl */`
   varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
@@ -381,7 +400,7 @@ function painter(feats, dataUrl, onDone) {
 
 // ── engine ──────────────────────────────────────────────────────────────────
 // scenes: engine scenes; a chapter panel that steps through several years has one per year, all with the same `panel`.
-export async function createWorld(host, { scenes, hero, data, dataUrl, relief, terrain = null, layers = null, light: lightMode = 'fixed', values = null, accent = null, reduced = false, onFrame } = {}) {
+export async function createWorld(host, { scenes, hero, data, dataUrl, relief, terrain = null, layers = null, light: lightMode = 'fixed', values = null, accent = null, reduced = false, look = 0, onFrame } = {}) {
   if (accent) PALETTE.focus = accent;
   const canvas = document.createElement('canvas');
   canvas.className = 'world__canvas';
@@ -594,7 +613,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     uRelW: { value: flat }, uRelE: { value: flat }, uTA: { value: blank }, uTB: { value: blank },
     uQA: { value: blank }, uQB: { value: blank }, uQBoxA: { value: new Vector4() }, uQBoxB: { value: new Vector4() },
     uRelBox: { value: new Vector4(...(relief?.europeBox || [0, 0, 1, 1])) },
-    uMix: { value: 0 }, uHatch: { value: 60 }, uLight: { value: light }, uCut: { value: new Vector3(0, 0, 0) },
+    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uCut: { value: new Vector3(0, 0, 0) },
     uOcean: { value: new Color('#06080d') }, uOceanLift: { value: new Color('#0c1220') }, uRim: { value: rim }, uFocus: { value: new Color(PALETTE.focus) },
   };
   if (relief) {
@@ -609,7 +628,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   }));
   earth.rotation.y = -Math.PI / 2; // equirectangular u=0 at lon -180
   const air = new Mesh(new SphereGeometry(1.06, 96, 64), new ShaderMaterial({
-    uniforms: { uRim: { value: rim } }, vertexShader: shellVert, fragmentShader: airFrag,
+    uniforms: { uRim: { value: rim }, uLight: { value: light }, uLook: { value: look ? 1 : 0 } }, vertexShader: shellVert, fragmentShader: airFrag,
     side: BackSide, transparent: true, blending: AdditiveBlending, depthWrite: false,
   }));
   globe.add(earth, air);
@@ -949,6 +968,10 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     markerEls.set(i, list); return list;
   };
 
+  // ── light: with `look` the frame goes through the post pipeline (bloom, shoulder, grade, vignette, grain) ──────
+  const post = look ? createPost(renderer, { phone }) : null;
+  const draw = () => (post ? post.render(scene, camera) : renderer.render(scene, camera));
+
   // ── camera ────────────────────────────────────────────────────────────────
   let W = 1, H = 1;
   const tmp = new Vector3(), lineRes = new Vector2(1, 1);
@@ -959,6 +982,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, phone ? 1.5 : 1.75));
     renderer.setSize(W, H, false);
     setViewport(camera, W, H);
+    if (post) post.setSize(W, H, renderer.getPixelRatio());
     lineRes.set(W, H);
     if (refKey(W, H) !== refKey(...REF)) { REF = [W, H]; stateCache.clear(); } // the next frames ask for textures that fit
     for (const list of markerEls.values()) list.forEach(m => { m.w = 0; });
@@ -1016,7 +1040,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
     // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank
     const A = texturesOf(i, true) || lastA || lastB, B = texturesOf(j, true) || A;
-    if (!A) { renderer.render(scene, camera); return; }
+    if (!A) { draw(); return; }
     lastA = A; lastB = B;
     earthU.uGA.value = A.g; earthU.uDA.value = A.d; earthU.uBoxA.value = A.box; earthU.uIGA.value = A.ig || blank; earthU.uIDA.value = A.id || blank;
     earthU.uGB.value = B.g; earthU.uDB.value = B.d; earthU.uBoxB.value = B.box; earthU.uIGB.value = B.ig || blank; earthU.uIDB.value = B.id || blank;
@@ -1059,7 +1083,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
       if (j !== i) showMarkers(j, smooth(0.6, 0.95, f), valueAt);
     }
 
-    renderer.render(scene, camera);
+    draw();
     if (onFrame) onFrame(p);
     const ms = performance.now() - c0;
     stats.frames++; stats.frameMs += ms; stats.worstFrameMs = Math.max(stats.worstFrameMs, ms);
@@ -1085,6 +1109,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     // the height profile along a section line: { prof: [{ d km, h m }], total km }, or null without the site's heights
     async profile(site, from, to) { const dem = await demOf(site); return dem ? sectionOf(dem, from, to, 1) : null; },
     stats,
+    post, // the light's settings, when `look` is on
     camera, // for checks in the preview
     destroy() { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); paint.destroy(); renderer.dispose(); },
   };
