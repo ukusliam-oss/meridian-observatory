@@ -262,8 +262,9 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
 - Mono labels are upper-case; wrap "c." in `<span class="lc">` so "c.1989" stays lower-case.
 
 ## Not done
-- Not deployed. The original Meridian 1 is still live at https://ukusliam-oss.github.io/meridian/ (af7a163); this
-  project has no remote.
+- Deployed 2026-10-26: remote `origin` = github.com/ukusliam-oss/meridian-observatory (public), GitHub Pages from `main`,
+  https://ukusliam-oss.github.io/meridian-observatory/. Every push to `main` redeploys it; ask before pushing. The
+  original Meridian 1 stays live at https://ukusliam-oss.github.io/meridian/ (af7a163, not this remote).
 - Phase 2 (2026-10-26): colour is light only. `.btn--accent` is card glass with one glowing subject dot, `.tag` is a
   faint outline in the subject colour (never a fill), the command-word ladder is one white light rising by level; lens
   cards speak in serif and mono only; chapter titles keep their lead on one line and the question in two (at most three
@@ -299,8 +300,7 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
     capitals for ~0.5 s as they come on; labels with markup inside are left alone; none with reduced motion.
   - Between pages the old page dims out and the new one lights up (cross-document view transitions; the bar stays).
   - `404.html` (pages.py, `lost.js`): sets its `<base>` from the address (GitHub Pages serves it at any depth);
-    share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen; og:image is relative until
-    the site has an address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
+    share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen, at its absolute address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
     italic descenders (the y of "Geography").
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own

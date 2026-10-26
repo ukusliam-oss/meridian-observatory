@@ -30,7 +30,7 @@ def shell(page, title, desc, main, script, subject='', head=''):
 <meta property="og:site_name" content="Meridian">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:image" content="assets/og.jpg">
+<meta property="og:image" content="https://ukusliam-oss.github.io/meridian-observatory/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
