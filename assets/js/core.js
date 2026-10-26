@@ -29,6 +29,7 @@ if (reduced) gsap.globalTimeline.timeScale(20);
 export let lenis = null;
 if (!reduced && Lenis) {
   lenis = new Lenis({ lerp: 0.105, smoothWheel: true, wheelMultiplier: 0.95, syncTouch: false });
+  window.__meridianLenis = lenis; // the home's inline safety net can start it
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);

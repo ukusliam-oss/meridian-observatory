@@ -111,7 +111,7 @@ if (root.classList.contains('is-booting')) {
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-  setTimeout(() => { want = 1; }, 9000); // a slow network or a missing globe never keeps the page shut
+  setTimeout(() => { want = 1; }, 7000); // a slow network or a missing globe never keeps the page shut
   function place() {
     const d = globe.disc();
     if (d.r > 0 && Number.isFinite(d.x)) Object.assign(dial.style, { left: `${d.x}px`, top: `${d.y}px`, width: `${d.r * 2.4}px` });
@@ -124,6 +124,7 @@ if (root.classList.contains('is-booting')) {
   // small blur move. A reader back within the session sees the title sharpen in place.
   function finish() {
     done = true;
+    root.dataset.reveal = '1'; // the inline safety net in index.html stands down
     try { sessionStorage.setItem('meridian:booted', '1'); } catch { /* private mode */ }
     if (globeReady) place();
     const quick = !!seen;

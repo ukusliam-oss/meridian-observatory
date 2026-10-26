@@ -149,7 +149,9 @@ BOOT = f'''<div class="boot" data-boot aria-hidden="true">
   </svg>
   <div class="boot__read boot__read--l"><span class="boot__brand">Meridian</span><span data-boot-status>Calibrating the observatory</span></div>
   <div class="boot__read boot__read--r"><span data-boot-coord>00.00°N 000.00°E</span><span><b data-boot-pct>000</b>%</span></div>
-</div>'''
+</div>
+<script>/* the loader's safety net: if its reveal has not begun within 10 s (a script failed, or an old cached one ran), the
+   page opens at once */ setTimeout(function(){{var d=document.documentElement;if(d.dataset.reveal||d.classList.contains('is-booted'))return;var b=document.querySelector('[data-boot]');if(b)b.remove();d.classList.remove('is-booting');d.classList.add('is-booted');[].forEach.call(document.querySelectorAll('#hero-h .hw, .hero .eyebrow, .hero .lede, .hero__cta, .hero__foot'),function(e){{e.style.opacity='1';e.style.filter='none';e.style.transform='none'}});try{{window.__meridianLenis&&window.__meridianLenis.start()}}catch(e){{}}}},10000);</script>'''
 home_main = BOOT + f'''
 <div class="scope" data-tone="dark" data-globe-scope>
   <div class="scope__stage"><div class="globe" aria-hidden="true"></div><div class="grain"></div></div>
@@ -291,3 +293,4 @@ lost = f'''
 </section>'''
 (ROOT / '404.html').write_text(shell('lost', 'Off the map | Meridian', 'This page is not on Meridian.', lost, 'lost.js', head=BASE))
 print('wrote 5 pages')
+import runpy; runpy.run_path(str(ROOT / 'tools' / 'stamp.py')) # every page carries the current version of each file

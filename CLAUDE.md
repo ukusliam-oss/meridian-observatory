@@ -18,6 +18,7 @@ Plain HTML/CSS/JS, no runtime framework. Preview: the `observatory` entry in `..
 ```
 npm run build          # bake land dots + bundle the three.js globe → assets/js/globe.js
 python3 tools/pages.py # regenerate index/history/economics/geography.html from one shell
+python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs it too): run before every commit
 ```
 
 ## Map
@@ -262,6 +263,11 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
 - Mono labels are upper-case; wrap "c." in `<span class="lc">` so "c.1989" stays lower-case.
 
 ## Not done
+- Cache: GitHub Pages serves everything with max-age=600, so a new page could run with old cached modules (it left the
+  home's loader at 000% for 12 s). `tools/stamp.py` gives every page an import map (after <meta charset>, or after
+  404's <base>) mapping each module to `?v=<content hash>`, and stamps <script src> and stylesheet hrefs. Test scripts
+  should import modules by the page's own relative path, not `/assets/js/…`, or they get a second copy of core.js.
+  The home also has an inline safety net (pages.py, after `.boot`): if the reveal has not begun in 10 s, it opens.
 - Deployed 2026-10-26: remote `origin` = github.com/ukusliam-oss/meridian-observatory (public), GitHub Pages from `main`,
   https://ukusliam-oss.github.io/meridian-observatory/. Every push to `main` redeploys it; ask before pushing. The
   original Meridian 1 stays live at https://ukusliam-oss.github.io/meridian/ (af7a163, not this remote).

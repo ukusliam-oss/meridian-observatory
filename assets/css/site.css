@@ -358,7 +358,7 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 
 /* ── the home's loader: the observatory calibrating (home.js) ── */
 .boot { position: fixed; inset: 0; z-index: 300; background: #05060a; color: #fff; pointer-events: none;
-  animation: boot-safety 0s 12s forwards; } /* if the script never comes, the page still shows */
+  animation: boot-safety 0s 11s forwards; } /* if the script never comes, the page still shows */
 @keyframes boot-safety { to { opacity: 0; visibility: hidden; } }
 html:not(.js) .boot { display: none; }
 .boot__dial { position: absolute; left: 50%; top: 50%; width: min(84vmin, 900px); height: auto; translate: -50% -50%; overflow: visible; }
