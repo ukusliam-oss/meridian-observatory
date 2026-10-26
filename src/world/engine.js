@@ -969,7 +969,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   };
 
   // ── light: with `look` the frame goes through the post pipeline (bloom, shoulder, grade, vignette, grain) ──────
-  const post = look ? createPost(renderer, { phone }) : null;
+  // look 1: the light's shaders only (the sun-side rim and air, the sea's glint); look 2 adds the post pipeline, which
+  // measured 10.7 ms of GPU a frame at DPR 1.75 on an M5 (KQ6 hero: 7.2 → 17.9 ms median), too much for smaller Macs
+  const post = look >= 2 ? createPost(renderer, { phone }) : null;
   const draw = () => (post ? post.render(scene, camera) : renderer.render(scene, camera));
 
   // ── camera ────────────────────────────────────────────────────────────────

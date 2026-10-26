@@ -120,7 +120,7 @@ ul, ol { padding: 0; list-style: none; }
 [data-theme="light"] [data-subject] :is(.door__go, .topic__code, .h3 em) { color: var(--accent-deep); }
 [data-theme="light"] [data-subject] [data-tone="dark"] .door__go { color: var(--accent); }
 [data-theme="light"] .change__level { color: var(--accent-deep); }
-[data-theme="light"] .rung { --rc: rgb(21 20 15 / calc(.45 + var(--i) * .18)); }
+[data-theme="light"] .rung { --rc: rgb(21 20 15 / calc(.52 + var(--i) * .16)); }
 /* pages without a subject (home) keep their headings' italics and labels grey */
 .lede { font-size: clamp(1.1rem, 1rem + .45vw, 1.35rem); line-height: 1.5; color: var(--text-2); letter-spacing: -.016em; text-wrap: pretty; max-width: 40ch; }
 .muted { color: var(--text-2); }

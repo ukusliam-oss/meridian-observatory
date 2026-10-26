@@ -268,9 +268,11 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   faint outline in the subject colour (never a fill), the command-word ladder is one white light rising by level; lens
   cards speak in serif and mono only; chapter titles keep their lead on one line and the question in two (at most three
   lines, at most half the screen wide). History's colour (amber outside, violet inside) is still undecided.
-- Phase 3 (2026-10-26): chapters draw through `src/world/post.js` (bloom, shoulder, grade, reading grade; taken from
-  the paper-and-ink engine without its paper or wash) with `look` on (`?look=0` off): the rim and air scatter on the
-  sun's side, the sea glints. post.js encodes the clear colour into its target, or the stage comes out black. Berlin
+- Phase 3 (2026-10-26): `look` 1, the default, is the light's shaders: the rim and air scatter on the sun's side, the
+  sea glints. `look` 2 (`?look=2`) adds `src/world/post.js` (bloom, shoulder, grade, reading grade; from the
+  paper-and-ink engine without its paper or wash); `?look=0` is neither. Measured on the real GPU (built-in browser,
+  M5, DPR 2, KQ6 hero, median / p95 GPU ms): 0: 6.6 / 10.5, 1: 7.2 / 11.5, 2: 17.9 / 21.4, so post is off by default
+  (its MSAA half-float target was ~3 ms of it, bloom almost nothing). Headless runs had shown it as 1–2 ms. post.js encodes the clear colour into its target, or the stage comes out black. Berlin
   flags are a 42% glaze (were 72%) and the focus fill 40% (was 62%): measured, ordinary fills were already dark
   (L* 1–12); only the flags (Union Flag red C* 60) and the focus (C* 42–47) read as paint. Data maps move ΔE 0.5–1.5.
 - Phase 4 (2026-10-26): chapters have a HUD on the world layer (`.hud`, chapter.js): corner ticks and, bottom right

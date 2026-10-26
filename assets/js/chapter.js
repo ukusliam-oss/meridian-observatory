@@ -552,7 +552,7 @@ async function start() {
     buildEngineScenes();
     setPct(0.96);
     world = await createWorld($('[data-world]'), { scenes: eScenes, hero, data: borders, dataUrl: CFG.borders, values: VALUES, accent: CFG.accent, reduced, relief: CFG.relief, terrain: CFG.terrain, layers: CFG.layers, light: CFG.light,
-      look: +(new URLSearchParams(location.search).get('look') ?? 1) }); // the light pipeline (post.js); ?look=0 turns it off
+      look: +(new URLSearchParams(location.search).get('look') ?? 1) }); // 1: the light's shaders; ?look=2 adds post.js, ?look=0 neither
     window.__meridianWorld = world; // stats for checks in the preview
     if (world) for (const s of scenes) if (s.map && s.map.section && s.map.relief3d) {
       const fig = $(`[data-xs="${s.id}"]`), x = s.map.section;
