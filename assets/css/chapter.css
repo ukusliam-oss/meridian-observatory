@@ -76,9 +76,7 @@
 .sc__panel { position: relative; width: min(520px, 100%); padding: 28px 30px 26px; border-radius: var(--r-lg); background: var(--glass-ch);
   -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx);
   border: 1px solid var(--line-ch); box-shadow: 0 1px 0 var(--glass-hi) inset, 0 40px 120px -40px rgb(0 0 0 / .9); }
-.sc__meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.sc__n { color: var(--text-3); }
-.sc__date { margin: 20px 0 8px; font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1.1; color: var(--acc); }
+.sc__date { margin: 0 0 8px; font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1.1; color: var(--acc); }
 .sc__title { font-size: clamp(2.05rem, 1.2rem + 2.1vw, 3.1rem); }
 .sc__body { margin-top: 20px; font-size: 17px; line-height: 1.62; color: var(--read); }
 .sc__body p + p { margin-top: .75em; }
@@ -480,3 +478,18 @@
 .loader__hint { flex-basis: 100%; text-align: center; color: rgb(255 255 255 / .62); }
 .sound-btn[aria-pressed="true"] { color: var(--acc); }
 @media (prefers-reduced-motion: reduce) { .loader__gate { animation: none; opacity: 1; } }
+
+/* ── the HUD: the instrument's frame over the map (chapter.js). It sits on the world layer, so panels pass over it
+   and blur it like anything else on the map. Ticks at the four corners, the scene's number and the camera's position
+   at the bottom right under the date ribbon (the panels hold the left), in the readings' faint mono. ── */
+.hud { position: absolute; inset: 16px; z-index: 1; pointer-events: none; transition: opacity .4s var(--ease); }
+.hud > i { position: absolute; width: 10px; height: 10px; border: 0 solid rgb(255 255 255 / .3); }
+.hud > i:nth-child(1) { left: 0; top: 0; border-width: 1px 0 0 1px; }
+.hud > i:nth-child(2) { right: 0; top: 0; border-width: 1px 1px 0 0; }
+.hud > i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 1px 1px; }
+.hud > i:nth-child(4) { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
+.hud__read { position: absolute; right: calc(var(--gutter) - 16px); bottom: 12px; display: grid; justify-items: end; gap: 5px; margin: 0;
+  font-size: 11px; letter-spacing: .04em; color: rgb(255 255 255 / .5); font-variant-numeric: tabular-nums; white-space: pre; }
+.hud__read span:first-child { color: rgb(255 255 255 / .72); }
+.is-past .hud { opacity: 0; }
+@media (max-width: 760px) { .hud__read { display: none; } .hud { inset: 10px; } }

@@ -165,7 +165,6 @@ function sceneHTML(s, i) {
       <p class="is-right"><span class="mono">In fact</span>${esc(s.misconception.right)}</p></div>` : '';
   return `<section class="sc" id="${s.id}" data-i="${i}">${opener}
     <div class="ch-wrap"><article class="sc__panel" data-panel>
-      <div class="sc__meta"><span class="tag mono">${esc(s.part)}</span><span class="sc__n mono">${String(i + 1).padStart(2, '0')} / ${N}</span></div>
       <p class="sc__date">${esc(s.dateLabel)}</p>
       <h2 class="display sc__title">${title(s.title)}</h2>
       <div class="sc__body">${s.body}</div>
@@ -383,6 +382,22 @@ function roll(el, html) {
 }
 let lastShown = -2, lastFr = -1;
 const navBar = $('.nav');
+// the HUD: the instrument's frame over the map, under the panels (corner ticks, the scene's number, where the camera
+// is, its readings running as it flies). It takes the count from the panel and the pill, so each fact is said once.
+const hud = document.createElement('div');
+hud.className = 'hud';
+hud.setAttribute('aria-hidden', 'true');
+hud.innerHTML = '<i></i><i></i><i></i><i></i><p class="hud__read mono"><span data-hud-n></span><span data-hud-cam></span></p>';
+$('[data-world]').append(hud);
+const hudN = $('[data-hud-n]', hud), hudCam = $('[data-hud-cam]', hud);
+const deg = (v, pos, neg) => `${Math.abs(v).toFixed(2)}°${v >= 0 ? pos : neg}`;
+let camText = '';
+function readCamera() {
+  if (!world) return;
+  const c = world.camera.position, r = c.length(), lat = Math.asin(c.y / r) * 180 / Math.PI, lon = Math.atan2(c.x, c.z) * 180 / Math.PI;
+  const t = `${deg(lat, 'N', 'S')}  ${deg(lon, 'E', 'W')}  ·  ALT ${Math.round((r - 1) * 6371).toLocaleString('en-GB')} KM`;
+  if (t !== camText) { camText = t; hudCam.textContent = t; }
+}
 function updateUI(p) {
   const i = Math.max(0, Math.floor(p)), f = p - Math.floor(p);
   const near = p < 0 ? 0 : Math.min(N - 1, Math.round(p));
@@ -401,8 +416,9 @@ function updateUI(p) {
   if (key !== lastShown) {
     lastShown = key;
     const s = scenes[near];
+    hudN.textContent = key < 0 ? `${N} SCENES` : `SCENE ${String(near + 1).padStart(2, '0')} / ${N}`;
     labelEl.textContent = s.dateLabel;
-    roll(pillPart, esc(p < -0.5 ? CFG.pill.part : `${s.part} · ${String(near + 1).padStart(2, '0')}/${N}`));
+    roll(pillPart, esc(p < -0.5 ? CFG.pill.part : s.part));
     roll(pillDate, p < -0.5 ? CFG.pill.date : esc(s.dateLabel));
     $$('[data-go]', menu).forEach(a => a.setAttribute('aria-current', +a.dataset.go === near));
     sections.forEach((sec, k) => sec.classList.toggle('is-active', key >= 0 && k === near));
@@ -562,6 +578,7 @@ async function start() {
     updateUI(p);
     updatePanels(y, ep, p < 0 ? 0 : Math.min(N - 1, Math.round(p)));
   });
+  gsap.ticker.add(readCamera); // the camera also drifts on the hero, so its reading is taken every frame
   addEventListener('resize', () => { measure(); lastY = NaN; });
   document.fonts?.ready.then(() => { measure(); lastY = NaN; });
   new ResizeObserver(() => { measure(); lastY = NaN; }).observe($('[data-scenes]'));

@@ -273,7 +273,12 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   sun's side, the sea glints. post.js encodes the clear colour into its target, or the stage comes out black. Berlin
   flags are a 42% glaze (were 72%) and the focus fill 40% (was 62%): measured, ordinary fills were already dark
   (L* 1–12); only the flags (Union Flag red C* 60) and the focus (C* 42–47) read as paint. Data maps move ΔE 0.5–1.5.
-- Phases left from the analysis: 4 HUD and lighting-up
+- Phase 4 (2026-10-26): chapters have a HUD on the world layer (`.hud`, chapter.js): corner ticks and, bottom right
+  under the ribbon, the scene number and the camera's position (lat, lon, altitude from `world.camera`, read every
+  frame). The panel no longer repeats the part tag and the count, the pill no longer repeats the count. Reveals light
+  up (`brightness(.4)` → 1, 6 px, `DUR.text`) instead of rising 36 px; headlines keep their mask rise.
+  The scene's date still shows three times (panel, ribbon, pill).
+- Phases left from the analysis: 5 the dot globe's physics, 6 one camera across pages.
   motion, 5 the dot globe's physics, 6 one camera across pages.
 - No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):

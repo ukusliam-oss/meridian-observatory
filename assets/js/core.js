@@ -6,6 +6,8 @@
 const { gsap, ScrollTrigger, SplitText, Flip, DrawSVGPlugin, CustomEase, Lenis } = window;
 const root = document.documentElement;
 
+// the three speeds: controls, text, the stage
+export const DUR = { ui: 0.3, text: 1, stage: 2 };
 export const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 export const hover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 export const $ = (s, el = document) => el.querySelector(s);
@@ -48,9 +50,11 @@ export function reveal(scope = document) {
   if (reduced) { gsap.set(els, { opacity: 1 }); return; }
   ScrollTrigger.batch(els, {
     start: 'top 92%', once: true,
+    // a block lights up rather than rising: its brightness comes up from 40% as it settles the last 6 px, at the
+    // text speed; headlines keep their own, slower rise (splitHeads), so the two do not move to one beat
     onEnter: batch => gsap.fromTo(batch,
-      { opacity: 0, y: (i, el) => +(el.dataset.reveal || 36) },
-      { opacity: 1, y: 0, duration: 1.2, stagger: 0.075, overwrite: true, clearProps: 'transform' }),
+      { opacity: 0, y: (i, el) => +(el.dataset.reveal || 6), filter: 'brightness(.4)' },
+      { opacity: 1, y: 0, filter: 'brightness(1)', duration: DUR.text, ease: 'm.out', stagger: 0.07, overwrite: true, clearProps: 'transform,filter' }),
   });
   // anything already scrolled past (reload mid-page) shows at once
   requestAnimationFrame(() => els.forEach(el => { if (el.getBoundingClientRect().bottom < 0) gsap.set(el, { opacity: 1 }); }));
