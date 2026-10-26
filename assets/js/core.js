@@ -178,7 +178,7 @@ function navTone() {
       start: 0, end: 'max',
       onUpdate: s => {
         const want = s.direction < 0 || s.scroll() < 200 || s.progress > 0.98;
-        if (want !== shown) { shown = want; gsap.to(tabbar, { yPercent: want ? 0 : 160, duration: 0.6, ease: 'm.out' }); }
+        if (want !== shown) { shown = want; root.classList.toggle('is-tab-away', !want); gsap.to(tabbar, { yPercent: want ? 0 : 160, duration: 0.6, ease: 'm.out' }); }
       },
     });
   }

@@ -283,7 +283,16 @@
   .sc__judge { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
-  .pillnav { bottom: calc(env(safe-area-inset-bottom) + 82px); }
+  /* phones: the pill sits above the tab bar while it shows, and drops to the edge when it tucks away on the way down;
+     the text dissolves into the night before it reaches the pill, so the pill never lies on the line being read */
+  .pillnav { bottom: calc(env(safe-area-inset-bottom) + 82px); transition: bottom .6s var(--ease); }
+  .is-tab-away .pillnav { bottom: calc(env(safe-area-inset-bottom) + 14px); }
+  .chapter::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; z-index: 59; pointer-events: none; opacity: 0;
+    height: calc(env(safe-area-inset-bottom) + 150px); background: linear-gradient(to top, var(--ink) 34%, rgb(5 6 10 / .72) 64%, rgb(5 6 10 / 0));
+    transition: opacity .4s var(--ease), height .6s var(--ease); }
+  .is-ready .chapter::after { opacity: 1; }
+  .is-tab-away .chapter::after { height: calc(env(safe-area-inset-bottom) + 92px); }
+  .is-past .chapter::after { opacity: 0; }
   .ch-hero { padding-bottom: calc(env(safe-area-inset-bottom) + 160px); }
   .ch-hero__title { margin: 16px 0 18px; }
   .sc__title { font-size: 2rem; }
