@@ -471,7 +471,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   const GW = 2048;
   const MAXT = Math.min(phone ? 2048 : 4096, renderer.capabilities.maxTextureSize), MAXPX = phone ? 2048 * 1280 : 4096 * 2560;
   const TEXEL = phone ? 0.5 : 0.55; // CSS px per texel
-  let REF = [host.clientWidth || innerWidth, host.clientHeight || innerHeight];
+  // a page opened in a hidden tab or pane has no size yet: plan for a common screen until it has one
+  let REF = [host.clientWidth || innerWidth || 1440, host.clientHeight || innerHeight || 900];
   const refKey = (w, h) => `${Math.round(w / 120)}x${Math.round(h / 120)}`;
   const BUDGET = (phone ? 96 : 320) * 2 ** 20; // bytes of painted textures kept on the GPU (mipmaps add a third)
   const texCache = new Map(); // key → { tex, used, bytes }
@@ -509,8 +510,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const map = { borders: s.map.borders, fill: s.map.fill, city: data ? null : s.map.city, areas: s.map.areas, focus: data ? [] : s.map.focus };
     const { lat, lon } = s.camera;
     const fp = footprint(s.camera, REF[0], REF[1]);
+    if (!Number.isFinite(fp.kmPerPx)) fp.kmPerPx = 40; // never plan a texture from a size that is not one
     // the whole globe in view: a hemisphere around the target is enough, at the screen's own density
-    const box = fp.box || [lon - 75, Math.max(-89.5, lat - 60), lon + 75, Math.min(89.5, lat + 60)];
+    const box = fp.box && fp.box.every(Number.isFinite) ? fp.box : [lon - 75, Math.max(-89.5, lat - 60), lon + 75, Math.min(89.5, lat + 60)];
     const size = textureSize(box, Math.max(0.003, (fp.kmPerPx || 40) * TEXEL), MAXT, MAXPX);
     stats.boxes[i] = { box: box.map(v => +v.toFixed(2)), size: `${size.W}x${size.H}`, texelKm: +size.texelKm.toFixed(3), kmPerPx: +fp.kmPerPx.toFixed(3) };
     const r = v => +v.toFixed(3);
@@ -981,7 +983,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   let lineLift = 1.0015;
 
   function resize() {
-    W = host.clientWidth || innerWidth; H = host.clientHeight || innerHeight;
+    const w = host.clientWidth || innerWidth, h = host.clientHeight || innerHeight;
+    if (!w || !h) return; // hidden: keep the last size, the next resize brings the real one
+    W = w; H = h;
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap ?? (phone ? 1.5 : 1.75)));
     renderer.setSize(W, H, false);
     setViewport(camera, W, H);
