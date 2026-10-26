@@ -267,7 +267,7 @@ SUBJECT_CHAPTERS = {'history': CHAPTERS, 'economics': ECON_CHAPTERS, 'geography'
 for k, (name, code, eyebrow, lede, stats) in HEROES.items():
     main = f'''
 <section class="s-hero" data-tone="dark">
-  <div class="s-hero__art" data-art aria-hidden="true"></div>
+  <div class="inst" data-inst aria-hidden="true"></div>
   <div class="grain"></div>
   <div class="wrap">
     <p class="eyebrow">Cambridge IGCSE · {eyebrow}</p>

@@ -133,19 +133,17 @@ export function counters(scope = document) {
   });
 }
 
+// Buttons stand still (they used to follow the pointer, which read as a wobble): the light on their glass gathers
+// where the pointer is (--mx, --my, read by .btn::after in site.css); a press is handled in CSS.
 export function magnetic(scope = document) {
-  if (reduced || !hover) return;
+  if (!hover) return;
   $$('.btn:not([data-mag]), [data-magnetic]:not([data-mag])', scope).forEach(el => {
     el.setAttribute('data-mag', '');
-    const s = +(el.dataset.magnetic || 0.25);
-    const xTo = gsap.quickTo(el, 'x', { duration: 0.7, ease: 'm.out' });
-    const yTo = gsap.quickTo(el, 'y', { duration: 0.7, ease: 'm.out' });
     el.addEventListener('pointermove', e => {
       const r = el.getBoundingClientRect();
-      xTo((e.clientX - r.left - r.width / 2) * s);
-      yTo((e.clientY - r.top - r.height / 2) * s * 1.3);
-    });
-    el.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
+      el.style.setProperty('--mx', `${(e.clientX - r.left).toFixed(1)}px`);
+      el.style.setProperty('--my', `${(e.clientY - r.top).toFixed(1)}px`);
+    }, { passive: true });
   });
 }
 

@@ -34,6 +34,8 @@ const srcKeys = Object.keys(data.sources);
 const srcNo = k => srcKeys.indexOf(k) + 1;
 
 // ── markup ─────────────────────────────────────────────────────────────────
+// a scene's title as plain words (its markup and the em's line break gone), for the pill
+const plain = t => String(t).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const title = t => {
   const i = t.indexOf(': ');
   if (i > 0) return `<em>${esc(t.slice(0, i + 1))}</em>${esc(t.slice(i + 2))}`;
@@ -367,7 +369,9 @@ function setMenu(open) {
   }
 }
 if (!touchOnly) {
-  menuBtn.addEventListener('pointerenter', () => { inside = true; setMenu(true); });
+  // the pill only opens on hover where it floats clear of the text (a wide window); on a narrow one it moves with the
+  // tab bar and could slide under a resting pointer, so there it opens on a click
+  menuBtn.addEventListener('pointerenter', () => { if (innerWidth <= 760) return; inside = true; setMenu(true); });
   addEventListener('pointermove', e => {
     if (!menuOpen) return;
     const now = !!e.target.closest?.('.chmenu, [data-menu-btn]') || boxOf(menuBtn, e) || boxOf(menu, e);
@@ -490,9 +494,10 @@ function updateUI(p) {
     lastShown = key;
     const s = scenes[near];
     decode(hudN, key < 0 ? `${N} SCENES` : `SCENE ${String(near + 1).padStart(2, '0')} / ${N}`, 420);
-    labelEl.textContent = s.dateLabel;
+    // the scene's date is said once, on its panel: the ribbon reads the year, the pill names the part and the scene
+    labelEl.textContent = '';
     roll(pillPart, esc(p < -0.5 ? CFG.pill.part : s.part));
-    roll(pillDate, p < -0.5 ? CFG.pill.date : esc(s.dateLabel));
+    roll(pillDate, p < -0.5 ? CFG.pill.date : esc(plain(s.title)));
     $$('[data-go]', menu).forEach(a => a.setAttribute('aria-current', +a.dataset.go === near));
     sections.forEach((sec, k) => sec.classList.toggle('is-active', key >= 0 && k === near));
     // paint the neighbouring scenes while the reader is reading, so no paint lands mid-flight

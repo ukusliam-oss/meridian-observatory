@@ -181,7 +181,7 @@
 .ribbon.is-on { opacity: 1; }
 .ribbon__date { display: flex; align-items: baseline; gap: 14px; margin-bottom: 10px; }
 .ribbon__year { font-family: var(--serif); font-size: 44px; line-height: .8; color: #fff; font-variant-numeric: tabular-nums; }
-.ribbon__label { color: rgb(255 255 255 / .78); }
+.ribbon__label { display: none; } /* the date is said on the panel; the ribbon reads the year */
 .ribbon__track { position: relative; height: 18px; }
 .ribbon__track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgb(255 255 255 / .16); }
 .ribbon__tick { position: absolute; top: 50%; width: 1px; height: 7px; transform: translate(-.5px, -50%); background: rgb(255 255 255 / .35); }

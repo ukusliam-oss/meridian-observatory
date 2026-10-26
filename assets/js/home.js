@@ -87,13 +87,16 @@ if (root.classList.contains('is-booting')) {
   const ring = $('[data-boot-ring]'), dial = $('[data-boot-dial]'), pct = $('[data-boot-pct]'), coord = $('[data-boot-coord]'), status = $('[data-boot-status]');
   const ticks = $$('.boot__ticks line', bootEl);
   const STEPS = [[0, 'Calibrating the observatory'], [0.3, 'Plotting 5,748 points of land'], [0.62, 'Charting three subjects'], [0.97, 'Ready']];
-  let step = 0;
+  let step = 0, skipped = false;
+  // a click, a key, the wheel or a touch skips the calibration: the short reveal plays at once
+  const skip = () => { if (skipped || done) return; skipped = true; want = 1; shown = 1; };
+  for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(ev, skip, { once: true, passive: true });
   const pad = (v, n) => String(Math.abs(v).toFixed(2)).padStart(n, '0');
   const tick = () => {
     if (done) return;
     const t = performance.now() - T0;
     // never ahead of the work, never faster than the calibration's own pace
-    const cap = Math.min(1, t / MIN), aim = Math.min(want, cap * 1.0001);
+    const cap = skipped ? 1 : Math.min(1, t / MIN), aim = Math.min(want, cap * 1.0001);
     shown += (aim - shown) * 0.08;
     if (aim >= 1 && shown > 0.995) shown = 1;
     ring.style.strokeDasharray = `${(shown * 100).toFixed(2)} 100`;
@@ -107,7 +110,7 @@ if (root.classList.contains('is-booting')) {
     while (step < STEPS.length - 1 && shown >= STEPS[step + 1][0]) { step++; decode(status, STEPS[step][1], 420); }
     // the dial sits where the planet is: its ring is the rim
     if (globeReady) place();
-    if (shown >= 1 && t >= MIN) return finish();
+    if (shown >= 1 && (t >= MIN || skipped)) return finish();
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
@@ -127,7 +130,7 @@ if (root.classList.contains('is-booting')) {
     root.dataset.reveal = '1'; // the inline safety net in index.html stands down
     try { sessionStorage.setItem('meridian:booted', '1'); } catch { /* private mode */ }
     if (globeReady) place();
-    const quick = !!seen;
+    const quick = !!seen || skipped;
     // the title stands above the night while it is born, then sinks back into the page
     gsap.set(title, { position: 'relative', zIndex: 301 });
     const r = title.getBoundingClientRect(), scale = Math.min(1.5, (innerWidth * 0.92) / r.width);

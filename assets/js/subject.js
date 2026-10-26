@@ -1,7 +1,7 @@
 // Subject page: the hero is static HTML; everything below it is rendered from the data file.
 import { boot, subnav, $, reduced, gsap, icons } from './core.js';
 import { examAnatomy, topicMap, technique, commandWords, flashcards, quiz, examplesTracker } from './ui.js';
-import { heroArt } from './visuals.js';
+import { instrument } from './instrument.js';
 import { practice } from './practice.js';
 
 const id = document.body.dataset.subject;
@@ -62,8 +62,17 @@ quiz(m('quiz'), d.quiz.map(q => ({ ...q })), { title: `${d.name} ${d.code}` });
 const lab = await import(`./labs/${d.lab.kind}.js`);
 lab.mount(m('lab'), d.lab);
 
-heroArt($('[data-art]'), id, d);
+instrument($('[data-inst]'), id, d);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 boot();
 subnav($('.nav__sub'), $('.subnav-at'));
-if (!reduced) gsap.from('.s-hero .lede, .s-hero__stats > div, .s-hero .eyebrow, .s-hero__code', { y: 24, opacity: 0, duration: 1.2, stagger: 0.08, delay: 0.25 });
+// the opening: arriving through a link, the title has just been carried here (transitions.js) and stands; otherwise its
+// words sharpen out of a blur in a random order (Cartier's); the rest sharpens in after it
+if (!reduced) {
+  const carried = document.documentElement.dataset.vt === 'subj';
+  if (!carried) {
+    const words = window.SplitText.create($('.s-hero__title .h1'), { type: 'words' }).words;
+    gsap.utils.shuffle([...words]).forEach((w, k) => gsap.fromTo(w, { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'none', delay: 0.1 + k * 0.1, clearProps: 'filter' }));
+  }
+  gsap.fromTo('.s-hero__code, .s-hero .lede, .s-hero__stats > div', { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'm.sine', stagger: 0.1, delay: carried ? 0.35 : 0.6, clearProps: 'filter' });
+}

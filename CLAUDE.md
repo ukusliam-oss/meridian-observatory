@@ -325,6 +325,26 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   the sun round to the lenses' side. Reduced motion: no loader, the final state. A 12 s CSS fallback hides the
   loader if the script never runs. Measured on the real GPU (M5, DPR 2): no long task or long animation frame from
   load to the end of the sunrise. The hero's trade routes and ports now show only in the Economics lens.
+- Hubs open on an instrument (`assets/js/instrument.js`, replacing visuals.js; `.inst` in site.css): the home
+  loader's dial (ticks, track, a ring of light in the subject's colour that draws round on arrival while the ticks
+  light) holding what the subject measures: History a year dial 1919–1991 whose needle sweeps the lab's 49 events and
+  names each as it passes; Economics a market that never settles, read as P* and Q*; Geography contour lines under a
+  turning sweep, read as an elevation. Upper right on wide screens, above the title on phones. Arriving through a link
+  the title has been carried in (below); otherwise its words sharpen out of a blur. 60 fps on all three (DPR 2).
+- The joins between pages (`assets/js/transitions.js`, a classic script stamp.py puts in every <head>; cross-document
+  view transitions): a subject link becomes the hub's title (`subj`, the link's box grows into it); everything else,
+  entering a chapter included, dims out and lights up. (A chapter card opening like a window onto the chapter was
+  tried and dropped: the moving box read as awkward.)
+- Buttons stand still (`magnetic` in core.js no longer moves them; following the pointer read as a wobble): light
+  gathers on the glass under the pointer (`.btn::after`, --mx/--my) and a press sinks them to 97.5% and lets them rise
+  back with a slight give. Names are set in pageswap (old page) and pagereveal (new page) and cleared
+  after, so two pages never share one. Browsers without them navigate as before.
+- Chapters say a scene's date once, on its panel: the ribbon reads the year, the pill names the part and the scene's
+  title. The pill opens on hover only above 760 px (on a narrow window it moves with the tab bar and could slide
+  under a resting pointer). The home's loader skips on a click, key, wheel or touch.
+- Quality, measured at DPR 2 on the M5 (KQ6, headless with the real GPU): 60 fps on all three; canvas 1800×1125
+  (saver), 2520×1575 (standard), 2880×1800 (high). The headless GPU timer reads unreliably high; trust the built-in
+  browser's earlier figures (standard 7.2 ms, high 17.9 ms at the hero).
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.
