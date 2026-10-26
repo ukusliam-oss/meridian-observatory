@@ -19,6 +19,10 @@ gsap.registerPlugin(ScrollTrigger, SplitText, Flip, DrawSVGPlugin, CustomEase);
 CustomEase.create('m.out', '0.16, 1, 0.3, 1');
 CustomEase.create('m.io', '0.65, 0, 0.35, 1');
 CustomEase.create('m.snap', '0.2, 1.3, 0.3, 1');
+// measured on Cartier's "Le Chœur des Pierres": stage moves are almost still for 0.3 s, half way at 0.6 s, with a long
+// tail (the home title's glide home); fades follow a sine
+CustomEase.create('m.smooth', '0.5, 0, 0, 1');
+CustomEase.create('m.sine', '0.445, 0.05, 0.55, 0.95');
 gsap.defaults({ ease: 'm.out', duration: 1 });
 if (reduced) gsap.globalTimeline.timeScale(20);
 
@@ -100,14 +104,15 @@ export function splitHeads(scope = document) {
   $$('[data-split]:not(.is-split)', scope).forEach(el => {
     el.classList.add('is-split');
     if (reduced) return;
-    const now = el.dataset.split === 'now';
+    const now = el.dataset.split === 'now', held = el.dataset.split === 'boot';
+    if (held) return; // 'boot': the home's title is born by home.js as its loader lifts
     SplitText.create(el, {
       type: 'lines,words', mask: 'lines', linesClass: 'line', autoSplit: true,
-      onSplit: self => gsap.from(self.lines, {
-        yPercent: 112, rotate: 2.5, transformOrigin: '0% 0%', duration: 1.35, stagger: 0.09,
-        delay: now ? 0.15 : 0,
-        scrollTrigger: now ? undefined : { trigger: el, start: 'top 88%', once: true },
-      }),
+      onSplit: self => (el._tw = gsap.from(self.lines, {
+        yPercent: 112, rotate: 2.5, transformOrigin: held ? '50% 0%' : '0% 0%', duration: held ? 1.6 : 1.35, stagger: held ? 0.14 : 0.09,
+        delay: now ? 0.15 : 0, paused: held && !root.classList.contains('is-booted'),
+        scrollTrigger: now || held ? undefined : { trigger: el, start: 'top 88%', once: true },
+      })),
     });
   });
 }

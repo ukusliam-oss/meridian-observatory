@@ -344,12 +344,42 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .scope__content { position: relative; margin-top: -100vh; margin-top: -100svh; pointer-events: none; }
 .scope__content .wrap > * { pointer-events: auto; }
 
-.hero { position: relative; min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding-block: calc(var(--nav-h) + 40px) 120px; }
-.hero__copy { max-width: 760px; display: grid; gap: 28px; justify-items: start; }
-.hero__copy .display { text-shadow: 0 2px 40px rgb(0 0 0 / .45); }
-.hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+/* The first screen: the planet in eclipse in the middle (globe.js), the title standing on its night side, centred,
+   inside the disc. Everything waits for the loader (.boot) and lights up as the sun comes round. */
+.hero { position: relative; min-height: 100vh; min-height: 100svh; display: grid; align-items: center; padding-block: calc(var(--nav-h) + 20px) 96px; }
+.hero .wrap { display: grid; justify-items: center; }
+.hero__copy { max-width: 760px; display: grid; gap: 24px; justify-items: center; text-align: center; }
+.hero__copy .display { max-width: 5.6em; text-shadow: 0 2px 40px rgb(0 0 0 / .6); }
+.hero__copy .lede { max-width: 46ch; text-shadow: 0 1px 18px rgb(0 0 0 / .8); }
+.hero__cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
 .hero__foot { position: absolute; left: 0; right: 0; bottom: 28px; }
-.hero__foot .wrap { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+.hero__foot .wrap { position: relative; display: flex; align-items: end; justify-content: center; gap: 20px; }
+.hero__foot .scroll-cue { position: absolute; right: var(--gutter); bottom: 0; }
+
+/* ── the home's loader: the observatory calibrating (home.js) ── */
+.boot { position: fixed; inset: 0; z-index: 300; background: #05060a; color: #fff; pointer-events: none;
+  animation: boot-safety 0s 12s forwards; } /* if the script never comes, the page still shows */
+@keyframes boot-safety { to { opacity: 0; visibility: hidden; } }
+html:not(.js) .boot { display: none; }
+.boot__dial { position: absolute; left: 50%; top: 50%; width: min(84vmin, 900px); height: auto; translate: -50% -50%; overflow: visible; }
+.boot__track { fill: none; stroke: rgb(255 255 255 / .08); stroke-width: .5; }
+.boot__ring { --glow: .35; fill: none; stroke: #fff; stroke-width: .7; stroke-linecap: round; stroke-dasharray: 0 100;
+  filter: drop-shadow(0 0 calc(var(--glow) * 4px) rgb(170 195 255 / .95)) drop-shadow(0 0 calc(var(--glow) * 14px) rgb(120 150 255 / .6)); }
+.boot__ticks { transform-box: view-box; }
+.boot__ticks line { stroke: rgb(255 255 255 / .42); stroke-width: .45; opacity: .12; transition: opacity .5s; }
+.boot__ticks line.is-on { opacity: 1; }
+.boot__meridian { fill: none; stroke: rgb(255 255 255 / .38); stroke-width: .45; transform-box: fill-box; transform-origin: center; animation: boot-scan 2.6s linear infinite; }
+.boot__equator { stroke: rgb(255 255 255 / .1); stroke-width: .4; }
+@keyframes boot-scan { 0% { transform: scaleX(1); } 25% { transform: scaleX(0); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
+.boot__read { position: absolute; bottom: 30px; display: grid; gap: 7px; font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: rgb(255 255 255 / .6); }
+.boot__read--l { left: var(--gutter); }
+.boot__read--r { right: var(--gutter); justify-items: end; text-align: right; font-variant-numeric: tabular-nums; }
+.boot__brand { color: #fff; letter-spacing: .14em; }
+.boot__read b { font-weight: 500; font-size: 22px; letter-spacing: .02em; color: #fff; }
+html.is-booting { overflow: hidden; }
+.is-booting .nav, .is-booting .tabbar { opacity: 0; }
+.nav, .tabbar { transition: opacity .9s var(--ease); }
+@media (max-width: 760px) { .boot__read { bottom: calc(env(safe-area-inset-bottom) + 22px); } .boot__read b { font-size: 18px; } }
 .codes { display: flex; flex-wrap: wrap; gap: 8px; }
 .code-chip { display: inline-flex; align-items: center; gap: 9px; height: 34px; padding: 0 14px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass-card); -webkit-backdrop-filter: var(--glass-card-fx); backdrop-filter: var(--glass-card-fx); font-size: 13px; color: var(--text-2); transition: border-color .3s, color .3s; }
 .code-chip:hover { border-color: var(--line-3); color: var(--text); }
@@ -360,7 +390,8 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .scroll-cue span::after { content: ""; position: absolute; left: 0; top: -40%; width: 1px; height: 40%; background: var(--text); animation: cue 2.2s var(--ease-io) infinite; }
 @keyframes cue { to { top: 100%; } }
 @media (max-width: 760px) {
-  .hero { align-items: start; padding-top: calc(var(--nav-h) + 36px); }
+  .hero { padding-block: calc(var(--nav-h) + 12px) 150px; }
+  .hero__copy .lede { font-size: 16px; }
   .hero__copy { gap: 22px; }
   .scroll-cue { display: none; }
   .hero__foot { bottom: 104px; }
@@ -892,7 +923,8 @@ a:hover > .nav__roll > span + span, a:focus-visible > .nav__roll > span + span {
 .js [data-split]:not(.is-split) { opacity: 0; }
 /* a headline's line masks clip at the line box, which cut the italic descenders (the y of "Geography"): the clip
    reaches a little below and to the right of each line without moving it */
-.line-mask { padding: 0 .12em .3em 0; margin: 0 -.12em -.3em 0; }
+.line-mask { padding: 0 .14em .42em 0; margin: 0 -.14em -.42em 0; }
+.line-mask .line { overflow: visible !important; } /* a line inside an italic run is clipped again by SplitText; the mask is enough */
 .js.reveal-fallback [data-split] { opacity: 1; }
 .theme-vt::view-transition-old(root), .theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-vt::view-transition-group(nav) { animation: none; }

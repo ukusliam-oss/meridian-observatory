@@ -302,6 +302,23 @@ python3 tools/pages.py # regenerate index/history/economics/geography.html from 
   - `404.html` (pages.py, `lost.js`): sets its `<base>` from the address (GitHub Pages serves it at any depth);
     share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen, at its absolute address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
     italic descenders (the y of "Geography").
+- The home's first impression (2026-10-26): a loader that is the observatory calibrating (`.boot` from pages.py, run
+  by home.js). A dial whose ring is the planet's rim fills with the real loading (fonts, the globe module, the globe's
+  first four frames drawn unseen beneath, so its shaders compile before the reveal), never faster than 2.6 s on the
+  first visit of a session (0.9 s after, sessionStorage 'meridian:booted'); ticks light, the meridian scans, the
+  readings (status with decode, scan coordinates, percentage) run. The dial follows `globe.disc()` so its ring is
+  the rim. The hand-over follows Cartier's overture (measured for the paper Meridian):
+  the dial goes out; the title (split into words, `.hw`, above the night with z-index 301 while it is born) is born at
+  the screen's centre 1.5× larger, its words sharpening out of a 5 px blur in random order (1 s linear, 0.1 s apart);
+  at 1.75 s it glides home over 2 s on `m.smooth` (.5, 0, 0, 1); the night lifts only at 2.6 s, once the title has
+  left the centre. A return visit sharpens in place. (A red/blue split, a 3D tilt and a burst of light were tried
+  first and dropped as cheap; a radial mask redrawn every frame had cost 116 and 167 ms frames: composited
+  properties only.) Then the night lifts off a planet in eclipse (centred, `eclipse: true`: the sun behind it, the air's
+  forward scattering a ring of light), `globe.sunrise()` brings the sun round to a crescent (HERO_SUN) while the
+  title's lines rise (`data-split="boot"`, waits for `meridian:booted`) and the rest lights up; scrolling on brings
+  the sun round to the lenses' side. Reduced motion: no loader, the final state. A 12 s CSS fallback hides the
+  loader if the script never runs. Measured on the real GPU (M5, DPR 2): no long task or long animation frame from
+  load to the end of the sunrise. The hero's trade routes and ports now show only in the Economics lens.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

@@ -134,14 +134,30 @@ doors = ''.join(f'''<a class="card door" href="{k}.html" data-spot data-reveal s
     ('economics', 'Economics', 'econ', '0455', 'All six topics, an interactive supply and demand diagram, and guidance on analysis and evaluation.'),
     ('geography', 'Geography', 'geo', '0460', 'All ten topics, an interactive demographic transition model and the 16 detailed specific examples.')])
 
-home_main = f'''
+# The home's loader is the observatory calibrating (home.js): a dial whose ring is the planet's rim fills with the real
+# loading (fonts, the globe and its first frames), the meridian scans, readings run; then the ring lands on the globe,
+# the night lifts and the sun comes round the planet. The ticks are drawn here, every 5 degrees, longer every 30.
+import math
+TICKS = ''.join(f'<line x1="{math.sin(math.radians(a))*(104):.2f}" y1="{-math.cos(math.radians(a))*(104):.2f}" x2="{math.sin(math.radians(a))*(104 + (9 if a % 30 == 0 else 4)):.2f}" y2="{-math.cos(math.radians(a))*(104 + (9 if a % 30 == 0 else 4)):.2f}" style="--a:{a}"/>' for a in range(0, 360, 5))
+BOOT = f'''<div class="boot" data-boot aria-hidden="true">
+  <svg class="boot__dial" data-boot-dial viewBox="-120 -120 240 240">
+    <g class="boot__ticks">{TICKS}</g>
+    <circle class="boot__track" r="100"/>
+    <circle class="boot__ring" data-boot-ring r="100" pathLength="100" transform="rotate(-90)"/>
+    <ellipse class="boot__meridian" rx="38" ry="100"/>
+    <line class="boot__equator" x1="-100" x2="100" y1="0" y2="0"/>
+  </svg>
+  <div class="boot__read boot__read--l"><span class="boot__brand">Meridian</span><span data-boot-status>Calibrating the observatory</span></div>
+  <div class="boot__read boot__read--r"><span data-boot-coord>00.00°N 000.00°E</span><span><b data-boot-pct>000</b>%</span></div>
+</div>'''
+home_main = BOOT + f'''
 <div class="scope" data-tone="dark" data-globe-scope>
   <div class="scope__stage"><div class="globe" aria-hidden="true"></div><div class="grain"></div></div>
   <div class="scope__content">
     <section class="hero" aria-labelledby="hero-h">
       <div class="wrap"><div class="hero__copy">
         <p class="eyebrow">Cambridge IGCSE · Individuals and Societies</p>
-        <h1 class="display" id="hero-h" data-split="now">History, Economics <em>and Geography</em></h1>
+        <h1 class="display" id="hero-h" data-split="boot">History, Economics <em>and Geography</em></h1>
         <p class="lede">Revision notes, interactive diagrams and exam technique for Cambridge IGCSE History (0470), Economics (0455) and Geography (0460). Updated for the syllabuses examined from 2027.</p>
         <div class="hero__cta">
           <a class="btn btn--primary" href="#subjects">Choose a subject <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a>

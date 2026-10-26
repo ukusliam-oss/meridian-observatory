@@ -66,12 +66,12 @@ const HAZARDS = [
 
 // lat, lon, camera distance, horizontal / vertical shift (fraction of viewport), accent, layer weights
 const VIEWS = [
-  { lat: 16, lon: 34, dist: 4.25, sx: 0.21, sy: 0.02, accent: '#9db7ff' },
+  { lat: 16, lon: 34, dist: 4.25, sx: 0, sy: 0, accent: '#9db7ff' }, // the hero: centred, in eclipse (see the sun below)
   { lat: 47, lon: 17, dist: 2.15, sx: 0.17, sy: 0, accent: '#f0b45a' },
   { lat: 24, lon: 74, dist: 3.6, sx: 0.19, sy: 0, accent: '#46d6a0' },
   { lat: 6, lon: 160, dist: 3.6, sx: 0.19, sy: 0, accent: '#5fb0ff' },
 ];
-const PHONE = [{ sx: 0, sy: 0.2 }, { sx: 0, sy: -0.16 }, { sx: 0, sy: -0.16 }, { sx: 0, sy: -0.16 }];
+const PHONE = [{ sx: 0, sy: 0, dist: 2.9 }, { sx: 0, sy: -0.16 }, { sx: 0, sy: -0.16 }, { sx: 0, sy: -0.16 }]; // a phone's eclipse fills its width
 
 // ── Shaders ──────────────────────────────────────────────────────────────────
 const dotVert = /* glsl */`
@@ -129,7 +129,12 @@ const airFrag = /* glsl */`
     // one scattering, cheaply: the air glows where the sun is and fades into the night, warm at the day's edge
     float sun = dot(vN, uLight), edge = exp(-pow((sun + 0.05) / 0.2, 2.0));
     i *= 0.06 + 1.04 * smoothstep(-0.4, 0.45, sun);
-    gl_FragColor = vec4(mix(uAccent, vec3(1.0, 0.62, 0.4), edge * 0.45), i);
+    // forward scattering: with the sun behind the planet (an eclipse) the whole rim lights as a thin ring, brightest
+    // and whitest on the sun's side
+    float back = max(-uLight.z, 0.0), ring = pow(smoothstep(0.0, 0.58, d), 7.0);
+    i += back * ring * (0.45 + 1.1 * smoothstep(-0.2, 0.6, sun)) * uPower;
+    vec3 c = mix(uAccent, vec3(1.0, 0.62, 0.4), edge * 0.45);
+    gl_FragColor = vec4(mix(c, vec3(0.92, 0.95, 1.0), back * ring * smoothstep(0.0, 0.7, sun) * 0.6), i);
   }`;
 const arcVert = /* glsl */`
   varying float vU;
@@ -223,7 +228,7 @@ function arc(a, b, uniforms) {
 }
 
 // ── Public ───────────────────────────────────────────────────────────────────
-export function createGlobe(host, { reduced = false, dpr = null } = {}) {
+export function createGlobe(host, { reduced = false, dpr = null, eclipse = false } = {}) {
   const canvas = document.createElement('canvas');
   canvas.setAttribute('aria-hidden', 'true');
   const labelsEl = document.createElement('div');
@@ -244,8 +249,15 @@ export function createGlobe(host, { reduced = false, dpr = null } = {}) {
   const globe = new Group();
   scene.add(globe);
 
-  // the sun from the upper left and a little behind, so the terminator crosses the disc
+  // One sun, in view space. Over the lenses it stands upper left and a little behind, so the terminator crosses the
+  // disc. On the hero the planet is in eclipse: the sun is behind it and up to the left, a crescent of day on the rim;
+  // a `sunrise` brings it there from straight behind (a ring of light only), and scrolling on brings it round to the
+  // lenses' side.
   const light = new Vector3(-0.78, 0.5, 0.36).normalize();
+  const LENS_SUN = light.clone(), HERO_SUN = new Vector3(-0.72, 0.42, -0.5).normalize(), BEHIND = new Vector3(-0.1, 0.12, -1).normalize();
+  let rise = eclipse && !reduced ? 0 : 1, riseFrom = null, riseMs = 2600, frames = 0, readyFn = null;
+  const ready = new Promise(r => { readyFn = r; });
+  const sunTmp = new Vector3();
   const accent = new Color(VIEWS[0].accent);
   const time = { value: 0 };
 
@@ -343,6 +355,10 @@ export function createGlobe(host, { reduced = false, dpr = null } = {}) {
     cur.sx += (T.sx - cur.sx) * k; cur.sy += (T.sy - cur.sy) * k;
     ['w0', 'w1', 'w2', 'w3'].forEach((key, j) => { cur[key] += (T.w[j] - cur[key]) * k; });
     accent.lerp(T.accent, k);
+    // the sun: from behind (rise 0) to the hero's eclipse (1), then round to the lenses' side as the hero scrolls away
+    if (riseFrom != null) { const u = clamp((now - riseFrom) / riseMs); rise = 1 - Math.pow(1 - u, 3); if (u >= 1) riseFrom = null; }
+    sunTmp.copy(BEHIND).lerp(HERO_SUN, rise).normalize().lerp(LENS_SUN, smooth(0.05, 0.85, clamp(f))).normalize();
+    light.copy(sunTmp);
     if (!drag.on) { const r = Math.exp(-dt * 1.6); drag.lon *= r; drag.lat *= r; }
 
     globe.rotation.set((cur.lat + drag.lat) * DEG, -(cur.lon + drag.lon) * DEG, 0, 'XYZ');
@@ -352,8 +368,9 @@ export function createGlobe(host, { reduced = false, dpr = null } = {}) {
     // layers
     histU.uOpacity.value = cur.w1;
     geoU.uOpacity.value = cur.w3;
-    portU.uOpacity.value = Math.max(cur.w2, cur.w0 * 0.25);
-    const arcW = Math.max(cur.w2, cur.w0 * 0.32), arcDraw = Math.max(cur.w2, cur.w0);
+    // the hero keeps its eclipse clean: the trade routes and ports belong to the Economics lens
+    portU.uOpacity.value = cur.w2;
+    const arcW = cur.w2, arcDraw = cur.w2;
     arcs.forEach((m, i) => {
       m.material.uniforms.uOpacity.value = arcW;
       m.material.uniforms.uDraw.value = reduced ? 1 : clamp(arcDraw * 1.7 - i * 0.045);
@@ -376,6 +393,7 @@ export function createGlobe(host, { reduced = false, dpr = null } = {}) {
       L.shown = 1;
     }
     renderer.render(scene, camera);
+    if (++frames === 4) readyFn(); // the shaders are compiled and the first frames drawn: the curtain can lift
   }
 
   // drag to spin (mouse / pen; touch keeps native scrolling)
@@ -405,11 +423,23 @@ export function createGlobe(host, { reduced = false, dpr = null } = {}) {
   document.addEventListener('visibilitychange', onVis);
 
   resize();
+  // the loader's ring is drawn on the hero's rim: start there rather than zooming in
+  if (eclipse) { const V = { ...VIEWS[0], ...(phone ? PHONE[0] : {}) }; Object.assign(cur, { dist: V.dist, sx: V.sx, sy: V.sy }); }
   raf = requestAnimationFrame(frame);
   host.classList.add('is-live');
 
   return {
     setProgress(v) { f = v; },
+    // resolves once the globe has drawn its first frames (the loader waits for it, so nothing stutters on reveal)
+    ready,
+    // the planet's disc on screen, in CSS px: its centre and radius (the loader's ring lands on it)
+    disc() {
+      camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+      const c = new Vector3(0, 0, 0).project(camera);
+      return { x: (c.x + 1) / 2 * W, y: (1 - c.y) / 2 * H, r: Math.tan(Math.asin(1 / cur.dist)) / Math.tan(camera.fov * DEG / 2) * H / 2 };
+    },
+    // the sun comes round from behind the planet to the hero's eclipse
+    sunrise(ms = 2600) { if (reduced) { rise = 1; return; } riseMs = ms; riseFrom = performance.now(); },
     // the settings menu's quality: [phone, wider screen] caps on the pixel ratio
     setDpr(c) { cap = c; resize(); },
     destroy() {
