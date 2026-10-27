@@ -1,14 +1,14 @@
 // The nav as words floating on the night (site.css explains the look) with one piece of glass at its right end: the
 // chapter pill's glass (glass.js) in black and white, a faint white aurora drifting slowly inside, the rim whose light
 // turns towards the pointer, a soft glow beneath on hover. The pill goes to the page's next thing to do: the daily quiz
-// on the home, written practice on a hub, the toolkit in a chapter. Labels roll up on hover like the pill's, and one
+// on the home, written practice on a hub, the toolkit in a chapter, the questions in the Paper 2 room. Labels roll up on hover like the pill's, and one
 // hairline glides to the link under the pointer and back to the current page's. Outside the chapters the nav leaves on
 // the way down and comes back on the way up; inside them it stays and steps back for study (chapter.js sets --study).
 import { gsap, ScrollTrigger, reduced, $, $$, esc, QUALITY, quality, setQuality } from './core.js';
 import { MT, strokeBorder, aurora } from './glass.js';
 
 const ARROW = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v5.5A2.5 2.5 0 0 0 6.5 11H13M10 8l3 3-3 3"/></svg>';
-const NEXT = [['toolkit', 'Toolkit'], ['practice', 'Practise'], ['daily', 'Daily quiz']];
+const NEXT = [['toolkit', 'Toolkit'], ['practice', 'Practise'], ['daily', 'Daily quiz'], ['questions', 'Questions']];
 // an instrument's dial: the settings
 const DIAL = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="7.25"/><path d="M10 2.75v1.6M17.25 10h-1.6M2.75 10h1.6M4.9 4.9l1.1 1.1M15.1 4.9 14 6"/><path d="m10 10 3.2-3.6" stroke-width="1.6"/><circle cx="10" cy="10" r="1.1" fill="currentColor" stroke="none"/></svg>';
 const GRADES = [['high', 'High'], ['standard', 'Standard'], ['saver', 'Saver']];
@@ -104,8 +104,8 @@ export function bar() {
     new ResizeObserver(() => to(here, true)).observe(box);
   }
 
-  // outside the chapters: away on the way down, back on the way up or when a key reaches it
-  if (!$('.ch') && !reduced) {
+  // outside the chapters and the Paper 2 room: away on the way down, back on the way up or when a key reaches it
+  if (!$('.ch, .p2') && !reduced) {
     let shown = true;
     const show = want => { if (want === shown) return; shown = want; gsap.to(nav, { yPercent: want ? 0 : -130, duration: want ? MT : MT * 0.8, ease: 'm.out' }); };
     ScrollTrigger.create({ start: 0, end: 'max', onUpdate: s => show(s.direction < 0 || s.scroll() < 240) });

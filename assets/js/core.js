@@ -198,6 +198,9 @@ function navTone() {
   if (!nav) return;
   const zones = $$('[data-tone="dark"]').filter(z => !z.closest('.nav'));
   const live = new Set();
+  // the tone the page opens with is set without its fade, or a light page opening on a dark hero shows the words dark
+  // for a moment
+  nav.classList.add('no-fade'); setTimeout(() => nav.classList.remove('no-fade'), 600);
   const apply = () => {
     const dark = live.size > 0;
     [nav, tabbar].forEach(n => { if (!n) return; if (dark) n.setAttribute('data-tone', 'dark'); else n.removeAttribute('data-tone'); });
@@ -301,7 +304,10 @@ export function boot(scope = document) {
   if (!booted) {
     booted = true;
     navTone(); theme(); anchors(); spotlight();
-    import('./bar.js').then(m => m.bar()); // after this module: bar.js imports it
+    // the nav last (after this module: bar.js imports it); then a view transition held on the old page plays
+    // (stamp.py's ENTER), now that there is nothing left to pop in
+    const entered = () => requestAnimationFrame(() => { window.__mBuilt = true; window.__mGo?.(); });
+    import('./bar.js').then(m => { m.bar(); return document.fonts?.ready; }).then(entered, entered);
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
     addEventListener('load', () => ScrollTrigger.refresh());
     if (location.hash) {

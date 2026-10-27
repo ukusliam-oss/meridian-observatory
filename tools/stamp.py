@@ -13,6 +13,15 @@ PAGES = sorted(p for p in ROOT.rglob('*.html') if 'node_modules' not in p.parts 
 ASSETS = sorted([*ROOT.glob('assets/js/**/*.js'), *ROOT.glob('assets/css/*.css'), *ROOT.glob('assets/vendor/*.js')])
 HASH = {p.relative_to(ROOT).as_posix(): hashlib.sha1(p.read_bytes()).hexdigest()[:10] for p in ASSETS}
 
+# Between pages (site.css): a view transition is held on the old page's picture until the new page's scripts have built
+# it (core.js boot calls __mGo), then the two cross in one dimmed shift, so nothing pops in and the screen never goes
+# black. Pages that open on their own dark loader (the home, the chapters) are not held. It must listen before the
+# first render, so it is inline in <head>; 1.5 s at most.
+ENTER = ('<script data-enter>(function(){addEventListener("pagereveal",function(e){var t=e.viewTransition;if(!t)return;'
+         't.ready.then(function(){var a=document.getAnimations().filter(function(x){return x.effect&&/view-transition/.test(x.effect.pseudoElement||"")});'
+         'if(window.__mBuilt||document.querySelector(".loader,[data-boot]"))return;a.forEach(function(x){x.pause()});var tm,go=function(){window.__mGo=null;clearTimeout(tm);'
+         'a.forEach(function(x){if(x.playState==="paused")x.play()})};window.__mGo=go;tm=setTimeout(go,1500)},function(){})})})();</script>')
+
 def stamp(page):
     s = page.read_text()
     up = '../' * (len(page.relative_to(ROOT).parts) - 1)
@@ -23,7 +32,8 @@ def stamp(page):
     # after the 404 page's <base> script if it has one, else right after <meta charset>
     anchor = re.search(r'document\.write\(\'<base[^\n]*</script>', s) or re.search(r'<meta charset="utf-8">', s)
     s = re.sub(r'\n?<script src="(?:\.\./)*assets/js/transitions\.js[^"]*"></script>', '', s)
-    s = s[:anchor.end()] + '\n' + tag + s[anchor.end():]
+    s = re.sub(r'\n?<script data-enter>.*?</script>', '', s, flags=re.S)
+    s = s[:anchor.end()] + '\n' + tag + '\n' + ENTER + s[anchor.end():]
     # the entry scripts and stylesheets themselves
     def ver(m):
         path = m.group(2)

@@ -1,7 +1,7 @@
 // Paper 2 practice room: one source-based question set (sources on paper cards, five parts, mark scheme and
 // example answers behind buttons). Nothing is typed or saved.
 
-import { $, $$, boot, esc, scrollToEl } from './core.js';
+import { $, $$, gsap, ScrollTrigger, reduced, boot, esc, scrollToEl, decode } from './core.js';
 import set from './data/history/kq6-paper2.js';
 
 const root = document.documentElement;
@@ -9,13 +9,13 @@ const ref = k => set.references[k];
 
 $('[data-p2-head]').innerHTML = `
   <span class="tag mono">${esc(set.paper)}</span>
-  <h1 class="display p2-title"><em>${esc(set.title.split(':')[0])}:</em>${esc(set.title.split(':').slice(1).join(':').trim())}</h1>
-  <p class="mono p2-meta">${Math.floor(set.time / 60)} hour ${set.time % 60} minutes · ${set.marks} marks · ${set.sources.length} sources · ${set.parts.length} parts</p>
-  <p class="p2-how">${esc(set.how)}</p>
-  <div class="p2-bg"><span class="mono">Background</span>${set.background}</div>`;
+  <h1 class="display p2-title" data-p2-title><em>${esc(set.title.split(':')[0])}:</em>${esc(set.title.split(':').slice(1).join(':').trim())}</h1>
+  <p class="mono p2-meta" data-p2-meta>${[`${Math.floor(set.time / 60)} hour ${set.time % 60} minutes`, `${set.marks} marks`, `${set.sources.length} sources`, `${set.parts.length} parts`].map(t => t.replace(/ /g, '\u00a0')).join(' · ')}</p>
+  <p class="p2-how" data-reveal>${esc(set.how)}</p>
+  <div class="p2-bg" data-reveal><span class="mono">Background</span>${set.background}</div>`;
 
 $('[data-p2-sources]').innerHTML = set.sources.map(s => `
-  <article class="paper" id="source-${s.id}">
+  <article class="paper" id="source-${s.id}" data-reveal>
     <header><b>${s.id}</b><p>${s.intro}</p></header>
     ${s.text.map(t => `<p>${esc(t)}</p>`).join('')}
     <footer class="mono">${esc(ref(s.ref).title)} · ${esc(ref(s.ref).copyright.split('.')[0])}</footer>
@@ -30,7 +30,7 @@ const scheme = (sc, k) => `
   ${sc.tip ? `<p class="p2-tip"><span class="mono">Tip</span>${esc(sc.tip)}</p>` : ''}`;
 
 $('[data-p2-parts]').innerHTML = set.parts.map((p, k) => `
-  <article class="p2-part" id="part-${k}">
+  <article class="p2-part" id="part-${k}" data-reveal>
     <header><span class="p2-k">${esc(p.k)}</span><span class="mono p2-m">[${p.m} marks]</span></header>
     <p class="p2-q">${esc(p.q)}</p>
     <div class="p2-use">${p.sources.map(id => `<a class="p2-chip mono" href="#source-${id}" data-src="${id}">Source ${id}</a>`).join('')}</div>
@@ -58,3 +58,20 @@ document.addEventListener('click', e => {
 
 boot();
 root.classList.add('is-ready');
+
+// The room opens like the rest of the site: the title's words sharpen out of a blur in a random order (1 s each, 0.1 s
+// apart), the paper's line decodes, then the blocks light up as they come into view (core.js reveal).
+const head = $('[data-p2-title]'), meta = $('[data-p2-meta]');
+if (!reduced) {
+  const words = window.SplitText.create(head, { type: 'words' }).words;
+  gsap.set(words, { opacity: 0, filter: 'blur(5px)' });
+  gsap.utils.shuffle([...words]).forEach((w, k) => gsap.to(w, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'none', delay: 0.3 + k * 0.1, clearProps: 'filter' }));
+  gsap.fromTo('[data-p2-head] .tag', { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.2 });
+  setTimeout(() => decode(meta, meta.textContent, 700), 900);
+}
+
+// as in a chapter, the nav stays while the questions are worked and steps back for study once the first screen leaves
+const navBar = $('.nav__bar');
+ScrollTrigger.create({ start: 0, end: () => innerHeight * 0.6, onUpdate: st => {
+  const u = st.progress; navBar?.style.setProperty('--study', (u * u * (3 - 2 * u)).toFixed(3));
+} });

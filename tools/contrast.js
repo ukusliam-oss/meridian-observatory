@@ -17,6 +17,7 @@ const over = (top, bot) => { const a = top[3]; return [0, 1, 2].map(i => top[i] 
 function behind(el) {
   const layers = [];
   for (let e = el; e; e = e.parentElement) {
+    if (e.matches('.nav[data-tone="dark"], .tabbar[data-tone="dark"]')) break; // over a dark zone (below), not the page
     const cs = getComputedStyle(e);
     if (cs.backgroundImage !== 'none' && !/gradient/.test(cs.backgroundImage)) return null;
     const c = parse(cs.backgroundColor);
@@ -24,6 +25,9 @@ function behind(el) {
   }
   let base = parse(getComputedStyle(document.documentElement).backgroundColor) || [0, 0, 0, 1];
   if (base[3] < 1) base = parse(getComputedStyle(document.body).backgroundColor) || [0, 0, 0, 1];
+  // the nav's words float with no bar: when navTone has turned them light, they are over a dark zone, not the page
+  const toned = el.closest('.nav[data-tone="dark"], .tabbar[data-tone="dark"]');
+  if (toned) base = parse(getComputedStyle(toned).getPropertyValue('--bg').trim()) || base;
   for (let i = layers.length - 1; i >= 0; i--) base = layers[i][3] >= 1 ? layers[i] : over(layers[i], base);
   return base;
 }

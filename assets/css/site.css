@@ -100,6 +100,7 @@ ul, ol { padding: 0; list-style: none; }
 .section { position: relative; padding-block: clamp(88px, 12vw, 168px); }
 .section--tight { padding-block: clamp(64px, 8vw, 112px); }
 [data-tone="dark"] { background: var(--bg); color: var(--text); }
+.nav.no-fade, .nav.no-fade * { transition: none !important; }
 .nav[data-tone], .tabbar[data-tone] { background: none; } /* the tone is for their ink: as a band it cut the hero's light off under the bar */
 
 /* ── Type ───────────────────────────────────────────────────────────────── */
@@ -157,7 +158,7 @@ ul, ol { padding: 0; list-style: none; }
 }
 .nav__bar > * { pointer-events: auto; }
 @property --wake { syntax: '<number>'; inherits: true; initial-value: 0; }
-.nav__bar:hover, .nav__bar:focus-within { --wake: 1; }
+.nav__bar:hover, .nav__bar:has(:focus-visible) { --wake: 1; } /* a click leaves focus on the pill: only a key wakes it */
 .nav__end { grid-column: 3; grid-row: 1; display: flex; align-items: center; justify-content: flex-end; gap: .5rem; }
 /* The chapter pill's 1px rim (emotion-agency's v-stroke-border): its light turns towards the pointer; glass.js
    adds the class and drives --btn-stroke-angle. */
@@ -384,10 +385,15 @@ html:not(.js) .boot { display: none; }
 .boot__read--r { right: var(--gutter); justify-items: end; text-align: right; font-variant-numeric: tabular-nums; }
 .boot__brand { color: #fff; letter-spacing: .14em; }
 .boot__read b { font-weight: 500; font-size: 22px; letter-spacing: .02em; color: #fff; }
+/* the skip hint: the faintest reading on the dial, centred under it, lit after a second of calibration */
+.boot__skip { position: absolute; left: 50%; bottom: 30px; translate: -50% 0; white-space: nowrap; font: 500 11.5px/1.3 var(--mono);
+  text-transform: uppercase; letter-spacing: .06em; color: rgb(255 255 255 / .5); opacity: 0; transition: opacity .8s var(--ease); }
+.boot__skip.is-on { opacity: 1; }
 html.is-booting { overflow: hidden; }
 .is-booting .nav, .is-booting .tabbar { opacity: 0; }
 .nav, .tabbar { transition: opacity .9s var(--ease); }
-@media (max-width: 760px) { .boot__read { bottom: calc(env(safe-area-inset-bottom) + 22px); } .boot__read b { font-size: 18px; } }
+@media (max-width: 760px) { .boot__read { bottom: calc(env(safe-area-inset-bottom) + 22px); } .boot__read b { font-size: 18px; }
+  .boot__skip { bottom: calc(env(safe-area-inset-bottom) + 92px); } }
 .codes { display: flex; flex-wrap: wrap; gap: 8px; }
 .code-chip { display: inline-flex; align-items: center; gap: 9px; height: 34px; padding: 0 14px 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass-card); -webkit-backdrop-filter: var(--glass-card-fx); backdrop-filter: var(--glass-card-fx); font-size: 13px; color: var(--text-2); transition: border-color .3s, color .3s; }
 .code-chip:hover { border-color: var(--line-3); color: var(--text); }
@@ -954,18 +960,16 @@ html.is-booting { overflow: hidden; }
 .js.no-motion [data-reveal], .js.reveal-fallback [data-reveal] { opacity: 1; }
 [data-split] .line { overflow: clip; padding-bottom: .06em; margin-bottom: -.06em; }
 @view-transition { navigation: auto; }
-/* Between pages, one gesture: the old page dims to night, and only once it has gone does the new one light up out of
-   that night (Cartier's), its title then sharpening word by word; nothing travels across the screen. The bar stays
-   put. (Carrying the followed link into the hub's title, and a chapter card opening like a window, were tried and
-   dropped: a box flying across read as awkward next to the calm exit.) */
-::view-transition { background: var(--bg); }
-::view-transition-old(root) { animation: vt-out .38s cubic-bezier(.445, .05, .55, .95) both; }
-::view-transition-new(root) { animation: vt-in .8s cubic-bezier(.445, .05, .55, .95) .26s both; }
-@keyframes vt-out { to { opacity: 0; filter: brightness(.4); } }
-@keyframes vt-in { from { opacity: 0; filter: brightness(.4); } }
-/* on the bar, not on .nav: a view-transition-name makes its element a backdrop root, and the bar's blur then saw
-   nothing behind it (the page read sharp through the glass) */
-.nav__bar { view-transition-name: nav; }
+/* Between pages, one gesture: the old page holds until the new one has been built (stamp.py's ENTER), then the two
+   cross in .6 s, each picture dimming to 60% as it fades, so the screen dips to about 80% at the middle and back
+   without ever going black. The nav has no transition name of its own and goes with the page. Tried and dropped:
+   a blackout between the pages (it read as a blink), the nav staying bright over a darkened page, a light theme's
+   paper showing between pages, the followed link carried into the hub's title, a chapter card opening like a window. */
+::view-transition { background: #07080b; }
+::view-transition-old(root) { animation: vt-out .6s cubic-bezier(.445, .05, .55, .95) both; }
+::view-transition-new(root) { animation: vt-in .6s cubic-bezier(.445, .05, .55, .95) both; }
+@keyframes vt-out { to { opacity: 0; filter: brightness(.6); } }
+@keyframes vt-in { from { opacity: 0; filter: brightness(.6); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
@@ -977,7 +981,6 @@ html.is-booting { overflow: hidden; }
 .line-mask .line { overflow: visible !important; } /* a line inside an italic run is clipped again by SplitText; the mask is enough */
 .js.reveal-fallback [data-split] { opacity: 1; }
 .theme-vt::view-transition-old(root), .theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-.theme-vt::view-transition-group(nav) { animation: none; }
 
 .parts__note { font-size: 13px; color: var(--text-3); margin-bottom: 2px; }
 .section-head .h2 { max-width: 16ch; }

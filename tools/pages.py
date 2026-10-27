@@ -149,6 +149,7 @@ BOOT = f'''<div class="boot" data-boot aria-hidden="true">
   </svg>
   <div class="boot__read boot__read--l"><span class="boot__brand">Meridian</span><span data-boot-status>Calibrating the observatory</span></div>
   <div class="boot__read boot__read--r"><span data-boot-coord>00.00°N 000.00°E</span><span><b data-boot-pct>000</b>%</span></div>
+  <span class="boot__skip" data-boot-skip></span>
 </div>
 <script>/* the loader's safety net: if its reveal has not begun within 10 s (a script failed, or an old cached one ran), the
    page opens at once */ setTimeout(function(){{var d=document.documentElement;if(d.dataset.reveal||d.classList.contains('is-booted'))return;var b=document.querySelector('[data-boot]');if(b)b.remove();d.classList.remove('is-booting');d.classList.add('is-booted');[].forEach.call(document.querySelectorAll('#hero-h .hw, .hero .eyebrow, .hero .lede, .hero__cta, .hero__foot'),function(e){{e.style.opacity='1';e.style.filter='none';e.style.transform='none'}});try{{window.__meridianLenis&&window.__meridianLenis.start()}}catch(e){{}}}},10000);</script>'''
@@ -270,10 +271,10 @@ for k, (name, code, eyebrow, lede, stats) in HEROES.items():
   <div class="inst" data-inst aria-hidden="true"></div>
   <div class="grain"></div>
   <div class="wrap">
-    <p class="eyebrow">Cambridge IGCSE · {eyebrow}</p>
+    <p class="eyebrow" data-decoded>Cambridge IGCSE · {eyebrow}</p>
     <div class="s-hero__title"><h1 class="h1">{name}</h1><span class="s-hero__code">{code}</span></div>
     <div class="s-hero__row"><p class="lede">{lede}</p>
-      <div class="s-hero__stats">{''.join(f'<div><b data-count="{n}">{n}</b><span>{t}</span></div>' for n, t in stats)}</div></div>
+      <div class="s-hero__stats">{''.join(f'<div><b>{n}</b><span>{t}</span></div>' for n, t in stats)}</div></div>
   </div>
 </section>''' + SUBJECT_CHAPTERS.get(k, '')
     (ROOT / f'{k}.html').write_text(shell(k, f'{name} {code} | Meridian', f'Cambridge IGCSE {name} {code} revision: assessment overview, syllabus content, an interactive diagram, exam technique, command words, flashcards and a quiz.', main, 'subject.js', k))

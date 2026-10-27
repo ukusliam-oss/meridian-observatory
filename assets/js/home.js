@@ -89,8 +89,16 @@ if (root.classList.contains('is-booting')) {
   const STEPS = [[0, 'Calibrating the observatory'], [0.3, 'Plotting 5,748 points of land'], [0.62, 'Charting three subjects'], [0.97, 'Ready']];
   let step = 0, skipped = false;
   // a click, a key, the wheel or a touch skips the calibration: the short reveal plays at once
-  const skip = () => { if (skipped || done) return; skipped = true; want = 1; shown = 1; };
+  const skip = () => { if (skipped || done) return; skipped = true; want = 1; shown = 1; hint.classList.remove('is-on'); };
   for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart']) addEventListener(ev, skip, { once: true, passive: true });
+  // and says so, quietly, once the calibration has run long enough to be seen (the first visit of a session only)
+  const hint = $('[data-boot-skip]');
+  if (!seen) setTimeout(() => {
+    if (skipped || done) return;
+    hint.classList.add('is-on');
+    const touch = matchMedia('(pointer: coarse), (max-width: 760px)').matches; // a phone, whatever its pointer reports
+    decode(hint, touch ? 'Tap to skip' : 'Click or press any key to skip', 600);
+  }, 1100);
   const pad = (v, n) => String(Math.abs(v).toFixed(2)).padStart(n, '0');
   const tick = () => {
     if (done) return;
@@ -138,7 +146,7 @@ if (root.classList.contains('is-booting')) {
     const order = gsap.utils.shuffle([...words]);
     const tl = gsap.timeline({ defaults: { ease: 'm.sine' } });
     const born = quick ? 0.15 : 0.45, glide = born + 1.75, lift = quick ? 0.1 : born + 2.6, rest = quick ? 0.7 : glide + 1.6;
-    tl.to($$('.boot__ticks, .boot__read, .boot__meridian, .boot__equator, .boot__track', bootEl), { opacity: 0, duration: 0.6 }, 0)
+    tl.to($$('.boot__ticks, .boot__read, .boot__skip, .boot__meridian, .boot__equator, .boot__track', bootEl), { opacity: 0, duration: 0.6 }, 0)
       .to(ring, { opacity: 0, duration: quick ? 0.6 : 0.9 }, 0.1);
     if (!quick) tl.set(title, { x: dx, y: dy, scale, transformOrigin: '50% 50%' }, 0);
     order.forEach((w, k) => tl.to(w, { opacity: 1, filter: 'blur(0px)', duration: quick ? 0.6 : 1, ease: 'none', clearProps: 'filter' }, born + k * (quick ? 0.05 : 0.1)));

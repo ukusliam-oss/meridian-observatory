@@ -1,5 +1,5 @@
 // Subject page: the hero is static HTML; everything below it is rendered from the data file.
-import { boot, subnav, $, reduced, gsap, icons } from './core.js';
+import { boot, subnav, $, icons } from './core.js';
 import { examAnatomy, topicMap, technique, commandWords, flashcards, quiz, examplesTracker } from './ui.js';
 import { instrument } from './instrument.js';
 import { practice } from './practice.js';
@@ -66,11 +66,4 @@ instrument($('[data-inst]'), id, d);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 boot();
 subnav($('.nav__sub'), $('.subnav-at'));
-// the opening, as the page lights up out of the night between pages: the title's letters sharpen out of a blur in a
-// random order (Cartier's, by letter since a hub's title is one word), then the code, the line and the figures
-if (!reduced) {
-  const chars = window.SplitText.create($('.s-hero__title .h1'), { type: 'chars' }).chars;
-  gsap.set(chars, { opacity: 0, filter: 'blur(6px)' });
-  gsap.utils.shuffle([...chars]).forEach((c, k) => gsap.to(c, { opacity: 1, filter: 'blur(0px)', duration: 0.9, ease: 'none', delay: 0.4 + k * 0.06, clearProps: 'filter' }));
-  gsap.fromTo('.s-hero__code, .s-hero .lede, .s-hero__stats > div', { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'm.sine', stagger: 0.1, delay: 0.4 + chars.length * 0.06 + 0.3, clearProps: 'filter' });
-}
+// no opening of its own: between pages the whole page comes up out of the dark (site.css), as one piece

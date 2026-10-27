@@ -304,7 +304,16 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
     "aggregate" are left alone (macro meaning). KQ6 gained eight toolkit definitions for this.
   - Mono labels decode (`decode`, `decodes` in core.js): section eyebrows and the HUD's scene number run through random
     capitals for ~0.5 s as they come on; labels with markup inside are left alone; none with reduced motion.
-  - Between pages the old page dims out and the new one lights up (cross-document view transitions; the bar stays).
+  - Between pages (cross-document view transitions): the old page's picture holds until the new page has been built,
+    then the two cross in .6 s, each dimming to 60% as it fades (the screen dips to about 80%, never black). The hold
+    is stamp.py's ENTER, an inline `pagereveal` listener in every page's head that pauses the transition's animations
+    at `ready`; core.js `boot` plays them (`__mGo`) once bar.js and the fonts are in, 1.5 s at most, once only (a
+    timer that replayed finished animations ran the whole crossing again). Pages that open on their own dark loader
+    (the home, the chapters) are not held. Measured headless on the way to a hub: held to 160 ms (instrument 127 ms,
+    pill 143 ms), crossed by 776 ms, nothing added after. Dropped on 2026-10-27, all read as a flash: a blackout
+    between the pages (old fades to night, new lights up out of it), the nav with its own transition name staying
+    bright over the darkened page (and dropping in from above when scrolling had hidden it), a light theme's paper
+    showing between pages, a night cover over the new page.
   - `404.html` (pages.py, `lost.js`): sets its `<base>` from the address (GitHub Pages serves it at any depth);
     share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen, at its absolute address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
     italic descenders (the y of "Geography").
@@ -329,11 +338,12 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   loader's dial (ticks, track, a ring of light in the subject's colour that draws round on arrival while the ticks
   light) holding what the subject measures: History a year dial 1919–1991 whose needle sweeps the lab's 49 events and
   names each as it passes; Economics a market that never settles, read as P* and Q*; Geography contour lines under a
-  turning sweep, read as an elevation. Upper right on wide screens, above the title on phones. Arriving through a link
-  the title has been carried in (below); otherwise its words sharpen out of a blur. 60 fps on all three (DPR 2).
-- The joins between pages: cross-document view transitions in site.css only. The old page dims to night (.38 s), the
-  new one lights up out of it after .26 s (.8 s); nothing travels across the screen; the hub's title letters then
-  sharpen out of a blur in random order. Carrying the followed link into the hub's title and a chapter card opening
+  turning sweep, read as an elevation. Upper right on wide screens, above the title on phones. It opens already lit, and
+  the hub's hero has no opening of its own (no letters sharpening, ticks lighting, ring drawing, figures counting or
+  label decoding: on 2026-10-27 the user found the arrival twinkly and asked for a plain shift into the dark). 60 fps on all three (DPR 2).
+- The joins between pages: cross-document view transitions in site.css only. The old page holds until the new one
+  is built, then the two cross in .6 s with a slight dim (see the Awwwards pass above); nothing travels across the
+  screen and nothing on the new page animates in on its own. Carrying the followed link into the hub's title and a chapter card opening
   like a window were both tried (transitions.js, removed) and dropped as awkward beside the calm exit.
 - Buttons stand still (`magnetic` in core.js no longer moves them; following the pointer read as a wobble): light
   gathers on the glass under the pointer (`.btn::after`, --mx/--my) and a press sinks them to 97.5% and lets them rise
@@ -342,6 +352,16 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
 - Chapters say a scene's date once, on its panel: the ribbon reads the year, the pill names the part and the scene's
   title. The pill opens on hover only above 760 px (on a narrow window it moves with the tab bar and could slide
   under a resting pointer). The home's loader skips on a click, key, wheel or touch.
+- Finishing pass (2026-10-27): the Paper 2 room follows the site's rules: its nav stays and steps back for study as in a
+  chapter (`.p2` counts as a chapter in bar.js; paper2.js sets --study), the pill goes to its questions (`#questions`),
+  the title's words sharpen out of a blur, the meta line decodes, blocks light up; source chips are outlines, the tip
+  and the stronger answer are lit by a line of the subject's light instead of a green or violet fill. The nav wakes on
+  hover or keyboard focus only (`:has(:focus-visible)`: a click left focus on the pill and kept it bright). The home's
+  loader says "Click or press any key to skip" ("Tap to skip" on phones) from 1.1 s, first visit only. A light page
+  opening on a dark hero sets the nav's tone without its fade (`.no-fade`, 0.6 s). The engine test pages run on
+  chapter.js and already follow the rules. Checked: contrast AA on the home and hubs in both themes, Paper 2, 404 and
+  the three chapters (0 failures; contrast.js now measures the floating nav against the dark zone under it); reduced
+  motion opens every page in its final state; no horizontal scroll at 390 px.
 - Quality, measured at DPR 2 on the M5 (KQ6, headless with the real GPU): 60 fps on all three; canvas 1800×1125
   (saver), 2520×1575 (standard), 2880×1800 (high). The headless GPU timer reads unreliably high; trust the built-in
   browser's earlier figures (standard 7.2 ms, high 17.9 ms at the hero).

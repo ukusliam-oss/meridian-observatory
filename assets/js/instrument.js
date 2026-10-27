@@ -1,8 +1,8 @@
 // A hub's opening instrument: the home loader's dial (the same ticks, track and ring of light) holding what the subject
 // measures. History reads the years 1919–1991 with a needle that sweeps them and names each event it passes; Economics
 // is a market whose supply and demand never quite settle, read out as a price and a quantity; Geography is a relief
-// survey, contour lines under a turning sweep. On arrival the ticks light one by one and the ring of light draws round
-// in the subject's colour, as the loader did. It runs on GSAP's ticker only while on screen; reduced motion: still.
+// survey, contour lines under a turning sweep. It opens with its ticks lit and its ring of light closed in the subject's
+// colour. It runs on GSAP's ticker only while on screen; reduced motion: still.
 import { gsap, reduced, decode } from './core.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -158,16 +158,8 @@ export function instrument(box, id, data) {
   const inst = ({ history, economics, geography })[id]?.(box, data);
   if (!inst) return;
   box.insertAdjacentHTML('beforeend', `<p class="inst__label mono">${inst.label}</p>`);
-  // arrival: the ticks light one by one and the ring of light draws round, as the home's loader did
-  const ticks = [...box.querySelectorAll('.inst__ticks line')], ring = box.querySelector('.inst__ring');
-  if (reduced) { ticks.forEach(l => l.classList.add('is-on')); ring.style.strokeDasharray = '100 100'; return; }
-  const p = { v: 0 };
-  gsap.timeline({ delay: 0.4 })
-    .to(p, { v: 1, duration: 1.6, ease: 'm.smooth', onUpdate: () => {
-      ring.style.strokeDasharray = `${f2(p.v * 100)} 100`;
-      const n = Math.round(p.v * ticks.length);
-      for (let k = 0; k < ticks.length; k++) ticks[k].classList.toggle('is-on', k < n);
-    } })
-    .fromTo(box.querySelectorAll('.inst__in, .inst__field, .inst__centre'), { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, ease: 'm.sine', stagger: 0.1, clearProps: 'filter' }, 0.5)
-    .call(() => { const l = box.querySelector('.inst__label'); decode(l, l.textContent, 600); }, null, 0.3);
+  // it arrives already lit: the page comes up out of the dark between pages as one piece, nothing on it twinkles in
+  // (ticks lighting one by one and a ring drawing round were dropped on 2026-10-27)
+  box.querySelectorAll('.inst__ticks line').forEach(l => l.classList.add('is-on'));
+  box.querySelector('.inst__ring').style.strokeDasharray = '100 100';
 }
