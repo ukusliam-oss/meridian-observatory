@@ -152,7 +152,7 @@ BOOT = f'''<div class="boot" data-boot aria-hidden="true">
   <span class="boot__skip" data-boot-skip></span>
 </div>
 <script>/* the loader's safety net: if its reveal has not begun within 10 s (a script failed, or an old cached one ran), the
-   page opens at once */ setTimeout(function(){{var d=document.documentElement;if(d.dataset.reveal||d.classList.contains('is-booted'))return;var b=document.querySelector('[data-boot]');if(b)b.remove();d.classList.remove('is-booting');d.classList.add('is-booted');[].forEach.call(document.querySelectorAll('#hero-h .hw, .hero .eyebrow, .hero .lede, .hero__cta, .hero__foot'),function(e){{e.style.opacity='1';e.style.filter='none';e.style.transform='none'}});try{{window.__meridianLenis&&window.__meridianLenis.start()}}catch(e){{}}}},10000);</script>'''
+   page opens at once; a loader that is still loading (home.js sets data-loading) is given until 22 s */ setTimeout(function n(){{var d=document.documentElement;if(d.dataset.reveal||d.classList.contains('is-booted'))return;if(d.dataset.loading&&performance.now()<22000)return setTimeout(n,1000);var b=document.querySelector('[data-boot]');if(b)b.remove();d.classList.remove('is-booting');d.classList.add('is-booted');[].forEach.call(document.querySelectorAll('#hero-h .hw, .hero .eyebrow, .hero .lede, .hero__cta, .hero__foot'),function(e){{e.style.opacity='1';e.style.filter='none';e.style.transform='none'}});try{{window.__meridianLenis&&window.__meridianLenis.start()}}catch(e){{}}}},10000);</script>'''
 home_main = BOOT + f'''
 <div class="scope" data-tone="dark" data-globe-scope>
   <div class="scope__stage"><div class="globe" aria-hidden="true"></div><div class="grain"></div></div>

@@ -38,7 +38,8 @@ def preload(rel):
              if not k.endswith('engine-test.js') and not k.endswith('lost.js') and not k.startswith('assets/vendor/')}
     now = [u for k, u in files.items() if HUB.search(k) or k == 'assets/css/practice.css'] + [f'{rel}{f}' for f in FONTS]
     later = [u for k, u in files.items() if not (HUB.search(k) or k == 'assets/css/practice.css')] + [rel + f for f in MAPS]
-    return f'<script type="application/json" id="preload">{json.dumps({"now": now, "later": later}, separators=(",", ":"))}</script>'
+    globe = (ROOT / 'assets/js/globe.js').stat().st_size # the home's dial follows its download by this many bytes
+    return f'<script type="application/json" id="preload">{json.dumps({"now": now, "later": later, "globe": globe}, separators=(",", ":"))}</script>'
 
 # Speculation rules: while the pointer rests on a link (moderate), its page's HTML is prefetched, and a hub or the
 # Paper 2 room is prerendered, so it opens already built. The home and the chapters (WebGL, large) are only prefetched.

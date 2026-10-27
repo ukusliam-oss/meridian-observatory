@@ -16,7 +16,7 @@ const seen = (() => { try { return sessionStorage.getItem('meridian:booted'); } 
 const MIN = seen ? 900 : 2600, T0 = performance.now();
 let want = 0.06, shown = 0, done = false;
 const gain = k => { want = Math.min(1, want + k); if (want > 0.999) want = 1; }; // many small shares never quite sum to 1
-if (bootEl && !reduced) root.classList.add('is-booting'); else bootEl?.remove();
+if (bootEl && !reduced) { root.classList.add('is-booting'); root.dataset.loading = '1'; } else bootEl?.remove(); // data-loading: index.html's safety net waits
 document.fonts?.ready.then(() => gain(0.2)) ?? gain(0.2);
 // what the hubs run on too (core.js preloadNow), so a hub opens from the cache, never mid-download; it starts once the
 // globe's module is in, so on a slow line it never holds the globe back
@@ -25,17 +25,32 @@ let preStarted = false;
 const pre = () => { if (preStarted) return; preStarted = true; if (preN) preloadNow(() => gain(0.16 / preN)); else gain(0.16); };
 
 // ── globe ──
+// Its module is the largest file the home waits for (on a slow line, several seconds): it is read as a stream first,
+// so the dial fills as its bytes arrive instead of standing still, then imported from the cache.
 const host = $('.globe');
 let globe = null, globeReady = false;
-import('./globe.js')
+const globeBytes = (() => { try { return JSON.parse($('#preload').textContent).globe; } catch { return 0; } })();
+let streamed = 0; // the dial's share given while the globe's bytes came in (0.26 of its 0.3)
+async function fetchGlobe() {
+  const url = import.meta.resolve?.('./globe.js');
+  if (!url || !globeBytes || !bootEl || reduced) return;
+  const r = await fetch(url); if (!r.ok || !r.body) return;
+  const read = r.body.getReader(); let got = 0;
+  for (;;) {
+    const { done, value } = await read.read(); if (done) break;
+    got += value.length;
+    const share = 0.26 * Math.min(1, got / globeBytes); gain(share - streamed); streamed = share;
+  }
+}
+fetchGlobe().catch(() => {}).then(() => import('./globe.js'))
   .then(({ createGlobe }) => {
-    gain(0.3); pre();
+    gain(0.3 - streamed); pre();
     globe = createGlobe(host, { reduced, dpr: QUALITY[quality()].dpr, eclipse: true });
     if (!globe) { host.classList.add('is-fallback'); gain(0.28); return; }
     sync();
     globe.ready.then(() => { globeReady = true; gain(0.28); });
   })
-  .catch(() => { host.classList.add('is-fallback'); gain(0.58); pre(); });
+  .catch(() => { host.classList.add('is-fallback'); gain(0.58 - streamed); pre(); });
 // read progress every tick: onUpdate is skipped when a jump lands outside the trigger
 const st = ScrollTrigger.create({ trigger: '.scope__content', start: 'top top', end: 'bottom bottom' });
 function sync() { globe?.setProgress(st.progress * 3); }
@@ -127,7 +142,8 @@ if (root.classList.contains('is-booting')) {
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-  setTimeout(() => { want = 1; }, 9000); // a slow network or a missing globe never keeps the page shut (index.html's net is at 10 s)
+  // the loader waits for the globe (it is the page): only a very slow line or a missing globe opens it without, at 20 s
+  setTimeout(() => { want = 1; }, 20000);
   function place() {
     const d = globe.disc();
     if (d.r > 0 && Number.isFinite(d.x)) Object.assign(dial.style, { left: `${d.x}px`, top: `${d.y}px`, width: `${d.r * 2.4}px` });

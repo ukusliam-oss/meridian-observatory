@@ -339,8 +339,8 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   properties only.) Then the night lifts off a planet in eclipse (centred, `eclipse: true`: the sun behind it, the air's
   forward scattering a ring of light), `globe.sunrise()` brings the sun round to a crescent (HERO_SUN) while the
   title's lines rise (`data-split="boot"`, waits for `meridian:booted`) and the rest lights up; scrolling on brings
-  the sun round to the lenses' side. Reduced motion: no loader, the final state. A 12 s CSS fallback hides the
-  loader if the script never runs. Measured on the real GPU (M5, DPR 2): no long task or long animation frame from
+  the sun round to the lenses' side. Reduced motion: no loader, the final state. A 24 s CSS fallback hides the
+  loader if the script never runs.
   load to the end of the sunrise. The hero's trade routes and ports now show only in the Economics lens.
 - Hubs open on an instrument (`assets/js/instrument.js`, replacing visuals.js; `.inst` in site.css): the home
   loader's dial (ticks, track, a ring of light in the subject's colour that draws round on arrival while the ticks
@@ -371,7 +371,12 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   Paper 2 room prerendered; Chrome skips the prerender on a network it judges slow). The first version fetched the
   whole site (700 KB) and every page's HTML at once during the loader: on the live site from here (about 120 KB/s) it
   shared the line with the globe and the loader stood at 99% until its cap. The home's loader now fetches "now" once its
-  globe module is in, counted on its dial
+  globe module is in, counted on its dial. The loader waits for the globe (up to 20 s; index.html's safety net
+  waits while `data-loading` is set, to 22 s): on the live site from here a cold first visit spent 4 to 8 s on the
+  globe's module and, capped at 9 s, sometimes opened without it, the globe arriving later. home.js reads the module
+  as a stream first (`#preload` carries its size), so the dial fills with its bytes instead of standing at 26%, then
+  imports it from the cache. Measured at 120 KB/s: the dial moves throughout and opens at 13 s with the globe drawn; on
+  a fast line at 3.6 s as before.
   (`preloadNow` in core.js; a share per file, and the dial rounds up past 0.999, or the sum of 46 shares stopped short
   of 1 and the loader waited for its 9 s cap), and "later" in idle time after the reveal; other pages (not the
   chapters) fetch both in idle time; once per ten minutes. A hub draws its instrument, nav and pill as soon as its two
