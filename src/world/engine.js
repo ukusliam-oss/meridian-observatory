@@ -407,7 +407,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   host.appendChild(canvas);
   let renderer;
   try {
-    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+    canvas.dataset.gl = ''; // core.js copies it before a page transition
   } catch { canvas.remove(); return null; }
   renderer.setClearColor(0x05060a, 1);
   const phone = matchMedia('(max-width: 760px)').matches;

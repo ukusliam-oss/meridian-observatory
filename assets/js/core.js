@@ -293,6 +293,20 @@ export function subnav(el, from) {
   });
 }
 
+// Between pages a view transition takes a picture of the old page, and some browsers take a WebGL canvas as a white
+// sheet (the home's globe flashed white on the way to a hub). So each globe's canvas (data-gl, drawn with its buffer
+// preserved) is swapped for a plain copy first, and swapped back if the page is shown again from the back-forward cache.
+addEventListener('pageswap', e => {
+  if (!e.viewTransition) return;
+  for (const gl of $$('canvas[data-gl]')) {
+    const c = document.createElement('canvas');
+    c.width = gl.width; c.height = gl.height; c.className = gl.className; c.style.cssText = gl.style.cssText;
+    try { c.getContext('2d').drawImage(gl, 0, 0); } catch { continue; }
+    c._gl = gl; gl.replaceWith(c);
+  }
+});
+addEventListener('pageshow', e => { if (e.persisted) $$('canvas').forEach(c => c._gl && c.replaceWith(c._gl)); });
+
 let booted = false;
 export function boot(scope = document) {
   splitHeads(scope);

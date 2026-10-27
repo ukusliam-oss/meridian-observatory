@@ -314,6 +314,13 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
     between the pages (old fades to night, new lights up out of it), the nav with its own transition name staying
     bright over the darkened page (and dropping in from above when scrolling had hidden it), a light theme's paper
     showing between pages, a night cover over the new page.
+    The flash the user kept seeing (a recording, 2026-10-27, in the desktop app's browser) was none of these: the
+    transition's picture of the old page took the home's WebGL globe as a white sheet. Globe canvases (`data-gl`, in
+    src/globe.js and src/world/engine.js, now with `preserveDrawingBuffer`) are swapped for a 2D copy in `pageswap`
+    (core.js) and back on a back-forward restore. Headless Chrome had drawn the globe in its picture correctly, so
+    burst screenshots there never showed it: check a transition on a recording from the browser that showed it
+    (frames via AVFoundation, `AVAssetImageGenerator`; there is no ffmpeg here). Home at DPR 2 with the buffer
+    preserved: 16.7 ms median and p95.
   - `404.html` (pages.py, `lost.js`): sets its `<base>` from the address (GitHub Pages serves it at any depth);
     share meta (og/twitter) on every page with `assets/og.jpg` (the home's first screen, at its absolute address); `.line-mask` reaches .3em below and .12em right of each headline line, which had cut the
     italic descenders (the y of "Geography").

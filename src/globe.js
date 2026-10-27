@@ -236,7 +236,8 @@ export function createGlobe(host, { reduced = false, dpr = null, eclipse = false
   labelsEl.setAttribute('aria-hidden', 'true');
   let renderer;
   try {
-    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+    canvas.dataset.gl = ''; // core.js copies it before a page transition
   } catch {
     host.classList.add('is-fallback');
     return null;
