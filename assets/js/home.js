@@ -18,22 +18,24 @@ let want = 0.06, shown = 0, done = false;
 const gain = k => { want = Math.min(1, want + k); if (want > 0.999) want = 1; }; // many small shares never quite sum to 1
 if (bootEl && !reduced) root.classList.add('is-booting'); else bootEl?.remove();
 document.fonts?.ready.then(() => gain(0.2)) ?? gain(0.2);
-// the rest of the site too (core.js preloadNow): every hub and chapter then opens from the cache, never mid-download
+// what the hubs run on too (core.js preloadNow), so a hub opens from the cache, never mid-download; it starts once the
+// globe's module is in, so on a slow line it never holds the globe back
 const preN = preloadCount();
-if (preN) preloadNow(() => gain(0.16 / preN), /\/globe\.js/); else gain(0.16); // the globe is on its way already
+let preStarted = false;
+const pre = () => { if (preStarted) return; preStarted = true; if (preN) preloadNow(() => gain(0.16 / preN)); else gain(0.16); };
 
 // ── globe ──
 const host = $('.globe');
 let globe = null, globeReady = false;
 import('./globe.js')
   .then(({ createGlobe }) => {
-    gain(0.3);
+    gain(0.3); pre();
     globe = createGlobe(host, { reduced, dpr: QUALITY[quality()].dpr, eclipse: true });
     if (!globe) { host.classList.add('is-fallback'); gain(0.28); return; }
     sync();
     globe.ready.then(() => { globeReady = true; gain(0.28); });
   })
-  .catch(() => { host.classList.add('is-fallback'); gain(0.58); });
+  .catch(() => { host.classList.add('is-fallback'); gain(0.58); pre(); });
 // read progress every tick: onUpdate is skipped when a jump lands outside the trigger
 const st = ScrollTrigger.create({ trigger: '.scope__content', start: 'top top', end: 'bottom bottom' });
 function sync() { globe?.setProgress(st.progress * 3); }

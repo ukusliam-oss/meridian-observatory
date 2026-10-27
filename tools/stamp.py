@@ -22,27 +22,32 @@ ENTER = ('<script data-enter>(function(){addEventListener("pagereveal",function(
          'if(window.__mBuilt||document.querySelector(".loader,[data-boot]"))return;a.forEach(function(x){x.pause()});var tm,go=function(){window.__mGo=null;clearTimeout(tm);'
          'a.forEach(function(x){if(x.playState==="paused")x.play()})};window.__mGo=go;tm=setTimeout(go,1500)},function(){})})})();</script>')
 
-# What a visit should never wait for twice: every script, stylesheet and font of the site ("now", fetched while the
-# home's loader runs, or in idle time on any other page) and the chapters' map data ("later", fetched in idle time
-# after that). Terrain tiles are left to the chapters. The list goes into each page as JSON (#preload, core.js).
+# What a visit should never wait for twice. "now" is what a hub runs on (its scripts, data, labs and the fonts), small
+# enough for the home's loader to fetch once its globe is in (on a slow line the whole site's 700 KB doubled the
+# loader); "later" is everything else, the chapters' scripts and then their map data, fetched in idle time after.
+# Terrain tiles are left to the chapters. The lists go into each page as JSON (#preload, core.js).
+HUB = re.compile(r'assets/js/(subject|ui|instrument|practice|bar|glass)\.js$|assets/js/data/(history|economics|geography|practice-\w+)\.js$|assets/js/labs/')
 FONTS = sorted(p.relative_to(ROOT).as_posix() for p in ROOT.glob('assets/fonts/*.woff2'))
-LATER = ['assets/data/borders.json', 'assets/data/countries-modern.json', 'assets/data/econ.json', 'assets/data/relief-world.jpg',
-         'assets/data/relief-europe.jpg', 'assets/data/geo/natural.json', 'assets/data/geo/quakes.json',
-         'assets/data/geo/volcanoes.json', 'assets/data/geo/plates.json']
-
-# Speculation rules: every page's HTML is prefetched at once, and a hub or the Paper 2 room is prerendered while the
-# pointer rests on a link to it (moderate), so it opens already built. The home and the chapters (WebGL, large) are
-# only prefetched.
-HEAVY = "a[href$='index.html'], a[href$='kq6.html'], a[href$='macro-policy.html'], a[href$='tectonics.html'], a[href*='engine-test']"
-RULES = '<script type="speculationrules">' + json.dumps({
-    'prefetch': [{'source': 'document', 'where': {'selector_matches': "a[href$='.html']"}, 'eagerness': 'eager'}],
-    'prerender': [{'source': 'document', 'where': {'and': [{'selector_matches': "a[href$='.html']"}, {'not': {'selector_matches': HEAVY}}]}, 'eagerness': 'moderate'}],
-}, separators=(',', ':')) + '</script>'
+MAPS = ['assets/data/borders.json', 'assets/data/countries-modern.json', 'assets/data/econ.json', 'assets/data/relief-world.jpg',
+        'assets/data/relief-europe.jpg', 'assets/data/geo/natural.json', 'assets/data/geo/quakes.json',
+        'assets/data/geo/volcanoes.json', 'assets/data/geo/plates.json']
+INJECTED = {'assets/css/practice.css', 'assets/css/policy-lab.css'} # added by practice.js and policy-lab.js, unversioned
 
 def preload(rel):
-    now = [f'{rel}{k}?v={v}' for k, v in HASH.items() if not k.endswith('engine-test.js') and k != 'assets/css/practice.css' and k != 'assets/css/policy-lab.css']
-    now += [f'{rel}assets/css/practice.css', f'{rel}assets/css/policy-lab.css'] + [f'{rel}{f}' for f in FONTS] # injected or used unversioned
-    return f'<script type="application/json" id="preload">{json.dumps({"now": now, "later": [rel + f for f in LATER]}, separators=(",", ":"))}</script>'
+    files = {k: f'{rel}{k}' + ('' if k in INJECTED else f'?v={v}') for k, v in HASH.items()
+             if not k.endswith('engine-test.js') and not k.endswith('lost.js') and not k.startswith('assets/vendor/')}
+    now = [u for k, u in files.items() if HUB.search(k) or k == 'assets/css/practice.css'] + [f'{rel}{f}' for f in FONTS]
+    later = [u for k, u in files.items() if not (HUB.search(k) or k == 'assets/css/practice.css')] + [rel + f for f in MAPS]
+    return f'<script type="application/json" id="preload">{json.dumps({"now": now, "later": later}, separators=(",", ":"))}</script>'
+
+# Speculation rules: while the pointer rests on a link (moderate), its page's HTML is prefetched, and a hub or the
+# Paper 2 room is prerendered, so it opens already built. The home and the chapters (WebGL, large) are only prefetched.
+# (Prefetching every page at once competed with the home's globe on a slow line.)
+HEAVY = "a[href$='index.html'], a[href$='kq6.html'], a[href$='macro-policy.html'], a[href$='tectonics.html'], a[href*='engine-test']"
+RULES = '<script type="speculationrules">' + json.dumps({
+    'prefetch': [{'source': 'document', 'where': {'selector_matches': "a[href$='.html']"}, 'eagerness': 'moderate'}],
+    'prerender': [{'source': 'document', 'where': {'and': [{'selector_matches': "a[href$='.html']"}, {'not': {'selector_matches': HEAVY}}]}, 'eagerness': 'moderate'}],
+}, separators=(',', ':')) + '</script>'
 
 def stamp(page):
     s = page.read_text()

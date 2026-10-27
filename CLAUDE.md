@@ -365,10 +365,13 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   title. The pill opens on hover only above 760 px (on a narrow window it moves with the tab bar and could slide
   under a resting pointer). The home's loader skips on a click, key, wheel or touch.
 - Loading done in the loading (2026-10-27, after a recording where a hub opened without its instrument and pill for
-  2.3 s and then popped them in): stamp.py writes a list of the site's files into every page (`#preload`: "now" is every
-  script, stylesheet and font, "later" the chapters' map data, not terrain) and speculation rules (every page's HTML
-  prefetched at once; a hub or the Paper 2 room prerendered while the pointer rests on a link to it; Chrome skips the
-  prerender on a network it judges slow). The home's loader fetches "now" while it calibrates, counted on its dial
+  2.3 s and then popped them in): stamp.py writes a list of the site's files into every page (`#preload`: "now" is what
+  a hub runs on, its scripts, data, labs and the fonts, about 150 KB; "later" everything else, the chapters' scripts
+  and then their map data, not terrain) and speculation rules (on hover, a page's HTML prefetched and a hub or the
+  Paper 2 room prerendered; Chrome skips the prerender on a network it judges slow). The first version fetched the
+  whole site (700 KB) and every page's HTML at once during the loader: on the live site from here (about 120 KB/s) it
+  shared the line with the globe and the loader stood at 99% until its cap. The home's loader now fetches "now" once its
+  globe module is in, counted on its dial
   (`preloadNow` in core.js; a share per file, and the dial rounds up past 0.999, or the sum of 46 shares stopped short
   of 1 and the loader waited for its 9 s cap), and "later" in idle time after the reveal; other pages (not the
   chapters) fetch both in idle time; once per ten minutes. A hub draws its instrument, nav and pill as soon as its two

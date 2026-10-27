@@ -51,17 +51,17 @@ export const QUALITY = {
 export const quality = () => { const q = store.get('quality', 'standard'); return QUALITY[q] ? q : 'standard'; };
 export function setQuality(q) { store.set('quality', q); dispatchEvent(new CustomEvent('meridian:quality', { detail: q })); }
 
-// The site's files, listed by stamp.py in each page (#preload): "now" is every script, stylesheet and font, "later" the
-// chapters' map data. The home's loader fetches "now" while it calibrates (preloadNow, counted on its dial); any other
-// page fetches both in idle time, so the next page opens from the cache. Done once per ten minutes (GitHub Pages'
+// The site's files, listed by stamp.py in each page (#preload): "now" is what the hubs run on, "later" the rest (the
+// chapters' scripts, then their map data). The home's loader fetches "now" once its globe is in (preloadNow, counted on
+// its dial) and "later" after the reveal; any other page fetches both in idle time, so the next page opens from the cache. Done once per ten minutes (GitHub Pages'
 // cache lifetime); the chapters skip it, being busy with their own maps.
 const PRE = (() => { try { return JSON.parse(document.getElementById('preload')?.textContent || 'null'); } catch { return null; } })();
 const fresh = () => { try { return Date.now() - (+sessionStorage.getItem('meridian:pre') || 0) < 6e5; } catch { return false; } };
 const get = u => fetch(u, { priority: 'low' }).then(r => r.ok && r.blob()).catch(() => {});
 export const preloadCount = () => (fresh() ? 0 : PRE?.now.length || 0);
-export function preloadNow(onEach, skip) {
+export function preloadNow(onEach) {
   if (fresh() || !PRE) return Promise.resolve();
-  return Promise.all(PRE.now.map(u => (skip?.test(u) ? Promise.resolve() : get(u)).then(() => onEach?.())));
+  return Promise.all(PRE.now.map(u => get(u).then(() => onEach?.())));
 }
 export async function preloadLater() {
   if (fresh() || !PRE) return;
