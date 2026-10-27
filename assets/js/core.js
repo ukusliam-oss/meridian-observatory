@@ -51,6 +51,24 @@ export const QUALITY = {
 export const quality = () => { const q = store.get('quality', 'standard'); return QUALITY[q] ? q : 'standard'; };
 export function setQuality(q) { store.set('quality', q); dispatchEvent(new CustomEvent('meridian:quality', { detail: q })); }
 
+// The site's files, listed by stamp.py in each page (#preload): "now" is every script, stylesheet and font, "later" the
+// chapters' map data. The home's loader fetches "now" while it calibrates (preloadNow, counted on its dial); any other
+// page fetches both in idle time, so the next page opens from the cache. Done once per ten minutes (GitHub Pages'
+// cache lifetime); the chapters skip it, being busy with their own maps.
+const PRE = (() => { try { return JSON.parse(document.getElementById('preload')?.textContent || 'null'); } catch { return null; } })();
+const fresh = () => { try { return Date.now() - (+sessionStorage.getItem('meridian:pre') || 0) < 6e5; } catch { return false; } };
+const get = u => fetch(u, { priority: 'low' }).then(r => r.ok && r.blob()).catch(() => {});
+export const preloadCount = () => (fresh() ? 0 : PRE?.now.length || 0);
+export function preloadNow(onEach, skip) {
+  if (fresh() || !PRE) return Promise.resolve();
+  return Promise.all(PRE.now.map(u => (skip?.test(u) ? Promise.resolve() : get(u)).then(() => onEach?.())));
+}
+export async function preloadLater() {
+  if (fresh() || !PRE) return;
+  for (const u of PRE.later) { await new Promise(r => (window.requestIdleCallback || setTimeout)(r)); await get(u); }
+  try { sessionStorage.setItem('meridian:pre', String(Date.now())); } catch { /* private mode */ }
+}
+
 export const navOffset = () => (parseFloat(getComputedStyle(root).getPropertyValue('--nav-h')) || 64) + 56;
 export function scrollToEl(el, offset = navOffset()) {
   if (!el) return;
@@ -322,6 +340,10 @@ export function boot(scope = document) {
     // (stamp.py's ENTER), now that there is nothing left to pop in
     const entered = () => requestAnimationFrame(() => { window.__mBuilt = true; window.__mGo?.(); });
     import('./bar.js').then(m => { m.bar(); return document.fonts?.ready; }).then(entered, entered);
+    if (!$('[data-boot], [data-world]')) {
+      const pre = () => setTimeout(() => preloadNow().then(preloadLater), 1500);
+      document.readyState === 'complete' ? pre() : addEventListener('load', pre, { once: true });
+    }
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
     addEventListener('load', () => ScrollTrigger.refresh());
     if (location.hash) {

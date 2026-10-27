@@ -162,4 +162,27 @@ export function instrument(box, id, data) {
   // (ticks lighting one by one and a ring drawing round were dropped on 2026-10-27)
   box.querySelectorAll('.inst__ticks line').forEach(l => l.classList.add('is-on'));
   box.querySelector('.inst__ring').style.strokeDasharray = '100 100';
+  // it never sits over the figures (or, on a phone, over the title): on a low window the dial takes only the room it
+  // has above them (its CSS size is the most it takes)
+  const hero = box.closest('.s-hero'), low = !!box.querySelector('.inst__centre--low');
+  const fit = () => {
+    box.style.removeProperty('--s'); box.style.removeProperty('display');
+    const phone = matchMedia('(max-width: 860px)').matches;
+    const below = hero?.querySelector(phone ? '.eyebrow' : '.s-hero__stats');
+    if (!below) return;
+    const r = box.getBoundingClientRect(), gap = phone ? 20 + (low ? 30 : 0) : 32;
+    let room = below.getBoundingClientRect().top - r.top - gap;
+    // on wide screens the dial, pinned to the right, also keeps clear of the title (GEOGRAPHY 0460 is long): it either
+    // stays beside it or above it, whichever lets it be larger
+    if (!phone) {
+      const words = [...hero.querySelectorAll('.s-hero__title > *')].map(w => w.getBoundingClientRect());
+      const beside = r.right - Math.max(...words.map(w => w.right)) - 24, above = Math.min(...words.map(w => w.top)) - r.top - gap;
+      room = Math.min(room, Math.max(beside, above));
+    }
+    if (room < (phone ? 120 : 160)) box.style.display = 'none'; // a very low window has no room for it at all
+    else if (room < box.offsetWidth) box.style.setProperty('--s', `${Math.floor(room)}px`);
+  };
+  fit();
+  if (hero) new ResizeObserver(fit).observe(hero);
+  document.fonts?.ready.then(fit);
 }

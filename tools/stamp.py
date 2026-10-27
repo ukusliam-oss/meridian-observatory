@@ -22,6 +22,28 @@ ENTER = ('<script data-enter>(function(){addEventListener("pagereveal",function(
          'if(window.__mBuilt||document.querySelector(".loader,[data-boot]"))return;a.forEach(function(x){x.pause()});var tm,go=function(){window.__mGo=null;clearTimeout(tm);'
          'a.forEach(function(x){if(x.playState==="paused")x.play()})};window.__mGo=go;tm=setTimeout(go,1500)},function(){})})})();</script>')
 
+# What a visit should never wait for twice: every script, stylesheet and font of the site ("now", fetched while the
+# home's loader runs, or in idle time on any other page) and the chapters' map data ("later", fetched in idle time
+# after that). Terrain tiles are left to the chapters. The list goes into each page as JSON (#preload, core.js).
+FONTS = sorted(p.relative_to(ROOT).as_posix() for p in ROOT.glob('assets/fonts/*.woff2'))
+LATER = ['assets/data/borders.json', 'assets/data/countries-modern.json', 'assets/data/econ.json', 'assets/data/relief-world.jpg',
+         'assets/data/relief-europe.jpg', 'assets/data/geo/natural.json', 'assets/data/geo/quakes.json',
+         'assets/data/geo/volcanoes.json', 'assets/data/geo/plates.json']
+
+# Speculation rules: every page's HTML is prefetched at once, and a hub or the Paper 2 room is prerendered while the
+# pointer rests on a link to it (moderate), so it opens already built. The home and the chapters (WebGL, large) are
+# only prefetched.
+HEAVY = "a[href$='index.html'], a[href$='kq6.html'], a[href$='macro-policy.html'], a[href$='tectonics.html'], a[href*='engine-test']"
+RULES = '<script type="speculationrules">' + json.dumps({
+    'prefetch': [{'source': 'document', 'where': {'selector_matches': "a[href$='.html']"}, 'eagerness': 'eager'}],
+    'prerender': [{'source': 'document', 'where': {'and': [{'selector_matches': "a[href$='.html']"}, {'not': {'selector_matches': HEAVY}}]}, 'eagerness': 'moderate'}],
+}, separators=(',', ':')) + '</script>'
+
+def preload(rel):
+    now = [f'{rel}{k}?v={v}' for k, v in HASH.items() if not k.endswith('engine-test.js') and k != 'assets/css/practice.css' and k != 'assets/css/policy-lab.css']
+    now += [f'{rel}assets/css/practice.css', f'{rel}assets/css/policy-lab.css'] + [f'{rel}{f}' for f in FONTS] # injected or used unversioned
+    return f'<script type="application/json" id="preload">{json.dumps({"now": now, "later": [rel + f for f in LATER]}, separators=(",", ":"))}</script>'
+
 def stamp(page):
     s = page.read_text()
     up = '../' * (len(page.relative_to(ROOT).parts) - 1)
@@ -33,7 +55,9 @@ def stamp(page):
     anchor = re.search(r'document\.write\(\'<base[^\n]*</script>', s) or re.search(r'<meta charset="utf-8">', s)
     s = re.sub(r'\n?<script src="(?:\.\./)*assets/js/transitions\.js[^"]*"></script>', '', s)
     s = re.sub(r'\n?<script data-enter>.*?</script>', '', s, flags=re.S)
-    s = s[:anchor.end()] + '\n' + tag + '\n' + ENTER + s[anchor.end():]
+    s = re.sub(r'\n?<script type="application/json" id="preload">.*?</script>', '', s, flags=re.S)
+    s = re.sub(r'\n?<script type="speculationrules">.*?</script>', '', s, flags=re.S)
+    s = s[:anchor.end()] + '\n' + tag + '\n' + ENTER + '\n' + preload(rel) + '\n' + RULES + s[anchor.end():]
     # the entry scripts and stylesheets themselves
     def ver(m):
         path = m.group(2)

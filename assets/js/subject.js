@@ -3,9 +3,13 @@ import { boot, subnav, $, icons } from './core.js';
 import { examAnatomy, topicMap, technique, commandWords, flashcards, quiz, examplesTracker } from './ui.js';
 import { instrument } from './instrument.js';
 import { practice } from './practice.js';
+import { bar } from './bar.js';
 
+// What the first screen shows (the instrument, the nav and its pill) is drawn as soon as the two data files are in;
+// the lab, far down the page, is fetched alongside and mounted last, so the hub never opens with pieces missing.
 const id = document.body.dataset.subject;
 const [{ default: d }, { default: pr }] = await Promise.all([import(`./data/${id}.js`), import(`./data/practice-${id}.js`)]);
+const labModule = import(`./labs/${d.lab.kind}.js`);
 const NEXT = { history: ['economics', 'Economics', 'econ', '0455'], economics: ['geography', 'Geography', 'geo', '0460'], geography: ['history', 'History', 'hist', '0470'] };
 
 const head = (eyebrow, h, lede) => `<header class="section-head section-head--split">
@@ -59,11 +63,12 @@ practice(m('practice'), pr);
 commandWords(m('words'), d.words);
 flashcards(m('cards'), d.cards, d.id);
 quiz(m('quiz'), d.quiz.map(q => ({ ...q })), { title: `${d.name} ${d.code}` });
-const lab = await import(`./labs/${d.lab.kind}.js`);
-lab.mount(m('lab'), d.lab);
 
 instrument($('[data-inst]'), id, d);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
+bar();
 boot();
 subnav($('.nav__sub'), $('.subnav-at'));
+(await labModule).mount(m('lab'), d.lab);
+boot(m('lab'));
 // no opening of its own: between pages the whole page comes up out of the dark (site.css), as one piece

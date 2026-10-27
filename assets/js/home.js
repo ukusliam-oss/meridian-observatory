@@ -1,5 +1,5 @@
 // Home: the loader and the eclipse, the globe scrollytelling, the command-word ladder and a daily mixed quiz.
-import { boot, $, $$, gsap, ScrollTrigger, reduced, QUALITY, quality, decode, lenis } from './core.js';
+import { boot, $, $$, gsap, ScrollTrigger, reduced, QUALITY, quality, decode, lenis, preloadNow, preloadLater, preloadCount } from './core.js';
 import { quiz, seeded } from './ui.js';
 import H from './data/history.js';
 import E from './data/economics.js';
@@ -15,22 +15,25 @@ const root = document.documentElement, bootEl = $('[data-boot]');
 const seen = (() => { try { return sessionStorage.getItem('meridian:booted'); } catch { return null; } })();
 const MIN = seen ? 900 : 2600, T0 = performance.now();
 let want = 0.06, shown = 0, done = false;
-const gain = k => { want = Math.min(1, want + k); };
+const gain = k => { want = Math.min(1, want + k); if (want > 0.999) want = 1; }; // many small shares never quite sum to 1
 if (bootEl && !reduced) root.classList.add('is-booting'); else bootEl?.remove();
-document.fonts?.ready.then(() => gain(0.24)) ?? gain(0.24);
+document.fonts?.ready.then(() => gain(0.2)) ?? gain(0.2);
+// the rest of the site too (core.js preloadNow): every hub and chapter then opens from the cache, never mid-download
+const preN = preloadCount();
+if (preN) preloadNow(() => gain(0.16 / preN), /\/globe\.js/); else gain(0.16); // the globe is on its way already
 
 // ── globe ──
 const host = $('.globe');
 let globe = null, globeReady = false;
 import('./globe.js')
   .then(({ createGlobe }) => {
-    gain(0.34);
+    gain(0.3);
     globe = createGlobe(host, { reduced, dpr: QUALITY[quality()].dpr, eclipse: true });
-    if (!globe) { host.classList.add('is-fallback'); gain(0.36); return; }
+    if (!globe) { host.classList.add('is-fallback'); gain(0.28); return; }
     sync();
-    globe.ready.then(() => { globeReady = true; gain(0.36); });
+    globe.ready.then(() => { globeReady = true; gain(0.28); });
   })
-  .catch(() => { host.classList.add('is-fallback'); gain(0.7); });
+  .catch(() => { host.classList.add('is-fallback'); gain(0.58); });
 // read progress every tick: onUpdate is skipped when a jump lands outside the trigger
 const st = ScrollTrigger.create({ trigger: '.scope__content', start: 'top top', end: 'bottom bottom' });
 function sync() { globe?.setProgress(st.progress * 3); }
@@ -122,7 +125,7 @@ if (root.classList.contains('is-booting')) {
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-  setTimeout(() => { want = 1; }, 7000); // a slow network or a missing globe never keeps the page shut
+  setTimeout(() => { want = 1; }, 9000); // a slow network or a missing globe never keeps the page shut (index.html's net is at 10 s)
   function place() {
     const d = globe.disc();
     if (d.r > 0 && Number.isFinite(d.x)) Object.assign(dial.style, { left: `${d.x}px`, top: `${d.y}px`, width: `${d.r * 2.4}px` });
@@ -140,7 +143,9 @@ if (root.classList.contains('is-booting')) {
     if (globeReady) place();
     const quick = !!seen || skipped;
     // the title stands above the night while it is born, then sinks back into the page
-    gsap.set(title, { position: 'relative', zIndex: 301 });
+    gsap.set(title, { position: 'relative', zIndex: 301, willChange: 'transform' });
+    // each word on its own layer while it sharpens, so the blur is composited rather than painted again every frame
+    gsap.set(words, { willChange: 'filter, opacity' });
     const r = title.getBoundingClientRect(), scale = Math.min(1.5, (innerWidth * 0.92) / r.width);
     const dx = innerWidth / 2 - (r.left + r.width / 2), dy = innerHeight / 2 - (r.top + r.height / 2);
     const order = gsap.utils.shuffle([...words]);
@@ -155,7 +160,10 @@ if (root.classList.contains('is-booting')) {
       .to(bootEl, { opacity: 0, duration: quick ? 0.8 : 1.6, ease: 'm.smooth' }, lift)
       .call(() => decode($('.hero .eyebrow'), $('.hero .eyebrow').textContent, 700), null, rest)
       .fromTo(heroBits, { opacity: 0, filter: 'blur(5px)' }, { opacity: 1, filter: 'blur(0px)', duration: 1, stagger: 0.12, clearProps: 'filter' }, rest)
-      .call(() => { lenis?.start(); gsap.set(title, { clearProps: 'position,zIndex' }); }, null, rest)
-      .call(() => { bootEl.remove(); ScrollTrigger.refresh(); }, null, rest + 1);
+      .call(() => lenis?.start(), null, rest)
+      // the title sinks back into the page only once the night has gone entirely: dropped under it while it was still
+      // fading, it dimmed for a moment as the overture ended
+      .call(() => { gsap.set(title, { clearProps: 'position,zIndex,willChange' }); gsap.set(words, { clearProps: 'willChange' }); bootEl.remove(); ScrollTrigger.refresh(); }, null, rest + 1)
+      .call(() => setTimeout(preloadLater, 2000), null, rest + 2); // the chapters' maps, once everything has settled
   }
 }

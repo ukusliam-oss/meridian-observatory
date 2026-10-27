@@ -427,7 +427,9 @@ export function createGlobe(host, { reduced = false, dpr = null, eclipse = false
   // the loader's ring is drawn on the hero's rim: start there rather than zooming in
   if (eclipse) { const V = { ...VIEWS[0], ...(phone ? PHONE[0] : {}) }; Object.assign(cur, { dist: V.dist, sx: V.sx, sy: V.sy }); }
   raf = requestAnimationFrame(frame);
-  host.classList.add('is-live');
+  // it fades in only once its shaders are compiled and its first frames drawn: a globe arriving late on a slow network
+  // comes in whole rather than stuttering into view
+  ready.then(() => host.classList.add('is-live'));
 
   return {
     setProgress(v) { f = v; },

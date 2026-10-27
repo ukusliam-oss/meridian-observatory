@@ -333,7 +333,8 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   the dial goes out; the title (split into words, `.hw`, above the night with z-index 301 while it is born) is born at
   the screen's centre 1.5× larger, its words sharpening out of a 5 px blur in random order (1 s linear, 0.1 s apart);
   at 1.75 s it glides home over 2 s on `m.smooth` (.5, 0, 0, 1); the night lifts only at 2.6 s, once the title has
-  left the centre. A return visit sharpens in place. (A red/blue split, a 3D tilt and a burst of light were tried
+  left the centre. A return visit sharpens in place. The title leaves the top layer only once the night has gone entirely (rest + 1 s): lowered at
+  `rest`, it went under the night's last quarter and dimmed for a moment as the overture ended. (A red/blue split, a 3D tilt and a burst of light were tried
   first and dropped as cheap; a radial mask redrawn every frame had cost 116 and 167 ms frames: composited
   properties only.) Then the night lifts off a planet in eclipse (centred, `eclipse: true`: the sun behind it, the air's
   forward scattering a ring of light), `globe.sunrise()` brings the sun round to a crescent (HERO_SUN) while the
@@ -347,7 +348,11 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   names each as it passes; Economics a market that never settles, read as P* and Q*; Geography contour lines under a
   turning sweep, read as an elevation. Upper right on wide screens, above the title on phones. It opens already lit, and
   the hub's hero has no opening of its own (no letters sharpening, ticks lighting, ring drawing, figures counting or
-  label decoding: on 2026-10-27 the user found the arrival twinkly and asked for a plain shift into the dark). 60 fps on all three (DPR 2).
+  label decoding: on 2026-10-27 the user found the arrival twinkly and asked for a plain shift into the dark). Its CSS size
+  (`--s`) is the most it takes: `fit()` in instrument.js shrinks it to the room above the figures (above the title on
+  phones), and on wide screens also keeps it beside or above the title, whichever is larger (GEOGRAPHY 0460 reaches
+  under it); with less than 160 px (120 on phones) it is hidden. Below 800 px of height it had sat over the figures.
+  Checked 1280 × 577 to 1920 × 1080, 1024 × 600, 390 × 844 and 375 × 667 on all three hubs. 60 fps on all three (DPR 2).
 - The joins between pages: cross-document view transitions in site.css only. The old page holds until the new one
   is built, then the two cross in .6 s with a slight dim (see the Awwwards pass above); nothing travels across the
   screen and nothing on the new page animates in on its own. Carrying the followed link into the hub's title and a chapter card opening
@@ -359,6 +364,19 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
 - Chapters say a scene's date once, on its panel: the ribbon reads the year, the pill names the part and the scene's
   title. The pill opens on hover only above 760 px (on a narrow window it moves with the tab bar and could slide
   under a resting pointer). The home's loader skips on a click, key, wheel or touch.
+- Loading done in the loading (2026-10-27, after a recording where a hub opened without its instrument and pill for
+  2.3 s and then popped them in): stamp.py writes a list of the site's files into every page (`#preload`: "now" is every
+  script, stylesheet and font, "later" the chapters' map data, not terrain) and speculation rules (every page's HTML
+  prefetched at once; a hub or the Paper 2 room prerendered while the pointer rests on a link to it; Chrome skips the
+  prerender on a network it judges slow). The home's loader fetches "now" while it calibrates, counted on its dial
+  (`preloadNow` in core.js; a share per file, and the dial rounds up past 0.999, or the sum of 46 shares stopped short
+  of 1 and the loader waited for its 9 s cap), and "later" in idle time after the reveal; other pages (not the
+  chapters) fetch both in idle time; once per ten minutes. A hub draws its instrument, nav and pill as soon as its two
+  data files are in and mounts the lab last. Measured, 150 ms latency and 12 Mbit/s: the home opens at 3.5 s (preload
+  done at 1.95 s, inside the 2.6 s minimum); a hub's first screen 1.4 s cold, 0.27 s after the home. The overture's
+  title and words are on their own layers while they move (will-change), which took the first visit's hand-over from
+  four dropped frames to none (DPR 2), and `scrollbar-gutter: stable` keeps the loader's scroll lock from narrowing
+  the page mid-overture where scrollbars take room. A late globe fades in only once its first frames are drawn.
 - Finishing pass (2026-10-27): the Paper 2 room follows the site's rules: its nav stays and steps back for study as in a
   chapter (`.p2` counts as a chapter in bar.js; paper2.js sets --study), the pill goes to its questions (`#questions`),
   the title's words sharpen out of a blur, the meta line decodes, blocks light up; source chips are outlines, the tip
