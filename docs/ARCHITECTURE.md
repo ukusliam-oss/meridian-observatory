@@ -158,10 +158,13 @@ deliberate corruptions in an isolated copy each failed for the expected reason (
   CShapes, Berlin WFS), some of them live. M-002 checks only its integrity (parses, tiles indexed), not that it is what
   its builder would produce. Reproducing `borders.json` offline from `tools/.cache` may be possible **[A]**; not tried.
 - **Hand-made binaries** (`relief-*.jpg` via `sips`, `og.jpg`, fonts, vendored libraries) have no recorded build.
-- **Tool versions**: esbuild is pinned and checked; Python is not (`python3 -I`, any 3.x that runs the scripts; 3.x's
-  `json.dumps` and `hashlib` are stable **[A]**). Node 22 is what was used; no `engines` field enforces it.
+- **Tool versions**: esbuild is pinned and checked. Node is declared as 22 (`.nvmrc`, `engines.node` `>=22 <23`; npm
+  only warns on a mismatch) and CI uses Python 3.12; both CI guards fail on another major/minor version. Locally the
+  pages reproduced identically with Python 3.12.14 and 3.14.7 **[V]**; other versions are untested. Pinning major
+  versions does not make every environment reproduce the build: patch versions, the OS and npm's own version still vary.
 - **The paint worker is not versioned**: `world.js` starts `world-paint.js` by a URL without `?v=` (import maps do not
   apply to worker URLs **[A]**), so a browser may pair a new `world.js` with a cached old worker for up to the Pages
   cache time (10 min). Not changed here (it would change loading behaviour).
-- **No CI**: `npm run check` runs locally only. Decision 0001 proposes making it a required check on `main` later.
+- **CI** (M-002C): `.github/workflows/check.yml`, job `meridian-check`, runs `npm ci` and `npm run check` on pushes to
+  `dev` and pull requests to `main`, read-only, with no deployment. It is not yet a required check on `main`.
 - `check.mjs` relies on `git` for the unchanged-tree stage; outside a git checkout that stage fails.

@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "description": "IGCSE Individuals & Societies revision site — History 0470, Economics 0455, Geography 0460",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
     "dots": "node tools/build-dots.mjs 18000",
     "build": "npm run dots && esbuild src/globe.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/globe.js",
