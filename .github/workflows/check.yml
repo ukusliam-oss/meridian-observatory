@@ -1,0 +1,51 @@
+# Runs the repository's checks (npm run check: data validators, texel check, build verification) on a clean checkout.
+# It only reads: no secrets, no deployment, no Pages. GitHub Pages builds main by itself (legacy mode); this
+# workflow does not touch that. The job's name, meridian-check, is the status check that main can require.
+name: check
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  meridian-check:
+    name: meridian-check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js (version from .nvmrc)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Report expected and actual versions
+        run: |
+          echo "commit:   $GITHUB_SHA ($GITHUB_REF)"
+          echo "checkout: $(git rev-parse HEAD)"
+          echo "expected: node $(cat .nvmrc).x (.nvmrc), engines.node $(node -p 'require("./package.json").engines.node'), python 3.12"
+          echo "actual:   node $(node -v), npm $(npm -v), $(python3 --version) at $(command -v python3)"
+          node -e 'process.exit(process.versions.node.split(".")[0] === require("fs").readFileSync(".nvmrc", "utf8").trim() ? 0 : 1)' \
+            || { echo "::error::Node.js major version does not match .nvmrc"; exit 1; }
+          python3 -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)' \
+            || { echo "::error::python3 is not Python 3.12"; exit 1; }
+
+      - name: Install dependencies (npm ci)
+        run: npm ci --no-audit --no-fund
+
+      - name: Run checks (npm run check)
+        run: npm run check
