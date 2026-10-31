@@ -810,8 +810,14 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   // section { from, to } draws a line across them (the panel draws the profile). Patches are built when first needed
   const THREE = { BufferGeometry, Float32BufferAttribute, Mesh, ShaderMaterial, MeshBasicMaterial, Group, Color, DoubleSide, Vector3 };
   const dems = new Map(), patches = new Map();
+  // a site's heights are only promised here (the landscape, its markers and the panel's cross-section all wait on one
+  // promise); heights(i) starts the one download, once the reader has stopped near that scene
   const demOf = site => {
-    if (!dems.has(site)) dems.set(site, layers && layers.dem ? loadDem(layers.dem, site).catch(() => null) : Promise.resolve(null));
+    if (!dems.has(site)) {
+      let go;
+      const p = new Promise(r => { go = r; }).then(() => (layers && layers.dem ? loadDem(layers.dem, site).catch(() => null) : null));
+      p.go = go; dems.set(site, p);
+    }
     return dems.get(site);
   };
   const patchOf = i => {
@@ -1112,6 +1118,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     pointOf: key => point.get(key),
     // paint a coming state and build its overlays and labels in idle time, so its first frame does no work
     prepare(i) { if (i >= -1 && i < scenes.length) { texturesOf(i); terrainOf(i); overlayFor(i); markersFor(i); patchOf(i); } },
+    // start the download of a coming landscape's heights
+    heights(i) { const s = i >= 0 && i < scenes.length ? sceneOf(i) : null, r = s && s.map.relief3d; if (r) demOf(r.site).go(); },
     // start the playing clock again from its first year (the reader has just entered the chapter)
     replay() { playT0 = null; dirty = true; },
     // the settings menu's quality: the pixel ratio's cap and the light (0 none, 1 shaders, 2 shaders and post)
@@ -1123,6 +1131,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     },
     // the height profile along a section line: { prof: [{ d km, h m }], total km }, or null without the site's heights
     async profile(site, from, to) { const dem = await demOf(site); return dem ? sectionOf(dem, from, to, 1) : null; },
+    heightsReady: site => demOf(site).then(Boolean),
     stats,
     get post() { return post; }, // the light's settings, when `look` is 2
     camera, // for checks in the preview

@@ -96,11 +96,12 @@ function lineChart(c, id) {
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(c.title || 'Chart')}"><defs>${clip}</defs>${grid.join('')}${yrs.join('')}${marks}${lines}${cursor}</svg>
     ${c.note || src ? `<figcaption class="mono">${esc(c.note || 'Source')} ${src}</figcaption>` : ''}</figure>`;
 }
+const demLine = s => `<p class="mono sc__dem" data-dem="${s.map.relief3d.site}">Loading heights. Flat relief for now.</p>`;
 // a cross-section along the scene's section line, drawn from the same heights as the landscape once the globe has them
 function section(s) {
   const x = s.map.section;
   return `<figure class="sc__chart sc__xs" data-xs="${s.id}"><figcaption class="mono">Cross-section ${esc(x.label || 'A to B')} · height in metres</figcaption>
-    <svg viewBox="0 0 460 200" role="img" aria-label="Cross-section ${esc(x.label || 'A to B')}"></svg><figcaption class="mono" data-xs-note>Loading the heights</figcaption></figure>`;
+    <div class="xs-plot"><svg viewBox="0 0 460 200" role="img" aria-label="Cross-section ${esc(x.label || 'A to B')}"></svg>${demLine(s)}</div><figcaption class="mono" data-xs-note><span aria-hidden="true">Distance in km (00.0 km). Vertical exaggeration about ×00. Copernicus DEM GLO-30.</span></figcaption></figure>`;
 }
 function drawSection(fig, sec, exag) {
   const W = 460, H = 200, L = 40, R = 14, T = 14, B = 26, { prof, total } = sec;
@@ -171,6 +172,7 @@ function sceneHTML(s, i) {
       <p class="sc__date">${esc(s.dateLabel)}</p>
       <h2 class="display sc__title">${title(s.title)}</h2>
       <div class="sc__body">${s.body}</div>
+      ${s.map && s.map.relief3d && !s.map.section ? demLine(s) : ''}
       ${s.chart ? chart(s.chart, s.id) : ''}${s.map && s.map.section && s.map.relief3d ? section(s) : ''}${s.chain ? chain(s.chain) : ''}${s.compare ? compare(s.compare) : ''}${s.cascade ? cascade(s.cascade) : ''}
       <div class="sc__block sc__why"><span class="sc__label mono">Why it matters</span><p>${esc(s.why)}</p></div>
       ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label mono">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
@@ -457,7 +459,7 @@ function roll(el, html) {
   gsap.fromTo(old, { yPercent: 0 }, { yPercent: -120, duration: 0.5, ease: 'expo.out', onComplete: () => old.remove() });
   gsap.fromTo(nu, { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' });
 }
-let lastShown = -2, lastFr = -1;
+let lastShown = -2, lastFr = -1, heightsAt = 0;
 const navBar = $('.nav');
 // the HUD: the instrument's frame over the map, under the panels (corner ticks, the scene's number, where the camera
 // is, its readings running as it flies). It takes the count from the panel and the pill, so each fact is said once.
@@ -502,6 +504,9 @@ function updateUI(p) {
     sections.forEach((sec, k) => sec.classList.toggle('is-active', key >= 0 && k === near));
     // paint the neighbouring scenes while the reader is reading, so no paint lands mid-flight
     if (world) [base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].filter(k => k != null).forEach((k, n) => idle(() => world.prepare(k), n * 120));
+    // heights only once the reader has stopped near a scene: a jump or a fast scroll flies past the others without fetching them
+    clearTimeout(heightsAt);
+    if (world) heightsAt = setTimeout(() => [base[near], base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].forEach(k => k != null && world.heights(k)), 250);
   }
   const fr = Math.min(1, Math.max(0, (p + 1) / N));
   if (Math.abs(fr - lastFr) > 1e-4) {
@@ -644,6 +649,15 @@ async function start() {
     console.warn('Globe unavailable:', err);
     root.classList.add('no-webgl');
   }
+  // the scene's text speaks of its landscape: until the heights are in, or if they cannot come, this line says so, in the
+  // empty chart where the scene has one; without WebGL the chart is gone, so the line moves under the text
+  $$('[data-dem]').forEach(el => {
+    if (!world) {
+      const fig = el.closest('[data-xs]');
+      el.textContent = `3D terrain${fig ? ' and cross-section' : ''} unavailable in this mode.`;
+      if (fig) $('.sc__body', el.closest('.sc')).after(el);
+    } else world.heightsReady(el.dataset.dem).then(ok => { if (ok) el.remove(); else el.textContent = 'Heights unavailable. Flat relief shown.'; });
+  });
   setPct(1);
   measure();
   // keyed on the scroll position, not the scene: inside a held panel the scene stays the same while years and steps move
