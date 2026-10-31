@@ -1131,6 +1131,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     },
     // the height profile along a section line: { prof: [{ d km, h m }], total km }, or null without the site's heights
     async profile(site, from, to) { const dem = await demOf(site); return dem ? sectionOf(dem, from, to, 1) : null; },
+    heightsReady: site => demOf(site).then(Boolean),
     stats,
     get post() { return post; }, // the light's settings, when `look` is 2
     camera, // for checks in the preview

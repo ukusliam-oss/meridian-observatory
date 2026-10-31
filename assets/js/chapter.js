@@ -171,6 +171,7 @@ function sceneHTML(s, i) {
       <p class="sc__date">${esc(s.dateLabel)}</p>
       <h2 class="display sc__title">${title(s.title)}</h2>
       <div class="sc__body">${s.body}</div>
+      ${s.map && s.map.relief3d ? `<p class="mono sc__dem" data-dem="${s.map.relief3d.site}">Loading heights. Flat relief for now.</p>` : ''}
       ${s.chart ? chart(s.chart, s.id) : ''}${s.map && s.map.section && s.map.relief3d ? section(s) : ''}${s.chain ? chain(s.chain) : ''}${s.compare ? compare(s.compare) : ''}${s.cascade ? cascade(s.cascade) : ''}
       <div class="sc__block sc__why"><span class="sc__label mono">Why it matters</span><p>${esc(s.why)}</p></div>
       ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label mono">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
@@ -649,6 +650,11 @@ async function start() {
     console.warn('Globe unavailable:', err);
     root.classList.add('no-webgl');
   }
+  // the scene's text speaks of its landscape: until the heights are in, or if they cannot come, this line says so
+  $$('[data-dem]').forEach(el => {
+    if (!world) el.textContent = `3D terrain${$('[data-xs]', el.closest('.sc')) ? ' and cross-section' : ''} unavailable in this mode.`;
+    else world.heightsReady(el.dataset.dem).then(ok => { if (ok) el.remove(); else el.textContent = 'Heights unavailable. Flat relief shown.'; });
+  });
   setPct(1);
   measure();
   // keyed on the scroll position, not the scene: inside a held panel the scene stays the same while years and steps move

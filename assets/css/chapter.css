@@ -411,6 +411,10 @@
 .sc__xs [data-xs-note] { display: grid; } /* the waiting note takes the room of the note to come, so the panel does not move */
 .sc__xs [data-xs-note] span { grid-area: 1 / 1; }
 .sc__xs [data-xs-note] span[aria-hidden] { visibility: hidden; }
+/* no height of its own: it sits in the gap under the text and leaves without moving anything */
+.sc__dem { height: 0; margin: 0; font-size: 11px; line-height: 16px; white-space: nowrap; color: rgb(255 255 255 / .62); }
+.no-webgl .sc__dem { height: auto; margin-top: 12px; white-space: normal; }
+.no-webgl .sc__xs { display: none; }
 .lc-grid { stroke: rgb(255 255 255 / .08); stroke-width: 1; }
 .lc-grid.is-zero { stroke: rgb(255 255 255 / .32); }
 .lc-t { fill: rgb(255 255 255 / .66); font-size: 11px; }
