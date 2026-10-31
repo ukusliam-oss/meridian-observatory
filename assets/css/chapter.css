@@ -408,11 +408,12 @@
 .sc__lc svg { width: 100%; height: auto; overflow: visible; }
 .sc__xs .xs-ground { fill: color-mix(in oklab, var(--acc) 22%, transparent); }
 .sc__xs .lc-line { stroke-dasharray: none; }
-.sc__xs [data-xs-note] { display: grid; } /* the waiting note takes the room of the note to come, so the panel does not move */
-.sc__xs [data-xs-note] span { grid-area: 1 / 1; }
-.sc__xs [data-xs-note] span[aria-hidden] { visibility: hidden; }
+.sc__xs [data-xs-note] span { visibility: hidden; } /* holds the room of the note to come, so the panel does not move */
 /* no height of its own: it sits in the gap under the text and leaves without moving anything */
 .sc__dem { height: 0; margin: 0; font-size: 11px; line-height: 16px; white-space: nowrap; color: rgb(255 255 255 / .62); }
+.xs-plot { display: grid; }
+.xs-plot > * { grid-area: 1 / 1; min-width: 0; }
+.sc__chart .sc__dem { height: auto; place-self: center; padding: 0 12px; text-align: center; white-space: normal; font-size: 11px; color: rgb(255 255 255 / .62); }
 .no-webgl .sc__dem { height: auto; margin-top: 12px; white-space: normal; }
 .no-webgl .sc__xs { display: none; }
 .lc-grid { stroke: rgb(255 255 255 / .08); stroke-width: 1; }
