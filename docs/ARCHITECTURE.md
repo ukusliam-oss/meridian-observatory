@@ -166,5 +166,5 @@ deliberate corruptions in an isolated copy each failed for the expected reason (
   apply to worker URLs **[A]**), so a browser may pair a new `world.js` with a cached old worker for up to the Pages
   cache time (10 min). Not changed here (it would change loading behaviour).
 - **CI** (M-002C): `.github/workflows/check.yml`, job `meridian-check`, runs `npm ci` and `npm run check` on pushes to
-  `dev` and pull requests to `main`, read-only, with no deployment. It is a required check on `main` (GitHub Actions, App ID 15368, strict; see decision 0001).
+  `develop` and pull requests to `main`, read-only, with no deployment. It is a required check on `main` (GitHub Actions, App ID 15368, strict; see decision 0001).
 - `check.mjs` relies on `git` for the unchanged-tree stage; outside a git checkout that stage fails.
