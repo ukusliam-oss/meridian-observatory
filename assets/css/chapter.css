@@ -408,6 +408,9 @@
 .sc__lc svg { width: 100%; height: auto; overflow: visible; }
 .sc__xs .xs-ground { fill: color-mix(in oklab, var(--acc) 22%, transparent); }
 .sc__xs .lc-line { stroke-dasharray: none; }
+.sc__xs [data-xs-note] { display: grid; } /* the waiting note takes the room of the note to come, so the panel does not move */
+.sc__xs [data-xs-note] span { grid-area: 1 / 1; }
+.sc__xs [data-xs-note] span[aria-hidden] { visibility: hidden; }
 .lc-grid { stroke: rgb(255 255 255 / .08); stroke-width: 1; }
 .lc-grid.is-zero { stroke: rgb(255 255 255 / .32); }
 .lc-t { fill: rgb(255 255 255 / .66); font-size: 11px; }

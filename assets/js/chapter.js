@@ -100,7 +100,7 @@ function lineChart(c, id) {
 function section(s) {
   const x = s.map.section;
   return `<figure class="sc__chart sc__xs" data-xs="${s.id}"><figcaption class="mono">Cross-section ${esc(x.label || 'A to B')} · height in metres</figcaption>
-    <svg viewBox="0 0 460 200" role="img" aria-label="Cross-section ${esc(x.label || 'A to B')}"></svg><figcaption class="mono" data-xs-note>Loading the heights</figcaption></figure>`;
+    <svg viewBox="0 0 460 200" role="img" aria-label="Cross-section ${esc(x.label || 'A to B')}"></svg><figcaption class="mono" data-xs-note><span>Loading the heights</span><span aria-hidden="true">Distance in km (00.0 km). Vertical exaggeration about ×00. Copernicus DEM GLO-30.</span></figcaption></figure>`;
 }
 function drawSection(fig, sec, exag) {
   const W = 460, H = 200, L = 40, R = 14, T = 14, B = 26, { prof, total } = sec;
@@ -457,7 +457,7 @@ function roll(el, html) {
   gsap.fromTo(old, { yPercent: 0 }, { yPercent: -120, duration: 0.5, ease: 'expo.out', onComplete: () => old.remove() });
   gsap.fromTo(nu, { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' });
 }
-let lastShown = -2, lastFr = -1;
+let lastShown = -2, lastFr = -1, heightsAt = 0;
 const navBar = $('.nav');
 // the HUD: the instrument's frame over the map, under the panels (corner ticks, the scene's number, where the camera
 // is, its readings running as it flies). It takes the count from the panel and the pill, so each fact is said once.
@@ -502,6 +502,9 @@ function updateUI(p) {
     sections.forEach((sec, k) => sec.classList.toggle('is-active', key >= 0 && k === near));
     // paint the neighbouring scenes while the reader is reading, so no paint lands mid-flight
     if (world) [base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].filter(k => k != null).forEach((k, n) => idle(() => world.prepare(k), n * 120));
+    // heights only once the reader has stopped near a scene: a jump or a fast scroll flies past the others without fetching them
+    clearTimeout(heightsAt);
+    if (world) heightsAt = setTimeout(() => [base[near], base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].forEach(k => k != null && world.heights(k)), 250);
   }
   const fr = Math.min(1, Math.max(0, (p + 1) / N));
   if (Math.abs(fr - lastFr) > 1e-4) {
@@ -636,7 +639,9 @@ async function start() {
     window.__meridianWorld = world; // stats for checks in the preview
     if (world) for (const s of scenes) if (s.map && s.map.section && s.map.relief3d) {
       const fig = $(`[data-xs="${s.id}"]`), x = s.map.section;
-      world.profile(s.map.relief3d.site, x.from, x.to).then(sec => { if (fig && sec) drawSection(fig, sec); });
+      world.profile(s.map.relief3d.site, x.from, x.to).then(sec => {
+        if (fig && sec) drawSection(fig, sec); else if (fig) fig.querySelector('[data-xs-note]').textContent = 'Heights unavailable';
+      });
     }
     if (!world) root.classList.add('no-webgl');
   } catch (err) {
