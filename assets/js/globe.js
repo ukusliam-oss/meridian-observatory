@@ -4310,7 +4310,7 @@ void main() {
 three/build/three.core.js:
 three/build/three.module.js:
   (**
-   * @license
+   * @License
    * Copyright 2010-2026 Three.js Authors
    * SPDX-License-Identifier: MIT
    *)
