@@ -2,8 +2,8 @@
 
 A motion-heavy revision site for the I&S prefect: Cambridge IGCSE History 0470, Economics 0455 and
 Geography 0460 for the 2027 exams. A calmer sibling built in a parallel session lives in `../is-desk`
-(its CLAUDE.md lists the syllabus facts both sites rely on). Constraints shared with it: the school
-is in mainland China, so nothing loads from a CDN (fonts and libraries are vendored); nothing needs
+(its CLAUDE.md lists the syllabus facts both sites rely on). Constraints shared with it: the site
+must work where CDNs are unavailable, so nothing loads from a CDN (fonts and libraries are vendored); nothing needs
 an account or typed input; ask before deploying.
 
 **This folder is `meridian-observatory`** (2026-10-26): Meridian 1 (the dark "night observatory" design, commit
