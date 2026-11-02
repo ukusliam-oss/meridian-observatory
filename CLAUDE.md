@@ -59,6 +59,10 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   block on every resize and puts the art in whichever lets it draw larger (`--art-l/t/w/h` on `.s-hero`).
 - `src/globe.js` → `assets/js/globe.js` — the home globe (three 0.186, custom shaders), driven by
   `setProgress(f)`: 0 hero, 1 History, 2 Economics, 3 Geography.
+- `tests/browser/` — Playwright tests (M-003A), their own package (`@playwright/test` 1.64.1, Chromium 156): every page
+  at seven viewports, the learning journeys, the Phase 0 states (heights, WebGL off, reduced motion, rapid scroll,
+  Economics at rest) and 46 screenshot baselines (macOS, GPU). `cd tests/browser && npm ci && npm test`; README there.
+  Not part of `npm run check` or CI. Outputs go to `tests/browser/.cache/` (verify-build skips `.cache`).
 
 ## History scroll chapters (plan: `../Meridian History 설계 계획서.md`)
 - `history/kq6.html` — KQ6 chapter: 33 scenes over one globe. `assets/js/chapter.js` renders the scenes from
@@ -402,7 +406,7 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.
   motion, 5 the dot globe's physics, 6 one camera across pages.
-- No automated browser tests; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
+- Browser tests are in `tests/browser/` (above), outside CI; the data checks are `tools/check-econ.mjs` and `tools/check-lab.mjs`. For colour
   contrast, run `tools/contrast.js` in the preview (`const T = await import('/tools/contrast.js'); T.unfold(); T.audit()`):
   it lists text under WCAG AA. Load the theme fresh (localStorage `meridian:theme`) and turn transitions off first: a
   hidden preview pane never runs colour transitions, so switching theme in place gives false failures. Glass bars are
