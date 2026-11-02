@@ -1062,8 +1062,11 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
       light.copy(d).addScaledVector(east, -0.75).addScaledVector(north, 0.6);
     }
 
-    // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank
-    const A = texturesOf(i, true) || lastA || lastB, B = texturesOf(j, true) || A;
+    // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank. At rest on a
+    // scene (f = 0) the next adds nothing to the picture (uMix is 0), so it is not asked for: a phone's budget then holds
+    // the scene in view, where the two together had evicted each other's textures in a loop (Economics, scene 15)
+    const rest = f === 0;
+    const A = texturesOf(i, true) || lastA || lastB, B = rest ? A : texturesOf(j, true) || A;
     if (!A) { draw(); return; }
     lastA = A; lastB = B;
     earthU.uGA.value = A.g; earthU.uDA.value = A.d; earthU.uBoxA.value = A.box; earthU.uIGA.value = A.ig || blank; earthU.uIDA.value = A.id || blank;
@@ -1075,7 +1078,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     earthU.uSlotA.value = (A.ig ? slotOf(i) : new Vector4(-1, 0, 1, 0)); earthU.uSlotB.value = (B.ig ? slotOf(j) : new Vector4(-1, 0, 1, 0));
     earthU.uWA.value = blend ? w : 0; earthU.uWB.value = blend ? 1 - w : 0;
     earthU.uMix.value = j === i ? 0 : mix;
-    earthU.uTA.value = terrainOf(i) || blank; earthU.uTB.value = j === i ? earthU.uTA.value : terrainOf(j) || blank;
+    earthU.uTA.value = terrainOf(i) || blank; earthU.uTB.value = j === i || rest ? earthU.uTA.value : terrainOf(j) || blank;
     earthU.uHatch.value = 1.2e6 / Math.max(60, alt); // stripes about six pixels apart at any height
 
     const ba = bordersFor(sA.map.borders), bb = bordersFor(sB.map.borders);
