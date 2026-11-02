@@ -552,15 +552,24 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   const tIndex = await tiledIndex(terrain);
   const tLevels = tIndex ? tIndex.levels : [];
   const tLoading = new Set();
+  // the scenes the reader has stopped near: heights() names them once a stop has lasted (chapter.js, the current scene
+  // first, in one go), so a camera flying past a scene starts no download for it. Its neighbours wait for the current
+  // scene's tiles: a jump's slow last stretch counts as a stop at the scene before, and tiles arrive in the order asked for
+  let stopped = new Set(), naming = false, current = null, currentKey = null;
+  const stopNear = i => {
+    if (!naming) { naming = true; stopped = new Set(); current = i; currentKey = null; queueMicrotask(() => { naming = false; }); }
+    stopped.add(i);
+  };
   // draw the tiles of some levels (coarse first, finer on top) over a lon/lat box into a W × H canvas, north up;
   // tiles are equirectangular, `deg` degrees a side, named by x = floor((lon + 180) / deg), y = floor((lat + 90) / deg)
-  async function composeTiles(base, levels, [w, so, e, n], W, H) {
+  async function composeTiles(base, levels, [w, so, e, n], W, H, wanted) {
     const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingQuality = 'high'; // a tile drawn smaller is averaged, not sampled, so it matches the level below
     let any = false;
     const ppd = W / (e - w);
     for (const L of levels) {
+      if (L !== levels[0] && !wanted()) return null; // the reader has moved on: no finer tiles; a later stop starts again, the coarse ones from the browser's cache
       if (L !== levels[0] && L.ppd > ppd * 3) continue; // much finer than the canvas: only aliasing and downloads
       const jobs = [];
       for (let x = Math.floor((w + 180) / L.deg); x <= Math.floor((e + 180) / L.deg); x++)
@@ -596,9 +605,10 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const key = `t|${st.box.toArray().map(v => v.toFixed(3)).join(',')}|${top.z}|${W}x${H}`;
     const c = texCache.get(key);
     if (c) { c.used = performance.now(); return c.tex; }
-    if (tLoading.has(key)) return null;
+    if (i === current) currentKey = key;
+    if (tLoading.has(key) || !stopped.has(i) || (i !== current && tLoading.has(currentKey))) return null;
     tLoading.add(key);
-    composeTiles(tIndex.base, levels, [w, so, e, n], W, H).then(canvas => { tLoading.delete(key); if (canvas) tileTexture(canvas, key, W, H); });
+    composeTiles(tIndex.base, levels, [w, so, e, n], W, H, () => stopped.has(i)).then(canvas => { tLoading.delete(key); if (canvas) { tileTexture(canvas, key, W, H); if (key === currentKey) { current = currentKey = null; stopped.forEach(terrainOf); } } }); // once a stop: a texture evicted later must not start them again
     return null;
   }
 
@@ -1117,9 +1127,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     setGate(panel, g) { if (gates.get(panel) !== g) { gates.set(panel, g); dirty = true; } },
     pointOf: key => point.get(key),
     // paint a coming state and build its overlays and labels in idle time, so its first frame does no work
-    prepare(i) { if (i >= -1 && i < scenes.length) { texturesOf(i); terrainOf(i); overlayFor(i); markersFor(i); patchOf(i); } },
-    // start the download of a coming landscape's heights
-    heights(i) { const s = i >= 0 && i < scenes.length ? sceneOf(i) : null, r = s && s.map.relief3d; if (r) demOf(r.site).go(); },
+    prepare(i) { if (i >= -1 && i < scenes.length) { texturesOf(i); overlayFor(i); markersFor(i); patchOf(i); } },
+    // the reader has stopped near this scene: start the download of its terrain tiles and its landscape's heights
+    heights(i) { if (i < 0 || i >= scenes.length) return; stopNear(i); terrainOf(i); const r = sceneOf(i).map.relief3d; if (r) demOf(r.site).go(); },
     // start the playing clock again from its first year (the reader has just entered the chapter)
     replay() { playT0 = null; dirty = true; },
     // the settings menu's quality: the pixel ratio's cap and the light (0 none, 1 shaders, 2 shaders and post)
