@@ -1,0 +1,72 @@
+[
+ {
+  "v": "production",
+  "t": 1,
+  "gate": 985,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.648
+ },
+ {
+  "v": "instrumented",
+  "t": 1,
+  "gate": 1022,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.68
+ },
+ {
+  "v": "instrumented",
+  "t": 2,
+  "gate": 982,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.661
+ },
+ {
+  "v": "production",
+  "t": 2,
+  "gate": 983,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.672
+ },
+ {
+  "v": "production",
+  "t": 3,
+  "gate": 983,
+  "sceneReady": 1126,
+  "jumpTaskS": 0.749
+ },
+ {
+  "v": "instrumented",
+  "t": 3,
+  "gate": 993,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.652
+ },
+ {
+  "v": "instrumented",
+  "t": 4,
+  "gate": 983,
+  "sceneReady": 1126,
+  "jumpTaskS": 0.742
+ },
+ {
+  "v": "production",
+  "t": 4,
+  "gate": 983,
+  "sceneReady": 1127,
+  "jumpTaskS": 0.664
+ },
+ {
+  "v": "production",
+  "t": 5,
+  "gate": 982,
+  "sceneReady": 1125,
+  "jumpTaskS": 0.665
+ },
+ {
+  "v": "instrumented",
+  "t": 5,
+  "gate": 983,
+  "sceneReady": 1126,
+  "jumpTaskS": 0.743
+ }
+]

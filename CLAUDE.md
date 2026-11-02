@@ -63,6 +63,9 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   at seven viewports, the learning journeys, the Phase 0 states (heights, WebGL off, reduced motion, rapid scroll,
   Economics at rest) and 46 screenshot baselines (macOS, GPU). `cd tests/browser && npm ci && npm test`; README there.
   Not part of `npm run check` or CI. Outputs go to `tests/browser/.cache/` (verify-build skips `.cache`).
+  Performance baseline (M-003B): `tests/browser/perf/` (Lighthouse 13.6.0 runner, an instrumented copy of the engine served
+  through CDP Fetch, Meridian timers: Chapter Ready, Scene Ready, Terrain Ready, idle work, memory); results in
+  `perf/results/`, findings in `perf/REPORT.md`. `npm run perf`, `npm run perf:lighthouse`; not gates.
 
 ## History scroll chapters (plan: `../Meridian History 설계 계획서.md`)
 - `history/kq6.html` — KQ6 chapter: 33 scenes over one globe. `assets/js/chapter.js` renders the scenes from
