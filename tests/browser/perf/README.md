@@ -26,6 +26,8 @@ node perf/instrument.mjs
 
 Options: `PERF_RUNS=n` sets the number of runs (default 3). `PERF_READING=all` repeats the slow sequential-reading test in every run. Without it, that test runs once per width.
 
+`summarise.mjs` rewrites `results/meridian.json` from whatever `.cache/perf/raw.jsonl` holds, so a new run replaces the committed baseline in the working tree. Commit it only on purpose.
+
 Large outputs go to `.cache/`: full Lighthouse reports, raw rows and traces. Only the compact `results/*.json` files are committed.
 
 ## Environment of the committed baseline (2026-11-03)
