@@ -176,7 +176,7 @@ Suggested order:
 
 ## Phase 2 status
 
-**A11Y-01: fixed by WP-01 (2026-11-03).** This needs its release to reach production and a check in Safari and with a screen reader (WP-10).
+**A11Y-01: fixed by WP-01.** It is in production as M8 (`28384b0`, 2026-11-03). Live checks passed: keyboard 20/20, Enter at once on every chip 48/48. It still needs a check in Safari and with a screen reader (WP-10).
 
 **What changed:**
 
@@ -192,3 +192,35 @@ Suggested order:
 - for chips, which left focus behind.
 
 **Acceptance test.** The `keyboard-sources` rows in `specs/a11y.spec.mjs`, at 1440 and 390 px, assert rather than only record.
+
+**A11Y-02, A11Y-03 and A11Y-08: fixed by WP-02 (2026-11-03).** Not yet released.
+
+| Measure (Chromium 156, local) | Before | After |
+|---|---|---|
+| Keys from the top of a chapter to the scene menu (KQ6, Economics, Geography) | 167, 203, 111 | 3: Tab, Tab ("Skip to scenes"), Enter. The page does not move |
+| Keys from the chapter's heading after entering | – | 8 at 1440 px, 9 at 390 px (Shift+Tab to "Skip to scenes", Enter) |
+| Focus after "Enter quietly" by keyboard | `<body>` | The chapter's `h1`, once the loader has faded |
+| Focus after a scene chosen by keyboard | `<body>` | That scene's title, in view once the scroll settles: 80 scenes plus 6 fast second choices, 86/86 |
+| Tab stops inside closed topics at 390 px (History, Economics, Geography hubs) | 51, 18, 30 | 0. Closed bodies are `inert` |
+
+**What changed:**
+
+- **Skip to scenes.** On the five chapter pages, a second skip link ("Skip to scenes", `.skip`) follows "Skip to content". It puts focus on the scene menu's button (`#scene-menu`), not on a scroll position.
+- **Focus after entering.** An entry from the keyboard puts focus on the heading in view (`tabindex="-1"`, `preventScroll`): the chapter's title, or a deep link's scene.
+- **Focus after a scene choice.** A scene chosen from the keyboard is reached by `goTo` alone, at its hold, as a deep link is, and focus goes to its title.
+- **Pointer users.** Pointer behaviour is unchanged.
+
+**Finding, not changed: where a menu jump lands.** Menu items are links to `#scene`, so `core.js`'s anchor handler also takes their click. After `goTo`, it scrolls to the start of the scene's section instead:
+
+- For a scene that opens a part, the jump stops on the part's title screen, and the previous scene is still the active one.
+- For scene 1, the jump stops on the hero.
+
+Pointer jumps still land there. Routing them through `goTo` alone was measured and left out, because it changes Phase 0 figures:
+
+- 390 px jumps fetched more terrain (KQ6: 182 tiles against 77);
+- Scene Ready was 0.1–0.6 s later.
+
+A keyboard jump at 390 px fetches what a deep link to the same scene already does on M8 (Geography scene 15: four height sites against three for the pointer).
+
+**Acceptance tests.** The `keyboard-chapter-route` rows (three chapters, 1440 and 390 px) and the `topics-inert` rows (three hubs, 390 px) in `specs/a11y.spec.mjs` assert. The older `keyboard-chapter` rows still record a Tab-only walk (`menuTabs`), which the skip link does not shorten.
+
