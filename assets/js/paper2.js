@@ -1,7 +1,7 @@
 // Paper 2 practice room: one source-based question set (sources on paper cards, five parts, mark scheme and
 // example answers behind buttons). Nothing is typed or saved.
 
-import { $, $$, gsap, ScrollTrigger, reduced, boot, esc, scrollToEl, decode } from './core.js';
+import { $, $$, gsap, ScrollTrigger, reduced, boot, esc, scrollToEl, decode, lenis } from './core.js';
 import set from './data/history/kq6-paper2.js';
 
 const root = document.documentElement;
@@ -54,10 +54,13 @@ new ResizeObserver(() => { if (scrolls()) col.tabIndex = 0; else col.removeAttri
 // a source chip scrolls the source column (desktop) or the page (phone) and flashes the card; followed from the
 // keyboard (a click with no pointer), it also puts focus on the card, so reading goes on from there. The site's anchor
 // handler (core.js) is kept out: it scrolled the page to the card's place in the document, which is far above once the
-// column has been scrolled. On desktop the page moves only to bring the column to where it sticks.
+// column has been scrolled. On desktop the page moves only to bring the column to where it sticks. Lenis learns of
+// the scroll that focusing the chip made only on its next frame: Enter pressed at once found it still at an old
+// position and scrolled from there, so it is first set to where the page really is.
 document.addEventListener('click', e => {
   const chip = e.target.closest('[data-src]'); if (!chip) return;
   e.preventDefault(); e.stopImmediatePropagation();
+  lenis?.scrollTo(scrollY, { immediate: true, force: true });
   const card = $('#source-' + chip.dataset.src);
   if (scrolls()) {
     const top = parseFloat(getComputedStyle(col).top);

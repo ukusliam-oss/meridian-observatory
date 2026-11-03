@@ -191,8 +191,7 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`keyboard at ${vpNam
       let t = 0; for (; t < 120; t++) { await page.keyboard.press('Tab'); if (await page.evaluate(id => document.activeElement?.matches(`[data-src="${id}"]`), id)) break; }
       const r = { tabs: t < 120 ? t + 1 : null };
       if (r.tabs) {
-        await page.waitForTimeout(300); // a reader's pause: Lenis takes up the scroll that focusing the chip made on its next frame
-        await page.keyboard.press('Enter');
+        await page.keyboard.press('Enter'); // at once, with no pause after Tab (Lenis had not yet taken up the focus scroll)
         // the page and the column scroll smoothly (Lenis, about 1.4 s): wait for the card to arrive, at most 6 s
         const t0 = Date.now();
         const at = () => page.evaluate(id => { const c = document.getElementById('source-' + id).getBoundingClientRect(), col = document.querySelector('[data-p2-sources]'); return { top: c.top, from: getComputedStyle(col).position === 'sticky' ? col.getBoundingClientRect().top : 0 }; }, id);

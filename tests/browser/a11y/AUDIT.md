@@ -183,6 +183,7 @@ Suggested order:
 - **The sources column.** On wide screens, where it scrolls on its own, the column takes `tabindex="0"` and keeps its name, "Sources A to F". On phones, where it sits in the page's flow, it adds no Tab stop.
 - **Source chips.** A chip followed from the keyboard puts focus on its source card (`tabindex="-1"`, named "Source A" to "Source F"). The ring sits inside the card, in the deep accent, at 5.45:1 on the paper.
 - **The site's anchor handler.** It no longer also handles chip clicks. It had scrolled the page to the card's place in the document, which is far up the page once the column has been scrolled. This happened with the mouse too.
+- **Lenis sync.** Before a chip's scroll, Lenis is set to the page's real position. Enter pressed at once after Tab had found Lenis still at an old position: the page ended at the top, or the column above the screen.
 
 **Correction to the original finding.** Chromium 130 and later make a scroll box with nothing focusable inside it keyboard-focusable on their own. In the Chromium 156 used here, Tab already reached the column (as `tabIndex` −1), and Page Down then scrolled it. The audit's keys had been pressed with focus outside the column. The finding still held:
 
