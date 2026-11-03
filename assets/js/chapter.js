@@ -390,10 +390,25 @@ document.addEventListener('keydown', e => {
   const to = { ArrowDown: k + 1, ArrowUp: k - 1, Home: 0, End: items.length - 1 }[e.key];
   if (to != null) { e.preventDefault(); items[(to + items.length) % items.length].focus(); }
 });
+// The items are links to #scene, so the site's anchor handler (core.js) also takes a click and scrolls, after goTo, to
+// where the scene's section begins: for a scene that opens a part that is its title screen, for the first scene still
+// the hero. A scene chosen from the keyboard (a click with no pointer) is reached by goTo alone, at its hold as a deep
+// link is, and focus goes to its title instead of leaving with the menu; a pointer choice is left as it was.
 menu.addEventListener('click', e => {
   const a = e.target.closest('[data-go]'); if (!a) return;
   e.preventDefault(); setMenu(false); goTo(+a.dataset.go);
+  if (e.detail !== 0) return;
+  e.stopPropagation(); history.replaceState(null, '', a.getAttribute('href'));
+  focusHeading(sceneHeading(+a.dataset.go));
 });
+// "Skip to scenes", the second skip link on a chapter page, puts focus on the menu's button itself; the site's anchor
+// handler (core.js) is kept out, as it would scroll the page towards the fixed pill
+$('[data-skip-scenes]')?.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); menuBtn.focus(); });
+
+// Headings take focus from a script without becoming Tab stops, and without scrolling: a focus scroll moves the page
+// before Lenis sees it. At a scene's hold its panel is on the reading line, so its title is the heading in view.
+function focusHeading(h) { if (!h) return; h.tabIndex = -1; h.focus({ preventScroll: true }); }
+function sceneHeading(i) { return $(`.sc[data-i="${i}"] .sc__title`); }
 
 // ── scroll → progress ─────────────────────────────────────────────────────
 // A scene holds (p = i exactly) while its panel fills the reading line in the middle of the screen; the
@@ -612,7 +627,20 @@ function gate(enter) {
     snd.start(on);
     if (world && world.replay) world.replay();
     enter();
+    // entered from the keyboard: once the loader has faded, focus goes to the heading in view (the chapter's title, or
+    // a deep link's scene) instead of staying on the hidden button
+    if (e.detail === 0) afterLoader(() => { const p = progressAt(lenis ? lenis.scroll : scrollY); focusHeading(p < -0.5 ? $('.ch-hero__title') : sceneHeading(Math.max(0, Math.round(p)))); });
   });
+}
+// the loader fades (.9s); a timer finishes the wait too, as transitionend is skipped without transitions or in a hidden tab
+function afterLoader(fn) {
+  let timer = 0;
+  const done = e => {
+    if (e && (e.target !== loader || e.propertyName !== 'opacity')) return;
+    loader.removeEventListener('transitionend', done); clearTimeout(timer); fn();
+  };
+  loader.addEventListener('transitionend', done);
+  timer = setTimeout(done, 1200);
 }
 function soundToggle() {
   const bar = $('.nav__bar'); if (!bar) return;

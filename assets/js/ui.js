@@ -120,12 +120,16 @@ export function topicMap(el, d) {
   update();
   // wide screens have room for every topic, so they start open; each group can expand or collapse at once
   const wide = matchMedia('(min-width: 1100px)').matches;
+  // a closed topic's body is inert: its confidence chips are clipped to nothing, so they leave the Tab order with it
   const setOpen = (t, open, animate = true) => {
     if (t.classList.contains('is-open') === open) return;
-    $('.topic__btn', t).setAttribute('aria-expanded', String(open));
+    const btn = $('.topic__btn', t), body = $('.topic__body', t);
+    btn.setAttribute('aria-expanded', String(open));
     t.classList.toggle('is-open', open);
-    if (animate) toggleHeight($('.topic__body', t), open);
-    else $('.topic__body', t).style.height = open ? 'auto' : '';
+    if (!open && body.contains(document.activeElement)) btn.focus();
+    body.inert = !open;
+    if (animate) toggleHeight(body, open);
+    else body.style.height = open ? 'auto' : '';
   };
   $$('.topic-group', el).forEach(g => {
     const cards = $$('.topic', g), all = $('[data-all]', g);
@@ -135,7 +139,7 @@ export function topicMap(el, d) {
       all.textContent = open ? 'Collapse all' : 'Expand all';
     };
     cards.forEach(t => {
-      if (wide) setOpen(t, true, false);
+      if (wide) setOpen(t, true, false); else $('.topic__body', t).inert = true;
       $('.topic__btn', t).addEventListener('click', () => { setOpen(t, !t.classList.contains('is-open')); sync(); });
     });
     all.addEventListener('click', () => { const open = all.dataset.open !== 'true'; cards.forEach(t => setOpen(t, open)); sync(); });

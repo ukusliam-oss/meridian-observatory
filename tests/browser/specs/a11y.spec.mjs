@@ -219,6 +219,70 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`keyboard at ${vpNam
     expect(log.overflow, 'no sideways scroll').toBeLessThanOrEqual(0);
     record({ check: 'keyboard-sources', ...log });
   });
+
+  // WP-02 (A11Y-02, A11Y-03): a chapter by keyboard alone, every key pressed at once. Asserts, like the row above.
+  // Entering puts focus on the heading in view; "Skip to scenes" reaches the scene menu from the top of the page in a few
+  // keys without moving the page; a scene chosen from the menu puts focus on its heading, which is in view once the
+  // scroll settles; Escape still returns to the button; a pointer choice leaves focus as before.
+  for (const path of ['history/kq6.html', 'economics/macro-policy.html', 'geography/tectonics.html']) test(`${path}: skip to scenes, focus after entering and after a scene`, async ({ page }) => {
+    const log = { page: path, vp: vpName };
+    const focused = () => page.evaluate(() => { const e = document.activeElement, r = e?.getBoundingClientRect(); return { tag: e === document.body ? 'body' : `${e.tagName.toLowerCase()}.${String(e.className).split(' ').pop()}`, text: (e?.textContent || '').trim().slice(0, 40), inView: !!r && r.width > 0 && r.top >= 0 && r.bottom <= innerHeight, ring: !!e?.matches(':focus-visible') }; });
+    const settled = async () => { let prev = null; for (let t = 0; t < 60; t++) { const y = await page.evaluate(() => Math.round(scrollY)); if (y === prev) return y; prev = y; await page.waitForTimeout(150); } return prev; };
+    await page.goto(path); await page.getByRole('button', { name: 'Enter quietly' }).waitFor({ timeout: 90_000 });
+    let g = 0; for (; g < 10 && !(await page.evaluate(() => document.activeElement?.dataset?.sound === '0')); g++) await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await expect.poll(() => page.evaluate(() => document.activeElement?.matches('h1') ?? false), { timeout: 5000, message: 'focus reaches the chapter heading once the loader has gone' }).toBe(true);
+    log.afterEnter = { ...(await focused()), y: await settled() };
+    expect(log.afterEnter.inView && log.afterEnter.y === 0, 'the heading is in view and the page has not moved').toBe(true);
+    // from the top of the page (the focus starting point at the start of <body>): Tab, Tab, Enter
+    await page.evaluate(() => { const b = document.body; b.tabIndex = -1; b.focus({ preventScroll: true }); b.removeAttribute('tabindex'); });
+    const y0 = await page.evaluate(() => scrollY); let keys = 0;
+    for (; keys < 12; keys++) { await page.keyboard.press('Tab'); if (await page.evaluate(() => /skip to scenes/i.test(document.activeElement?.textContent || ''))) break; }
+    await expect.poll(async () => (await focused()).inView, { timeout: 2000, message: '"Skip to scenes" slides into view when focused (.skip, 0.3 s)' }).toBe(true);
+    log.skip = await focused();
+    await page.keyboard.press('Enter'); keys += 2;
+    log.menuKeys = keys; log.onMenu = await focused(); log.skipMoved = (await page.evaluate(() => scrollY)) - y0;
+    expect(log.onMenu.tag, 'the skip link focuses the scene menu button').toBe('button.pillnav__menu');
+    expect(log.menuKeys, 'key presses to the scene menu').toBeLessThanOrEqual(10);
+    expect(log.onMenu.inView && log.onMenu.ring && log.skipMoved === 0, 'the button shows its ring and the page stays put').toBe(true);
+    // open, move down three scenes, choose
+    await page.keyboard.press('Enter'); await expect(page.locator('[data-menu-btn]')).toHaveAttribute('aria-expanded', 'true');
+    for (let a = 0; a < 3; a++) await page.keyboard.press('ArrowDown');
+    const k = await page.evaluate(() => +document.activeElement?.dataset?.go);
+    await page.keyboard.press('Enter');
+    await settled(); log.choice = { k, ...(await focused()), active: await activeScene(page) };
+    expect(await page.evaluate(k => !!document.activeElement?.matches(`.sc[data-i="${k}"] .sc__title`), k), `focus is on scene ${k + 1}'s title`).toBe(true);
+    expect(log.choice.inView && log.choice.active === k, 'the scene is reached and its focused title is in view once the scroll settles').toBe(true);
+    // Escape closes the menu and returns focus to its button
+    await page.locator('[data-menu-btn]').focus(); await page.keyboard.press('Enter'); await page.keyboard.press('Escape');
+    await expect(page.locator('[data-menu-btn]')).toHaveAttribute('aria-expanded', 'false');
+    expect(await page.evaluate(() => document.activeElement?.matches('[data-menu-btn]')), 'Escape returns focus to the button').toBe(true);
+    // a pointer choice leaves focus where it was (not on a heading)
+    await page.mouse.move(5, 450); await page.waitForTimeout(400);
+    await menuJump(page, 6); await settled();
+    log.pointer = await focused();
+    expect(log.pointer.tag.startsWith('h2') || log.pointer.tag.startsWith('h1'), 'a pointer choice does not move focus to a heading').toBe(false);
+    record({ check: 'keyboard-chapter-route', ...log });
+  });
+
+  // WP-02 (A11Y-08): a closed topic's controls leave the Tab order and come back with it (hubs; closed at 390 px)
+  if (vpName === '390x844') for (const hub of ['history.html', 'economics.html', 'geography.html']) test(`${hub}: closed topics take no Tab stops`, async ({ page }) => {
+    await open(page, hub); await page.waitForTimeout(800);
+    const reachable = () => page.evaluate(() => [...document.querySelectorAll('.topic:not(.is-open) .topic__body')].flatMap(b => [...b.querySelectorAll('button, a[href], [tabindex]')]).filter(e => !e.disabled && e.tabIndex >= 0 && !e.closest('[inert]')).length);
+    const log = { page: hub, closed: await page.locator('.topic:not(.is-open)').count(), reachableInClosed: await reachable() };
+    expect(log.closed, 'topics start closed on a phone').toBeGreaterThan(0);
+    expect(log.reachableInClosed, 'controls inside closed topics').toBe(0);
+    const first = page.locator('.topic').first();
+    await first.locator('.topic__btn').focus(); await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab'); log.openTab = await page.evaluate(() => !!document.activeElement?.closest('.topic.is-open .topic__body'));
+    expect(log.openTab, 'an open topic\'s chips are reachable').toBe(true);
+    await first.locator('.topic__btn').focus(); await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab'); log.closedTab = await page.evaluate(() => !!document.activeElement?.closest('.topic__body'));
+    expect(log.closedTab, 'closed again, Tab passes over them').toBe(false);
+    log.overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(log.overflow).toBeLessThanOrEqual(0);
+    record({ check: 'topics-inert', ...log });
+  });
 });
 
 // 5. contrast with the site's own tool, dark and light, content unfolded (reduced motion: no colour transitions)
