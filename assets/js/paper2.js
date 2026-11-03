@@ -1,7 +1,7 @@
 // Paper 2 practice room: one source-based question set (sources on paper cards, five parts, mark scheme and
 // example answers behind buttons). Nothing is typed or saved.
 
-import { $, $$, gsap, ScrollTrigger, reduced, boot, esc, scrollToEl, decode } from './core.js';
+import { $, $$, gsap, ScrollTrigger, reduced, boot, esc, scrollToEl, decode, lenis } from './core.js';
 import set from './data/history/kq6-paper2.js';
 
 const root = document.documentElement;
@@ -15,7 +15,7 @@ $('[data-p2-head]').innerHTML = `
   <div class="p2-bg" data-reveal><span class="mono">Background</span>${set.background}</div>`;
 
 $('[data-p2-sources]').innerHTML = set.sources.map(s => `
-  <article class="paper" id="source-${s.id}" data-reveal>
+  <article class="paper" id="source-${s.id}" tabindex="-1" aria-label="Source ${s.id}" data-reveal>
     <header><b>${s.id}</b><p>${s.intro}</p></header>
     ${s.text.map(t => `<p>${esc(t)}</p>`).join('')}
     <footer class="mono">${esc(ref(s.ref).title)} · ${esc(ref(s.ref).copyright.split('.')[0])}</footer>
@@ -45,14 +45,30 @@ $('[data-p2-notes]').innerHTML = `${set.source}
   <h3 class="mono">Sources and copyright</h3>
   <ol class="ch-sources">${Object.entries(set.references).map(([k, r]) => `<li><b>${esc(r.title)}</b>. ${esc(r.author)}. ${esc(r.publisher)}${r.year && r.year !== 'n.d.' ? ', ' + r.year : ''}. <a href="${esc(r.url)}" rel="noopener">${esc(r.url.replace(/^https?:\/\//, ''))}</a>. <i>${esc(r.copyright)}</i></li>`).join('')}</ol>`;
 
-// a source chip scrolls the source column (desktop) or the page (phone) and flashes the card
+// on wide screens the source column scrolls on its own: there it is a Tab stop, so the keys scroll it (WCAG 2.1.1);
+// on phones it is in the page's flow and adds no stop
+const col = $('[data-p2-sources]');
+const scrolls = () => getComputedStyle(col).position === 'sticky' && col.scrollHeight > col.clientHeight;
+new ResizeObserver(() => { if (scrolls()) col.tabIndex = 0; else col.removeAttribute('tabindex'); }).observe(col);
+
+// a source chip scrolls the source column (desktop) or the page (phone) and flashes the card; followed from the
+// keyboard (a click with no pointer), it also puts focus on the card, so reading goes on from there. The site's anchor
+// handler (core.js) is kept out: it scrolled the page to the card's place in the document, which is far above once the
+// column has been scrolled. On desktop the page moves only to bring the column to where it sticks. Lenis learns of
+// the scroll that focusing the chip made only on its next frame: Enter pressed at once found it still at an old
+// position and scrolled from there, so it is first set to where the page really is.
 document.addEventListener('click', e => {
   const chip = e.target.closest('[data-src]'); if (!chip) return;
-  e.preventDefault();
+  e.preventDefault(); e.stopImmediatePropagation();
+  lenis?.scrollTo(scrollY, { immediate: true, force: true });
   const card = $('#source-' + chip.dataset.src);
-  const col = $('[data-p2-sources]');
-  if (getComputedStyle(col).position === 'sticky' && col.scrollHeight > col.clientHeight) col.scrollTo({ top: card.offsetTop - 12, behavior: 'smooth' });
-  else scrollToEl(card);
+  if (scrolls()) {
+    const top = parseFloat(getComputedStyle(col).top);
+    if (Math.abs(col.getBoundingClientRect().top - top) > 2) scrollToEl(col, top);
+    col.scrollTo({ top: card.offsetTop - 12, behavior: 'smooth' });
+  } else scrollToEl(card);
+  history.replaceState(null, '', '#source-' + chip.dataset.src);
+  if (e.detail === 0) card.focus({ preventScroll: true });
   card.classList.remove('is-flash'); void card.offsetWidth; card.classList.add('is-flash');
 });
 

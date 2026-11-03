@@ -135,6 +135,90 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`keyboard at ${vpNam
     }
     record({ check: 'keyboard-paper2', vp: vpName, ...log });
   });
+
+  // WP-01 (A11Y-01): Sources A–F read and followed without a mouse. Unlike the rows above, this one asserts: it is the
+  // package's acceptance test. Wide screens: the source column scrolls on its own, so Tab must reach it and the keys must
+  // scroll it. Phones: the column is in the page's flow and takes no focus of its own. Both: a chip followed by Enter
+  // brings its source into view and puts focus on it; a chip followed by a click leaves focus where it was.
+  test('Paper 2: Sources A–F and every source chip by keyboard', async ({ page }) => {
+    const wide = vp.width > 900, log = { vp: vpName };
+    await open(page, 'history/kq6-paper2.html'); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(600);
+    const col = page.locator('[data-p2-sources]');
+    log.column = await col.evaluate(c => ({ position: getComputedStyle(c).position, scrollHeight: c.scrollHeight, clientHeight: c.clientHeight, tabindex: c.getAttribute('tabindex'), name: c.getAttribute('aria-label') }));
+    log.axe = (await axe(page)).violations.map(v => `${v.id}:${v.nodes}`);
+    expect(log.axe.filter(v => v.startsWith('scrollable-region-focusable')), 'axe scrollable-region-focusable').toEqual([]);
+    // Tab from the top of the page to the column
+    await page.evaluate(() => { document.activeElement?.blur(); scrollTo(0, 0); });
+    let n = 0; for (; n < 60; n++) { await page.keyboard.press('Tab'); if (await page.evaluate(() => document.activeElement?.matches('[data-p2-sources]'))) break; }
+    log.regionTabs = n < 60 ? n + 1 : null;
+    if (wide) {
+      expect(log.regionTabs, 'Tab reaches the source column').not.toBeNull();
+      // its focus ring: drawn, and at least 3:1 against the page ground beside it (the ink and its violet-tinted top)
+      log.ring = await page.evaluate(() => {
+        const c = document.querySelector('[data-p2-sources]'), s = getComputedStyle(c);
+        const rgb = v => { const p = document.createElement('i'); p.style.color = v; document.body.append(p); const m = getComputedStyle(p).color.match(/[\d.]+/g).map(Number); p.remove(); return m; };
+        const lum = ([r, g, b]) => [r, g, b].map(x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }).reduce((a, x, i) => a + x * [0.2126, 0.7152, 0.0722][i], 0);
+        const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return +((x + 0.05) / (y + 0.05)).toFixed(2); };
+        const ring = rgb(s.outlineColor), cs = getComputedStyle(document.body);
+        const grounds = { ink: rgb(cs.getPropertyValue('--ink')), tinted: rgb('color-mix(in oklab, ' + cs.getPropertyValue('--accent-deep') + ' 30%, ' + cs.getPropertyValue('--ink') + ')') };
+        const r = c.getBoundingClientRect();
+        return { focusVisible: c.matches(':focus-visible'), style: `${s.outlineStyle} ${s.outlineWidth} offset ${s.outlineOffset}`, color: s.outlineColor, contrast: Object.fromEntries(Object.entries(grounds).map(([k, g]) => [k, ratio(ring, g)])), inViewport: r.left - parseFloat(s.outlineOffset) - parseFloat(s.outlineWidth) >= 0 && r.right + parseFloat(s.outlineOffset) + parseFloat(s.outlineWidth) <= innerWidth };
+      });
+      expect(log.ring.focusVisible && log.ring.style.startsWith('solid'), 'focus ring shown').toBe(true);
+      expect(Math.min(...Object.values(log.ring.contrast)), 'ring contrast').toBeGreaterThanOrEqual(3);
+      // Page Down scrolls the column until every source has been on screen
+      const seen = new Set(), tops = [];
+      for (let k = 0; k < 20; k++) {
+        const s = await col.evaluate(c => { const r = c.getBoundingClientRect(); return { top: c.scrollTop, end: c.scrollTop + c.clientHeight >= c.scrollHeight - 2, seen: [...c.querySelectorAll('.paper')].filter(p => { const q = p.querySelector('header').getBoundingClientRect(); return q.top >= r.top - 1 && q.bottom <= r.bottom + 1; }).map(p => p.id.slice(-1)) }; });
+        tops.push(s.top); s.seen.forEach(x => seen.add(x)); if (s.end && seen.size === 6) break;
+        await page.keyboard.press('PageDown'); await page.waitForTimeout(350);
+      }
+      log.pageDown = { scrollTops: tops, sourcesSeen: [...seen].sort().join('') };
+      expect(log.pageDown.sourcesSeen, 'Sources A–F each come into view').toBe('ABCDEF');
+      expect(await page.evaluate(() => document.activeElement?.matches('[data-p2-sources]')), 'focus stays on the column while it scrolls').toBe(true);
+      // no trap: Tab moves on to the questions, Shift+Tab comes back
+      await page.keyboard.press('Tab'); log.tabOut = await page.evaluate(() => `${document.activeElement?.tagName.toLowerCase()}.${String(document.activeElement?.className).split(' ')[0]} in questions=${!!document.activeElement?.closest('#questions')}`);
+      expect(log.tabOut, 'Tab leaves the column').toMatch(/in questions=true/);
+      await page.keyboard.press('Shift+Tab'); expect(await page.evaluate(() => document.activeElement?.matches('[data-p2-sources]')), 'Shift+Tab returns').toBe(true);
+    } else {
+      expect(log.column.position, 'the column is in the page flow on phones').toBe('static');
+      expect(log.regionTabs, 'no extra Tab stop on phones').toBeNull();
+    }
+    // every source's chip, reached with Tab and followed with Enter
+    log.chips = {};
+    for (const id of 'ABCDEF') {
+      await page.locator('a.skip').focus(); // start each walk from the top of the page
+      let t = 0; for (; t < 120; t++) { await page.keyboard.press('Tab'); if (await page.evaluate(id => document.activeElement?.matches(`[data-src="${id}"]`), id)) break; }
+      const r = { tabs: t < 120 ? t + 1 : null };
+      if (r.tabs) {
+        await page.keyboard.press('Enter'); // at once, with no pause after Tab (Lenis had not yet taken up the focus scroll)
+        // the page and the column scroll smoothly (Lenis, about 1.4 s): wait for the card to arrive, at most 6 s
+        const t0 = Date.now();
+        const at = () => page.evaluate(id => { const c = document.getElementById('source-' + id).getBoundingClientRect(), col = document.querySelector('[data-p2-sources]'); return { top: c.top, from: getComputedStyle(col).position === 'sticky' ? col.getBoundingClientRect().top : 0 }; }, id);
+        for (let prev = null; Date.now() - t0 < 6000; await page.waitForTimeout(150)) { const p = await at(); if (prev && Math.abs(p.top - prev.top) < 0.5 && p.top >= p.from - 2 && p.top < vp.height - 40) break; prev = p; }
+        r.ms = Date.now() - t0;
+        Object.assign(r, await page.evaluate(id => {
+          const card = document.getElementById('source-' + id), a = document.activeElement, cr = card.getBoundingClientRect();
+          const col = document.querySelector('[data-p2-sources]'), box = getComputedStyle(col).position === 'sticky' ? col.getBoundingClientRect() : { top: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0, bottom: innerHeight };
+          const x = cr.left + 24, y = Math.max(cr.top, box.top) + 24, hit = document.elementFromPoint(x, y);
+          return { focus: a === card ? `#${card.id}` : `${a?.tagName.toLowerCase()}.${String(a?.className).split(' ')[0]}`, focusVisible: a === card && card.matches(':focus-visible'), ring: (s => `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor} offset ${s.outlineOffset}`)(getComputedStyle(card)), topInView: cr.top >= box.top - 2 && cr.top < box.bottom - 40, unobscured: !!hit && card.contains(hit), name: card.getAttribute('aria-label') };
+        }, id));
+      }
+      log.chips[id] = r;
+      expect(r.tabs, `Tab reaches a chip for Source ${id}`).not.toBeNull();
+      expect(r.focus, `Enter on the chip puts focus on Source ${id}`).toBe(`#source-${id}`);
+      expect(r.topInView && r.unobscured, `Source ${id} is in view and not covered`).toBe(true);
+      expect(r.focusVisible && r.ring.startsWith('solid'), `Source ${id} shows its focus ring`).toBe(true);
+    }
+    // the pointer keeps today's behaviour: a click scrolls to the source and leaves focus on the chip
+    const chip = page.locator('[data-src="D"]').first();
+    await chip.scrollIntoViewIfNeeded(); await chip.click(); await page.waitForTimeout(wide ? 900 : 1900);
+    log.click = await page.evaluate(() => ({ focusOnChip: document.activeElement?.matches('[data-src]') ?? false, sourceInView: (() => { const c = document.getElementById('source-D').getBoundingClientRect(); return c.top < innerHeight && c.bottom > 0; })() }));
+    expect(log.click.sourceInView, 'a click still brings the source into view').toBe(true);
+    log.overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(log.overflow, 'no sideways scroll').toBeLessThanOrEqual(0);
+    record({ check: 'keyboard-sources', ...log });
+  });
 });
 
 // 5. contrast with the site's own tool, dark and light, content unfolded (reduced motion: no colour transitions)
