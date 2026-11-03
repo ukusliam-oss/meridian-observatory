@@ -59,6 +59,10 @@ Useful options:
 
 Reports, traces and results go to `.cache/`. The repository ignores that folder, and `tools/verify-build.mjs` skips it.
 
+## Performance (M-003B)
+
+`npm run perf` and `npm run perf:lighthouse` measure the site. These are measurements, not gates, and `npm test` does not run them. Method and commands are in `perf/README.md`; results and the ranked findings are in `perf/REPORT.md`.
+
 ## Layout
 
 ```text
@@ -69,6 +73,9 @@ specs/routes.spec.mjs   every page at every viewport (63 tests)
 specs/journeys.spec.mjs learning journeys at 1440 × 900 and 390 × 844 (12 tests)
 specs/states.spec.mjs   heights, WebGL, reduced motion, rapid scroll, Economics at rest (19 tests)
 specs/visual.spec.mjs   screenshot baselines (46)
+specs/perf.spec.mjs     performance scenarios (M-003B; the perf project, not part of npm test)
+lib/perf.mjs            timers, network and CPU meters, the instrumented engine's loader
+perf/                   Lighthouse runner, engine instrumentation, overhead check, summaries, results, report
 specs/__screenshots__/  the approved baselines
 ```
 

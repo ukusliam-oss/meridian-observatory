@@ -1,0 +1,2289 @@
+{
+ "target": "deployed",
+ "base": "https://ukusliam-oss.github.io/meridian-observatory/",
+ "lighthouse": "13.6.0",
+ "chrome": "156.0.8078.4",
+ "platform": "darwin arm64",
+ "runs": [
+  {
+   "page": "index.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 8153,
+   "score": 0.99,
+   "fcp": 1103.028,
+   "lcp": 1103.028,
+   "cls": 0,
+   "tbt": 27,
+   "si": 2905.489690097417,
+   "tti": 1780.0280000000002,
+   "bytes": 527778,
+   "requests": 45,
+   "mainThreadMs": 2996.91999999998,
+   "bootupMs": 873.148000000001,
+   "work": {
+    "other": 1075,
+    "scriptEvaluation": 935,
+    "styleLayout": 636,
+    "paintCompositeRender": 291,
+    "parseHTML": 22,
+    "scriptParseCompile": 20,
+    "garbageCollection": 19
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 6440,
+   "score": 1,
+   "fcp": 930,
+   "lcp": 1680,
+   "cls": 0.0014404680932114176,
+   "tbt": 24,
+   "si": 1703.6630556543532,
+   "tti": 2313.5,
+   "bytes": 366589,
+   "requests": 50,
+   "mainThreadMs": 2521.0120000000047,
+   "bootupMs": 409.7160000000003,
+   "work": {
+    "other": 972,
+    "styleLayout": 645,
+    "scriptEvaluation": 463,
+    "paintCompositeRender": 392,
+    "parseHTML": 18,
+    "scriptParseCompile": 17,
+    "garbageCollection": 14
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 6359,
+   "score": 1,
+   "fcp": 930,
+   "lcp": 930,
+   "cls": 0,
+   "tbt": 28.5,
+   "si": 1515.9229545375852,
+   "tti": 2321.3,
+   "bytes": 670297,
+   "requests": 60,
+   "mainThreadMs": 1813.7760000000007,
+   "bootupMs": 438.752000000001,
+   "work": {
+    "other": 545,
+    "styleLayout": 519,
+    "scriptEvaluation": 466,
+    "paintCompositeRender": 238,
+    "parseHTML": 22,
+    "scriptParseCompile": 19,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 6487,
+   "score": 1,
+   "fcp": 930,
+   "lcp": 930,
+   "cls": 0,
+   "tbt": 26.5,
+   "si": 1650.2329147356222,
+   "tti": 2317.3,
+   "bytes": 670347,
+   "requests": 59,
+   "mainThreadMs": 2011.4439999999913,
+   "bootupMs": 575.4800000000016,
+   "work": {
+    "other": 711,
+    "scriptEvaluation": 620,
+    "styleLayout": 440,
+    "paintCompositeRender": 199,
+    "parseHTML": 15,
+    "garbageCollection": 13,
+    "scriptParseCompile": 13
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 8632,
+   "score": 0.79,
+   "fcp": 972.866,
+   "lcp": 972.866,
+   "cls": 0,
+   "tbt": 868,
+   "si": 3423.777078271767,
+   "tti": 7378.966,
+   "bytes": 1514646,
+   "requests": 29,
+   "mainThreadMs": 4567.551999999864,
+   "bootupMs": 3283.507999999885,
+   "work": {
+    "scriptEvaluation": 3335,
+    "other": 683,
+    "styleLayout": 354,
+    "paintCompositeRender": 118,
+    "parseHTML": 33,
+    "scriptParseCompile": 23,
+    "garbageCollection": 21
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 7561,
+   "score": 0.93,
+   "fcp": 957.527,
+   "lcp": 957.527,
+   "cls": 0,
+   "tbt": 314,
+   "si": 2711.020271930128,
+   "tti": 4964.327,
+   "bytes": 1377270,
+   "requests": 36,
+   "mainThreadMs": 3074.3680000000036,
+   "bootupMs": 1640.6240000000107,
+   "work": {
+    "scriptEvaluation": 1754,
+    "other": 752,
+    "styleLayout": 332,
+    "paintCompositeRender": 164,
+    "parseHTML": 33,
+    "garbageCollection": 22,
+    "scriptParseCompile": 18
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 9014,
+   "score": 0.73,
+   "fcp": 908.819,
+   "lcp": 908.819,
+   "cls": 0,
+   "tbt": 1296.5,
+   "si": 4069.213132352409,
+   "tti": 7598.469000000001,
+   "bytes": 1657832,
+   "requests": 36,
+   "mainThreadMs": 5289.15599999989,
+   "bootupMs": 4197.275999999903,
+   "work": {
+    "scriptEvaluation": 4264,
+    "other": 609,
+    "styleLayout": 246,
+    "paintCompositeRender": 111,
+    "garbageCollection": 25,
+    "parseHTML": 21,
+    "scriptParseCompile": 13
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "mobile",
+   "run": 1,
+   "ms": 6225,
+   "score": 0.99,
+   "fcp": 930,
+   "lcp": 2006,
+   "cls": 0,
+   "tbt": 0,
+   "si": 1758.503542844995,
+   "tti": 2006.0000000000002,
+   "bytes": 498154,
+   "requests": 51,
+   "mainThreadMs": 1339.4880000000028,
+   "bootupMs": 352.3480000000004,
+   "work": {
+    "other": 466,
+    "scriptEvaluation": 427,
+    "styleLayout": 247,
+    "paintCompositeRender": 152,
+    "parseHTML": 21,
+    "scriptParseCompile": 17,
+    "garbageCollection": 10
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "index.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 6187,
+   "score": 0.98,
+   "fcp": 246.974,
+   "lcp": 246.974,
+   "cls": 0.09056346496220413,
+   "tbt": 0,
+   "si": 564.6704305023783,
+   "tti": 246.974,
+   "bytes": 527713,
+   "requests": 45,
+   "mainThreadMs": 514.1609999999989,
+   "bootupMs": 114.07900000000033,
+   "work": {
+    "other": 169,
+    "scriptEvaluation": 157,
+    "styleLayout": 139,
+    "paintCompositeRender": 42,
+    "scriptParseCompile": 3,
+    "garbageCollection": 3,
+    "parseHTML": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 6557,
+   "score": 1,
+   "fcp": 270,
+   "lcp": 270,
+   "cls": 0.016497486629162655,
+   "tbt": 0,
+   "si": 437.14027376941465,
+   "tti": 270,
+   "bytes": 667877,
+   "requests": 59,
+   "mainThreadMs": 528.9330000000014,
+   "bootupMs": 63.651000000000174,
+   "work": {
+    "other": 198,
+    "styleLayout": 142,
+    "scriptEvaluation": 102,
+    "paintCompositeRender": 78,
+    "parseHTML": 4,
+    "scriptParseCompile": 3,
+    "garbageCollection": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 6454,
+   "score": 1,
+   "fcp": 270,
+   "lcp": 270,
+   "cls": 0.03457143712787847,
+   "tbt": 0,
+   "si": 454.90062004970423,
+   "tti": 270,
+   "bytes": 667639,
+   "requests": 58,
+   "mainThreadMs": 474.8669999999996,
+   "bootupMs": 78.83900000000018,
+   "work": {
+    "other": 142,
+    "styleLayout": 138,
+    "scriptEvaluation": 118,
+    "paintCompositeRender": 63,
+    "parseHTML": 5,
+    "scriptParseCompile": 5,
+    "garbageCollection": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 6457,
+   "score": 1,
+   "fcp": 244.11599999999999,
+   "lcp": 244.11599999999999,
+   "cls": 0.04377729104646411,
+   "tbt": 0,
+   "si": 389.4756945404906,
+   "tti": 244.11599999999999,
+   "bytes": 670334,
+   "requests": 60,
+   "mainThreadMs": 502.9959999999996,
+   "bootupMs": 163.52499999999984,
+   "work": {
+    "scriptEvaluation": 205,
+    "other": 139,
+    "styleLayout": 104,
+    "paintCompositeRender": 42,
+    "garbageCollection": 5,
+    "parseHTML": 4,
+    "scriptParseCompile": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 8331,
+   "score": 0.95,
+   "fcp": 318.0555,
+   "lcp": 318.0555,
+   "cls": 0.0004149656334821819,
+   "tbt": 176.5,
+   "si": 914.9425258815825,
+   "tti": 1450.9055,
+   "bytes": 1514642,
+   "requests": 29,
+   "mainThreadMs": 1188.532999999977,
+   "bootupMs": 790.234999999985,
+   "work": {
+    "scriptEvaluation": 819,
+    "other": 172,
+    "styleLayout": 140,
+    "paintCompositeRender": 41,
+    "garbageCollection": 7,
+    "parseHTML": 6,
+    "scriptParseCompile": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 7673,
+   "score": 0.78,
+   "fcp": 303.173,
+   "lcp": 303.173,
+   "cls": 0.5964375372030325,
+   "tbt": 34.5,
+   "si": 711.3299676108236,
+   "tti": 988.7230000000001,
+   "bytes": 1377289,
+   "requests": 36,
+   "mainThreadMs": 902.9159999999976,
+   "bootupMs": 440.3980000000024,
+   "work": {
+    "scriptEvaluation": 470,
+    "other": 196,
+    "styleLayout": 163,
+    "paintCompositeRender": 54,
+    "garbageCollection": 8,
+    "parseHTML": 7,
+    "scriptParseCompile": 5
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 8450,
+   "score": 0.88,
+   "fcp": 261.66700000000003,
+   "lcp": 261.66700000000003,
+   "cls": 0.01327656364007822,
+   "tbt": 301,
+   "si": 806.6303210716897,
+   "tti": 1482.3670000000002,
+   "bytes": 1657861,
+   "requests": 36,
+   "mainThreadMs": 1348.6539999999734,
+   "bootupMs": 1047.8989999999787,
+   "work": {
+    "scriptEvaluation": 1064,
+    "other": 138,
+    "styleLayout": 95,
+    "paintCompositeRender": 35,
+    "garbageCollection": 9,
+    "scriptParseCompile": 4,
+    "parseHTML": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "desktop",
+   "run": 1,
+   "ms": 6033,
+   "score": 0.8,
+   "fcp": 270,
+   "lcp": 437,
+   "cls": 0.4619527155021452,
+   "tbt": 0,
+   "si": 498.67683049909493,
+   "tti": 437,
+   "bytes": 680108,
+   "requests": 56,
+   "mainThreadMs": 247.8620000000009,
+   "bootupMs": 49.62700000000007,
+   "work": {
+    "other": 102,
+    "scriptEvaluation": 72,
+    "styleLayout": 40,
+    "paintCompositeRender": 26,
+    "scriptParseCompile": 3,
+    "parseHTML": 3,
+    "garbageCollection": 1
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "index.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 6172,
+   "score": 1,
+   "fcp": 914.0955,
+   "lcp": 914.0955,
+   "cls": 0.0486078546128083,
+   "tbt": 12,
+   "si": 1542.028044581032,
+   "tti": 1595.7460050659179,
+   "bytes": 527715,
+   "requests": 45,
+   "mainThreadMs": 2439.515999999988,
+   "bootupMs": 727.5280000000007,
+   "work": {
+    "scriptEvaluation": 847,
+    "other": 800,
+    "styleLayout": 534,
+    "paintCompositeRender": 215,
+    "garbageCollection": 19,
+    "scriptParseCompile": 15,
+    "parseHTML": 10
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 6212,
+   "score": 1,
+   "fcp": 902.5264999999999,
+   "lcp": 1502.5265,
+   "cls": 0.008335775692129337,
+   "tbt": 30.5,
+   "si": 1338.425157944025,
+   "tti": 2298.2765,
+   "bytes": 670299,
+   "requests": 59,
+   "mainThreadMs": 2472.0240000000017,
+   "bootupMs": 424.8320000000013,
+   "work": {
+    "other": 945,
+    "styleLayout": 614,
+    "scriptEvaluation": 495,
+    "paintCompositeRender": 380,
+    "parseHTML": 14,
+    "scriptParseCompile": 13,
+    "garbageCollection": 11
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 6879,
+   "score": 1,
+   "fcp": 913.753,
+   "lcp": 913.753,
+   "cls": 0,
+   "tbt": 54.5,
+   "si": 1538.3993952464984,
+   "tti": 2359.7530000000006,
+   "bytes": 444549,
+   "requests": 55,
+   "mainThreadMs": 2229.275999999998,
+   "bootupMs": 537.0080000000012,
+   "work": {
+    "other": 661,
+    "styleLayout": 660,
+    "scriptEvaluation": 573,
+    "paintCompositeRender": 292,
+    "parseHTML": 21,
+    "scriptParseCompile": 18,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 6769,
+   "score": 1,
+   "fcp": 931.208,
+   "lcp": 931.208,
+   "cls": 0,
+   "tbt": 29.5,
+   "si": 1736.531386069014,
+   "tti": 2326.7580000000003,
+   "bytes": 384783,
+   "requests": 52,
+   "mainThreadMs": 2140.7399999999902,
+   "bootupMs": 663.0560000000017,
+   "work": {
+    "scriptEvaluation": 706,
+    "other": 660,
+    "styleLayout": 499,
+    "paintCompositeRender": 226,
+    "parseHTML": 21,
+    "scriptParseCompile": 16,
+    "garbageCollection": 13
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 11977,
+   "score": 0.79,
+   "fcp": 1055.367,
+   "lcp": 1055.367,
+   "cls": 0.002152543150933507,
+   "tbt": 819,
+   "si": 3459.762491917738,
+   "tti": 7406.167,
+   "bytes": 1385493,
+   "requests": 29,
+   "mainThreadMs": 5263.443999999886,
+   "bootupMs": 3466.1599999999294,
+   "work": {
+    "scriptEvaluation": 3486,
+    "other": 1053,
+    "styleLayout": 449,
+    "paintCompositeRender": 193,
+    "parseHTML": 35,
+    "scriptParseCompile": 28,
+    "garbageCollection": 19
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 7718,
+   "score": 0.73,
+   "fcp": 997.817,
+   "lcp": 997.817,
+   "cls": 0.3833860255517937,
+   "tbt": 356.5,
+   "si": 2574.4078399670307,
+   "tti": 5459.367,
+   "bytes": 1377281,
+   "requests": 36,
+   "mainThreadMs": 3219.960000000003,
+   "bootupMs": 1755.2080000000099,
+   "work": {
+    "scriptEvaluation": 1845,
+    "other": 741,
+    "styleLayout": 357,
+    "paintCompositeRender": 180,
+    "parseHTML": 37,
+    "garbageCollection": 36,
+    "scriptParseCompile": 23
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 10723,
+   "score": 0.73,
+   "fcp": 1126.9740000000002,
+   "lcp": 1126.9740000000002,
+   "cls": 0.02735971797406481,
+   "tbt": 1492.5,
+   "si": 3663.970785773222,
+   "tti": 8052.524,
+   "bytes": 1657640,
+   "requests": 36,
+   "mainThreadMs": 5946.423999999892,
+   "bootupMs": 4550.12799999991,
+   "work": {
+    "scriptEvaluation": 4572,
+    "other": 810,
+    "styleLayout": 334,
+    "paintCompositeRender": 155,
+    "parseHTML": 29,
+    "garbageCollection": 25,
+    "scriptParseCompile": 22
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "mobile",
+   "run": 2,
+   "ms": 6371,
+   "score": 1,
+   "fcp": 926.24,
+   "lcp": 1865.24,
+   "cls": 0,
+   "tbt": 0,
+   "si": 1833.425294329143,
+   "tti": 1865.2400000000002,
+   "bytes": 432129,
+   "requests": 47,
+   "mainThreadMs": 1455.1639999999986,
+   "bootupMs": 344.7320000000005,
+   "work": {
+    "other": 552,
+    "scriptEvaluation": 426,
+    "styleLayout": 270,
+    "paintCompositeRender": 156,
+    "parseHTML": 28,
+    "scriptParseCompile": 17,
+    "garbageCollection": 7
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "index.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 6396,
+   "score": 1,
+   "fcp": 254.2935,
+   "lcp": 254.2935,
+   "cls": 0.02520180661354814,
+   "tbt": 0,
+   "si": 631.7813570150184,
+   "tti": 254.2935,
+   "bytes": 527654,
+   "requests": 45,
+   "mainThreadMs": 516.6589999999982,
+   "bootupMs": 116.88500000000016,
+   "work": {
+    "other": 171,
+    "scriptEvaluation": 158,
+    "styleLayout": 134,
+    "paintCompositeRender": 45,
+    "scriptParseCompile": 3,
+    "garbageCollection": 3,
+    "parseHTML": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 6495,
+   "score": 1,
+   "fcp": 246.308,
+   "lcp": 246.308,
+   "cls": 0.016497486629162655,
+   "tbt": 0,
+   "si": 439.5178921524697,
+   "tti": 246.308,
+   "bytes": 458373,
+   "requests": 56,
+   "mainThreadMs": 583.8730000000023,
+   "bootupMs": 72.2500000000002,
+   "work": {
+    "other": 201,
+    "styleLayout": 164,
+    "scriptEvaluation": 117,
+    "paintCompositeRender": 92,
+    "parseHTML": 4,
+    "scriptParseCompile": 4,
+    "garbageCollection": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 6547,
+   "score": 1,
+   "fcp": 244.9525,
+   "lcp": 244.9525,
+   "cls": 0.03457143712787847,
+   "tbt": 0,
+   "si": 390.4201618715623,
+   "tti": 244.9525,
+   "bytes": 680245,
+   "requests": 61,
+   "mainThreadMs": 492.3740000000003,
+   "bootupMs": 90.41300000000018,
+   "work": {
+    "other": 153,
+    "styleLayout": 134,
+    "scriptEvaluation": 131,
+    "paintCompositeRender": 66,
+    "parseHTML": 3,
+    "scriptParseCompile": 3,
+    "garbageCollection": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 7919,
+   "score": 1,
+   "fcp": 270,
+   "lcp": 270,
+   "cls": 0.0436901273786592,
+   "tbt": 0,
+   "si": 844.8119480199259,
+   "tti": 270,
+   "bytes": 444599,
+   "requests": 55,
+   "mainThreadMs": 515.8169999999978,
+   "bootupMs": 133.5590000000001,
+   "work": {
+    "scriptEvaluation": 185,
+    "other": 140,
+    "styleLayout": 133,
+    "paintCompositeRender": 42,
+    "parseHTML": 8,
+    "scriptParseCompile": 4,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 9558,
+   "score": 0.95,
+   "fcp": 355.322,
+   "lcp": 355.322,
+   "cls": 0.0003498105281207134,
+   "tbt": 179,
+   "si": 981.2342602981842,
+   "tti": 1493.3220000000001,
+   "bytes": 1514630,
+   "requests": 29,
+   "mainThreadMs": 1316.343999999971,
+   "bootupMs": 840.3759999999754,
+   "work": {
+    "scriptEvaluation": 865,
+    "other": 217,
+    "styleLayout": 154,
+    "paintCompositeRender": 53,
+    "garbageCollection": 13,
+    "parseHTML": 8,
+    "scriptParseCompile": 6
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 7514,
+   "score": 0.78,
+   "fcp": 297.091,
+   "lcp": 297.091,
+   "cls": 0.5964375372030325,
+   "tbt": 35.5,
+   "si": 743.9803640137394,
+   "tti": 983.6410000000001,
+   "bytes": 1377321,
+   "requests": 36,
+   "mainThreadMs": 797.9959999999974,
+   "bootupMs": 389.24100000000243,
+   "work": {
+    "scriptEvaluation": 415,
+    "other": 191,
+    "styleLayout": 133,
+    "paintCompositeRender": 42,
+    "parseHTML": 7,
+    "garbageCollection": 6,
+    "scriptParseCompile": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 8381,
+   "score": 0.88,
+   "fcp": 271.479,
+   "lcp": 271.479,
+   "cls": 0.01327132533636868,
+   "tbt": 299.5,
+   "si": 837.476478236216,
+   "tti": 1493.529,
+   "bytes": 1657540,
+   "requests": 36,
+   "mainThreadMs": 1360.0659999999732,
+   "bootupMs": 1046.1009999999799,
+   "work": {
+    "scriptEvaluation": 1063,
+    "other": 149,
+    "styleLayout": 99,
+    "paintCompositeRender": 35,
+    "garbageCollection": 7,
+    "parseHTML": 4,
+    "scriptParseCompile": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "desktop",
+   "run": 2,
+   "ms": 6258,
+   "score": 0.8,
+   "fcp": 258.2975,
+   "lcp": 427.2975,
+   "cls": 0.4597383757533636,
+   "tbt": 0,
+   "si": 588.4635075148444,
+   "tti": 427.2975,
+   "bytes": 460698,
+   "requests": 50,
+   "mainThreadMs": 275.35500000000116,
+   "bootupMs": 57.20900000000014,
+   "work": {
+    "other": 102,
+    "scriptEvaluation": 81,
+    "styleLayout": 51,
+    "paintCompositeRender": 31,
+    "parseHTML": 5,
+    "scriptParseCompile": 4,
+    "garbageCollection": 1
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba",
+    "css/chapter.css?v=e6f7577d75"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "index.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 6027,
+   "score": 1,
+   "fcp": 912.401,
+   "lcp": 912.401,
+   "cls": 0,
+   "tbt": 8,
+   "si": 1491.8648053388674,
+   "tti": 1590.0515050659178,
+   "bytes": 527701,
+   "requests": 45,
+   "mainThreadMs": 2122.6199999999894,
+   "bootupMs": 617.9320000000017,
+   "work": {
+    "other": 723,
+    "scriptEvaluation": 721,
+    "styleLayout": 461,
+    "paintCompositeRender": 179,
+    "scriptParseCompile": 15,
+    "garbageCollection": 14,
+    "parseHTML": 10
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 6198,
+   "score": 1,
+   "fcp": 930,
+   "lcp": 1680,
+   "cls": 0.008335775692129337,
+   "tbt": 24.5,
+   "si": 1339.0020970672579,
+   "tti": 2313.3,
+   "bytes": 668051,
+   "requests": 59,
+   "mainThreadMs": 2384.2160000000044,
+   "bootupMs": 421.4800000000005,
+   "work": {
+    "other": 846,
+    "styleLayout": 617,
+    "scriptEvaluation": 489,
+    "paintCompositeRender": 398,
+    "parseHTML": 15,
+    "scriptParseCompile": 15,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 6084,
+   "score": 0.96,
+   "fcp": 930,
+   "lcp": 930,
+   "cls": 0.1195006235730017,
+   "tbt": 48,
+   "si": 1397.311812692142,
+   "tti": 2231,
+   "bytes": 366538,
+   "requests": 48,
+   "mainThreadMs": 2006.344,
+   "bootupMs": 477.74000000000103,
+   "work": {
+    "other": 679,
+    "styleLayout": 514,
+    "scriptEvaluation": 493,
+    "paintCompositeRender": 292,
+    "scriptParseCompile": 13,
+    "parseHTML": 12,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 6156,
+   "score": 0.95,
+   "fcp": 930,
+   "lcp": 930,
+   "cls": 0.1338105218675406,
+   "tbt": 24.5,
+   "si": 1324.0448266588069,
+   "tti": 2313.3,
+   "bytes": 667926,
+   "requests": 59,
+   "mainThreadMs": 1624.9960000000005,
+   "bootupMs": 417.4200000000006,
+   "work": {
+    "other": 568,
+    "scriptEvaluation": 458,
+    "styleLayout": 388,
+    "paintCompositeRender": 171,
+    "parseHTML": 15,
+    "scriptParseCompile": 12,
+    "garbageCollection": 12
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 7475,
+   "score": 0.82,
+   "fcp": 915.334,
+   "lcp": 915.334,
+   "cls": 0.002544249310186656,
+   "tbt": 686,
+   "si": 3035.4061334878907,
+   "tti": 7144.034,
+   "bytes": 1514624,
+   "requests": 29,
+   "mainThreadMs": 4315.2679999999045,
+   "bootupMs": 3079.623999999942,
+   "work": {
+    "scriptEvaluation": 3148,
+    "other": 714,
+    "styleLayout": 286,
+    "paintCompositeRender": 114,
+    "parseHTML": 21,
+    "garbageCollection": 18,
+    "scriptParseCompile": 14
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba",
+    "css/chapter.css?v=e6f7577d75"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 6879,
+   "score": 0.95,
+   "fcp": 903.498,
+   "lcp": 903.498,
+   "cls": 0.002485211451625372,
+   "tbt": 271,
+   "si": 2147.4685626701284,
+   "tti": 4866.698,
+   "bytes": 1377267,
+   "requests": 36,
+   "mainThreadMs": 2566.6279999999942,
+   "bootupMs": 1453.0200000000093,
+   "work": {
+    "scriptEvaluation": 1549,
+    "other": 584,
+    "styleLayout": 260,
+    "paintCompositeRender": 123,
+    "parseHTML": 21,
+    "garbageCollection": 16,
+    "scriptParseCompile": 14
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 8058,
+   "score": 0.75,
+   "fcp": 903.676,
+   "lcp": 903.676,
+   "cls": 0.002354285598570525,
+   "tbt": 1249.5,
+   "si": 3120.942118681653,
+   "tti": 7546.126,
+   "bytes": 1657528,
+   "requests": 36,
+   "mainThreadMs": 5171.555999999902,
+   "bootupMs": 4113.283999999928,
+   "work": {
+    "scriptEvaluation": 4182,
+    "other": 578,
+    "styleLayout": 230,
+    "paintCompositeRender": 114,
+    "garbageCollection": 34,
+    "parseHTML": 19,
+    "scriptParseCompile": 14
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "mobile",
+   "run": 3,
+   "ms": 5997,
+   "score": 0.77,
+   "fcp": 1406,
+   "lcp": 2006,
+   "cls": 0.573133917639686,
+   "tbt": 0,
+   "si": 1550.5819795342745,
+   "tti": 2006.0000000000002,
+   "bytes": 692941,
+   "requests": 57,
+   "mainThreadMs": 1104.768000000002,
+   "bootupMs": 238.08800000000062,
+   "work": {
+    "other": 455,
+    "scriptEvaluation": 334,
+    "styleLayout": 180,
+    "paintCompositeRender": 105,
+    "scriptParseCompile": 12,
+    "parseHTML": 11,
+    "garbageCollection": 7
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 150,
+    "throughputKbps": 1638.4,
+    "requestLatencyMs": 562.5,
+    "downloadThroughputKbps": 1474.5600000000002,
+    "uploadThroughputKbps": 675,
+    "cpuSlowdownMultiplier": 4
+   },
+   "screen": {
+    "mobile": true,
+    "width": 412,
+    "height": 823,
+    "deviceScaleFactor": 1.75,
+    "disabled": false
+   }
+  },
+  {
+   "page": "index.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 6307,
+   "score": 0.98,
+   "fcp": 247.333,
+   "lcp": 247.333,
+   "cls": 0.09056346496220413,
+   "tbt": 0,
+   "si": 624.659149690845,
+   "tti": 247.33300000000003,
+   "bytes": 527669,
+   "requests": 45,
+   "mainThreadMs": 538.1739999999982,
+   "bootupMs": 125.80600000000041,
+   "work": {
+    "scriptEvaluation": 171,
+    "other": 166,
+    "styleLayout": 150,
+    "paintCompositeRender": 42,
+    "parseHTML": 4,
+    "scriptParseCompile": 3,
+    "garbageCollection": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 6447,
+   "score": 1,
+   "fcp": 270,
+   "lcp": 270,
+   "cls": 0.016497486629162655,
+   "tbt": 0,
+   "si": 447.01575279353654,
+   "tti": 270,
+   "bytes": 670341,
+   "requests": 60,
+   "mainThreadMs": 598.2700000000016,
+   "bootupMs": 69.92200000000021,
+   "work": {
+    "other": 218,
+    "styleLayout": 159,
+    "scriptEvaluation": 117,
+    "paintCompositeRender": 92,
+    "parseHTML": 5,
+    "scriptParseCompile": 4,
+    "garbageCollection": 4
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 6548,
+   "score": 1,
+   "fcp": 243.755,
+   "lcp": 243.755,
+   "cls": 0.03457143712787847,
+   "tbt": 0,
+   "si": 388.2279249863847,
+   "tti": 243.75500000000002,
+   "bytes": 667855,
+   "requests": 58,
+   "mainThreadMs": 483.7649999999988,
+   "bootupMs": 88.75300000000026,
+   "work": {
+    "other": 151,
+    "styleLayout": 136,
+    "scriptEvaluation": 125,
+    "paintCompositeRender": 63,
+    "parseHTML": 3,
+    "scriptParseCompile": 3,
+    "garbageCollection": 2
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 6635,
+   "score": 1,
+   "fcp": 244.19299999999998,
+   "lcp": 244.19299999999998,
+   "cls": 0.04372076578597905,
+   "tbt": 0,
+   "si": 444.5183658986285,
+   "tti": 244.19299999999998,
+   "bytes": 667753,
+   "requests": 59,
+   "mainThreadMs": 540.6939999999981,
+   "bootupMs": 186.3839999999998,
+   "work": {
+    "scriptEvaluation": 226,
+    "other": 153,
+    "styleLayout": 107,
+    "paintCompositeRender": 44,
+    "parseHTML": 4,
+    "garbageCollection": 4,
+    "scriptParseCompile": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 8654,
+   "score": 0.95,
+   "fcp": 285.222,
+   "lcp": 285.222,
+   "cls": 0.0004149656334821819,
+   "tbt": 174.5,
+   "si": 871.2532670879648,
+   "tti": 1414.772,
+   "bytes": 1514681,
+   "requests": 29,
+   "mainThreadMs": 1233.8609999999705,
+   "bootupMs": 797.6839999999771,
+   "work": {
+    "scriptEvaluation": 818,
+    "other": 206,
+    "styleLayout": 143,
+    "paintCompositeRender": 46,
+    "parseHTML": 8,
+    "garbageCollection": 7,
+    "scriptParseCompile": 5
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 7167,
+   "score": 0.78,
+   "fcp": 285.903,
+   "lcp": 285.903,
+   "cls": 0.5964316627904007,
+   "tbt": 33.5,
+   "si": 594.0691914226069,
+   "tti": 970.4530000000001,
+   "bytes": 1377287,
+   "requests": 36,
+   "mainThreadMs": 781.5459999999991,
+   "bootupMs": 390.75500000000204,
+   "work": {
+    "scriptEvaluation": 424,
+    "other": 158,
+    "styleLayout": 135,
+    "paintCompositeRender": 46,
+    "garbageCollection": 7,
+    "parseHTML": 6,
+    "scriptParseCompile": 5
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "geography/tectonics.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 8454,
+   "score": 0.87,
+   "fcp": 241.381,
+   "lcp": 241.381,
+   "cls": 0.01327656364007822,
+   "tbt": 302.5,
+   "si": 855.7840289820429,
+   "tti": 1464.231,
+   "bytes": 1657580,
+   "requests": 36,
+   "mainThreadMs": 1383.031999999973,
+   "bootupMs": 1047.260999999977,
+   "work": {
+    "scriptEvaluation": 1065,
+    "other": 158,
+    "styleLayout": 107,
+    "paintCompositeRender": 37,
+    "garbageCollection": 7,
+    "parseHTML": 6,
+    "scriptParseCompile": 3
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  },
+  {
+   "page": "history/kq6-paper2.html",
+   "formFactor": "desktop",
+   "run": 3,
+   "ms": 5998,
+   "score": 0.8,
+   "fcp": 270,
+   "lcp": 439,
+   "cls": 0.46192338307722614,
+   "tbt": 0,
+   "si": 465.5077927785205,
+   "tti": 439,
+   "bytes": 498227,
+   "requests": 51,
+   "mainThreadMs": 243.4320000000008,
+   "bootupMs": 49.46200000000015,
+   "work": {
+    "other": 87,
+    "scriptEvaluation": 77,
+    "styleLayout": 44,
+    "paintCompositeRender": 29,
+    "scriptParseCompile": 3,
+    "parseHTML": 3,
+    "garbageCollection": 1
+   },
+   "lcpElement": null,
+   "blocking": [
+    "css/chapter.css?v=e6f7577d75",
+    "css/site.css?v=9885e600ba"
+   ],
+   "warnings": [],
+   "runtimeError": null,
+   "throttling": {
+    "rttMs": 40,
+    "throughputKbps": 10240,
+    "requestLatencyMs": 0,
+    "downloadThroughputKbps": 0,
+    "uploadThroughputKbps": 0,
+    "cpuSlowdownMultiplier": 1
+   },
+   "screen": {
+    "mobile": false,
+    "width": 1350,
+    "height": 940,
+    "deviceScaleFactor": 1,
+    "disabled": false
+   }
+  }
+ ]
+}
