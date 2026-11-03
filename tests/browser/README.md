@@ -63,6 +63,10 @@ Reports, traces and results go to `.cache/`. The repository ignores that folder,
 
 `npm run perf` and `npm run perf:lighthouse` measure the site. These are measurements, not gates, and `npm test` does not run them. Method and commands are in `perf/README.md`; results and the ranked findings are in `perf/REPORT.md`.
 
+## Accessibility audit (M-003C)
+
+`npm run a11y` runs axe-core 4.14.0 scans, keyboard walks, reflow and text-spacing checks, target sizes, contrast (`tools/contrast.js`) and motion checks. It records findings and does not fail on them. The findings, the WCAG 2.2 AA coverage and the backlog are in `a11y/AUDIT.md`; machine-readable results are in `a11y/results/audit.json`.
+
 ## Layout
 
 ```text
@@ -74,6 +78,9 @@ specs/journeys.spec.mjs learning journeys at 1440 × 900 and 390 × 844 (12 test
 specs/states.spec.mjs   heights, WebGL, reduced motion, rapid scroll, Economics at rest (19 tests)
 specs/visual.spec.mjs   screenshot baselines (46)
 specs/perf.spec.mjs     performance scenarios (M-003B; the perf project, not part of npm test)
+specs/a11y.spec.mjs     accessibility audit (M-003C; the a11y project, not part of npm test)
+lib/a11y.mjs            axe, semantics, Tab walks, targets, reflow, text spacing, motion
+a11y/                   summary script, results, AUDIT.md
 lib/perf.mjs            timers, network and CPU meters, the instrumented engine's loader
 perf/                   Lighthouse runner, engine instrumentation, overhead check, summaries, results, report
 specs/__screenshots__/  the approved baselines

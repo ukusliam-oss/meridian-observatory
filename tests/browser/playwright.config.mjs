@@ -37,5 +37,7 @@ export default defineConfig({
     { name: 'visual', testMatch: /visual\.spec\.mjs/, use: { reducedMotion: 'reduce' } },
     // measurements, not gates; run alone (`npm run perf`, one worker) and summarised by perf/summarise.mjs
     { name: 'perf', testMatch: /perf\.spec\.mjs/, timeout: 600_000 },
+    // accessibility and usability audit (M-003C): findings recorded, not gates; `npm run a11y`
+    { name: 'a11y', testMatch: /a11y\.spec\.mjs/, timeout: 180_000 },
   ],
 });

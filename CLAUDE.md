@@ -66,6 +66,8 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   Performance baseline (M-003B): `tests/browser/perf/` (Lighthouse 13.6.0 runner, an instrumented copy of the engine served
   through CDP Fetch, Meridian timers: Chapter Ready, Scene Ready, Terrain Ready, idle work, memory); results in
   `perf/results/`, findings in `perf/REPORT.md`. `npm run perf`, `npm run perf:lighthouse`; not gates.
+  Accessibility audit (M-003C): `npm run a11y` (axe-core 4.14.0, keyboard walks, reflow at 320 px, text spacing, targets,
+  contrast, motion); findings A11Y-01..15 and U-01..08, WCAG 2.2 AA coverage and backlog in `tests/browser/a11y/AUDIT.md`.
 
 ## History scroll chapters (plan: `../Meridian History 설계 계획서.md`)
 - `history/kq6.html` — KQ6 chapter: 33 scenes over one globe. `assets/js/chapter.js` renders the scenes from
