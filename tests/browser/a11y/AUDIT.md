@@ -193,7 +193,7 @@ Suggested order:
 
 **Acceptance test.** The `keyboard-sources` rows in `specs/a11y.spec.mjs`, at 1440 and 390 px, assert rather than only record.
 
-**A11Y-02, A11Y-03 and A11Y-08: fixed by WP-02 (2026-11-03).** Not yet released.
+**A11Y-02, A11Y-03 and A11Y-08: fixed by WP-02.** It is in production as M9 (`67cc305`, 2026-11-03). Live checks passed: skip path 3 keys, scene choices 86/86, hubs 0 hidden stops, WP-01 20/20 and 48/48.
 
 | Measure (Chromium 156, local) | Before | After |
 |---|---|---|
@@ -210,7 +210,7 @@ Suggested order:
 - **Focus after a scene choice.** A scene chosen from the keyboard is reached by `goTo` alone, at its hold, as a deep link is, and focus goes to its title.
 - **Pointer users.** Pointer behaviour is unchanged.
 
-**Finding, not changed: where a menu jump lands.** Menu items are links to `#scene`, so `core.js`'s anchor handler also takes their click. After `goTo`, it scrolls to the start of the scene's section instead:
+**Finding, then fixed by WP-02F (below): where a menu jump lands.** Menu items are links to `#scene`, so `core.js`'s anchor handler also takes their click. After `goTo`, it scrolls to the start of the scene's section instead:
 
 - For a scene that opens a part, the jump stops on the part's title screen, and the previous scene is still the active one.
 - For scene 1, the jump stops on the hero.
@@ -223,4 +223,41 @@ Pointer jumps still land there. Routing them through `goTo` alone was measured a
 A keyboard jump at 390 px fetches what a deep link to the same scene already does on M8 (Geography scene 15: four height sites against three for the pointer).
 
 **Acceptance tests.** The `keyboard-chapter-route` rows (three chapters, 1440 and 390 px) and the `topics-inert` rows (three hubs, 390 px) in `specs/a11y.spec.mjs` assert. The older `keyboard-chapter` rows still record a Tab-only walk (`menuTabs`), which the skip link does not shorten.
+
+**WP-02F, pointer scene choice (issue #26): fixed (2026-11-04).** Not yet released.
+
+**Root cause.** Menu items are links to `#scene`, so a pointer choice ran `goTo(i)` and then `core.js`'s anchor handler. The anchor handler scrolled to the section's start under the nav. That is inside the scene's hold, with its title on screen, except where the section opens a part:
+
+- **1440 px:** all 22 part openers missed. The jump stopped on the part's title screen, with the previous scene active (scene 1: the hero).
+- **390 px:** the right scene was active, but its title was off-screen.
+- **The other 156 choices** at the two widths arrived.
+
+**How the costs were compared.**
+
+- **Successful arrivals only.** The four routes to the same scene were compared on equal terms: the pointer, the keyboard (`goTo` alone), a deep link (`#scene` on load) and reading on from the previous scene. Each ran in a fresh context with M-003B's instrumentation, at 1440 and 390 px. KQ6 14, Economics 15 and Geography 15 ran twice; one part opener per chapter (KQ6 16, Economics 13, Geography 9) ran once.
+- **What a failed arrival cost was not used as a baseline.**
+- **Results:**
+  - Keyboard and deep link fetch the same tile set (8 of 9 cases; the KQ6 14 deep link at 1440 px fetched more, as it flies from the hero during load).
+  - Where the pointer already arrived, it lands later in the same hold with the same camera. At 390 px it fetches less (KQ6 14: 77 tiles against 182).
+  - So routing every pointer choice through `goTo` would add cost without fixing anything.
+
+**What changed (`assets/js/chapter.js`, the menu's click handler).**
+
+- A pointer choice keeps the anchor landing wherever that landing makes the chosen scene active with its title on screen (`anchorShows`, computed from `progressAt` and `navOffset`).
+- Otherwise the choice is reached by `goTo` alone, with the address updated.
+- Keyboard choices are unchanged (WP-02).
+
+**Results.**
+
+| Check | Result |
+|---|---|
+| Pointer choices of every scene, 1440 and 390 px | 200/200 arrive (M9: 156) |
+| The 156 that already arrived | Land on the same pixel as on M9 |
+| Corrected part openers against the keyboard route | Same tile sets, requests and bytes |
+| Corrected part openers against the deep link | No more than the deep link |
+| Texture memory | Within 96 and 320 MB |
+| At rest afterwards | 0 frames, tiles and compositions |
+| Pointer focus | Unchanged |
+
+**Acceptance test.** The journeys rows "the pointer reaches the scene chosen from the menu" (three chapters, 1440 and 390 px, five scenes each) fail on M9 and pass now.
 
