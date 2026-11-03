@@ -92,4 +92,33 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`journeys at ${vpNam
     expect(await noHorizontalOverflow(page)).toBe(true);
     expect(w.errors).toEqual([]);
   });
+
+  // WP-02F: a scene chosen from the menu with the pointer is reached: it becomes the active scene with its title on
+  // screen, and stays so once the scroll has settled. Scene 1 and the scenes that open a part used to stop short, on
+  // the hero or the part's title screen (the site's anchor handler scrolled to the section's start after goTo).
+  for (const [path, picks] of [['history/kq6.html', [0, 3, 15, 13, 32]], ['economics/macro-policy.html', [0, 1, 12, 14, 40]], ['geography/tectonics.html', [0, 2, 8, 14, 25]]])
+    test(`${path}: the pointer reaches the scene chosen from the menu`, async ({ page }) => {
+      const w = watch(page);
+      await open(page, path);
+      const at = k => page.evaluate(k => {
+        const s = document.querySelectorAll('.sc')[k], t = s.querySelector('.sc__title').getBoundingClientRect();
+        const start = s.getBoundingClientRect().top + scrollY - ((parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64) + 56);
+        return { active: [...document.querySelectorAll('.sc')].findIndex(x => x.classList.contains('is-active')), titleInView: t.top >= 0 && t.bottom <= innerHeight, y: Math.round(scrollY), opensPart: !!s.querySelector('.part'), pastPartTitle: scrollY > start + 100, hash: location.hash === '#' + s.id };
+      }, k);
+      for (const k of picks) {
+        await page.mouse.move(5, vp.height / 2);
+        await menuJump(page, k);
+        // the scroll has stopped: the same position over 600 ms (the globe of some scenes keeps drawing)
+        await expect.poll(async () => { const y0 = await page.evaluate(() => scrollY); await page.waitForTimeout(600); return y0 === await page.evaluate(() => scrollY); }, { timeout: 15_000 }).toBe(true);
+        const a = await at(k); await page.waitForTimeout(500); const b = await at(k);
+        expect(a.active, `scene ${k + 1} is active`).toBe(k);
+        expect(a.titleInView, `scene ${k + 1}'s title is on screen`).toBe(true);
+        if (a.opensPart) expect(a.pastPartTitle, `scene ${k + 1} is not left on its part's title screen`).toBe(true);
+        expect(a.hash, 'the address names the scene').toBe(true);
+        expect(b, 'nothing moves once settled').toEqual(a);
+        expect(await page.evaluate(() => document.activeElement === document.body || !document.activeElement?.matches('h1, h2')), 'a pointer choice moves no focus to a heading').toBe(true);
+      }
+      expect(await noHorizontalOverflow(page)).toBe(true);
+      expect(w.errors).toEqual([]);
+    });
 });

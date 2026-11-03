@@ -3,7 +3,7 @@
 // The text works without WebGL: if the globe cannot start, the page is still a complete chapter.
 // The page names its data file in <body data-chapter>; anything a chapter does not set falls back to KQ6's values.
 
-import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, decode } from './core.js';
+import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, decode, navOffset } from './core.js';
 import { MT, strokeBorder, aurora, animIcon, drawIn, nudge } from './glass.js';
 const { default: data } = await import(document.body.dataset.chapter || './data/history/kq6.js');
 const usesValues = data.scenes.some(s => (s.map && (s.map.data || s.map.spikes)) || (s.chart && (s.chart.series || []).some(sr => sr.ind)));
@@ -391,16 +391,27 @@ document.addEventListener('keydown', e => {
   if (to != null) { e.preventDefault(); items[(to + items.length) % items.length].focus(); }
 });
 // The items are links to #scene, so the site's anchor handler (core.js) also takes a click and scrolls, after goTo, to
-// where the scene's section begins: for a scene that opens a part that is its title screen, for the first scene still
-// the hero. A scene chosen from the keyboard (a click with no pointer) is reached by goTo alone, at its hold as a deep
-// link is, and focus goes to its title instead of leaving with the menu; a pointer choice is left as it was.
+// where the scene's section begins. For most scenes that is inside the scene's hold, with its title in view; for a scene
+// that opens a part it is the part's title screen, short of the scene (the first scene: still the hero). A pointer
+// choice keeps that landing where it shows the scene, and is otherwise reached by goTo alone, at its hold as a deep
+// link is. A keyboard choice (a click with no pointer) always goes by goTo alone, and focus goes to the scene's title.
 menu.addEventListener('click', e => {
   const a = e.target.closest('[data-go]'); if (!a) return;
-  e.preventDefault(); setMenu(false); goTo(+a.dataset.go);
-  if (e.detail !== 0) return;
+  const i = +a.dataset.go, keys = e.detail === 0, shows = keys || anchorShows(i);
+  e.preventDefault(); setMenu(false); goTo(i);
+  if (!keys && shows) return;
   e.stopPropagation(); history.replaceState(null, '', a.getAttribute('href'));
-  focusHeading(sceneHeading(+a.dataset.go));
+  if (keys) focusHeading(sceneHeading(i));
 });
+// whether the anchor handler's landing (the section's top under the nav, as scrollToEl puts it) makes scene i the
+// active one (on wide screens it stops a few pixels short of the hold, with the camera already there) with its title
+// on screen
+function anchorShows(i) {
+  const s = $(`.sc[data-i="${i}"]`), t = sceneHeading(i).getBoundingClientRect();
+  const y = Math.min(Math.max(0, s.getBoundingClientRect().top + scrollY - navOffset()), document.documentElement.scrollHeight - innerHeight);
+  const top = t.top + scrollY - y;
+  return Math.round(progressAt(y)) === i && top >= 0 && top + t.height <= innerHeight;
+}
 // "Skip to scenes", the second skip link on a chapter page, puts focus on the menu's button itself; the site's anchor
 // handler (core.js) is kept out, as it would scroll the page towards the fixed pill
 $('[data-skip-scenes]')?.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); menuBtn.focus(); });
