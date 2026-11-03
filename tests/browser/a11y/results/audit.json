@@ -1,0 +1,3069 @@
+{
+ "made": "2026-11-03",
+ "axeVersion": "4.14.0",
+ "scans": 31,
+ "axe": [
+  {
+   "kind": "violations",
+   "id": "aria-prohibited-attr",
+   "impact": "serious",
+   "sc": [
+    "4.1.2"
+   ],
+   "bestPractice": false,
+   "help": "Elements must only use permitted ARIA attributes",
+   "where": [
+    "economics-hub | opened | 1440x900 | 9",
+    "geography-hub | opened | 1440x900 | 20",
+    "history-hub | opened | 1440x900 | 8",
+    "history-hub | opened | 390x844 | 8",
+    "economics-hub | opened | 390x844 | 9",
+    "geography-hub | opened | 390x844 | 20",
+    "history.html | unfolded | 1440x900 | 8",
+    "economics.html | unfolded | 1440x900 | 9",
+    "geography.html | unfolded | 1440x900 | 20"
+   ],
+   "examples": [
+    {
+     "target": ".word[data-spot=\"\"]:nth-child(1) > .word__top > .depth[aria-label=\"Depth 1 of 5\"]",
+     "html": "<span class=\"depth\" aria-label=\"Depth 1 of 5\"><i class=\"on\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i></span>",
+     "summary": "Fix all of the following:   aria-label attribute cannot be used on \"span\" elements with no valid role attribute."
+    },
+    {
+     "target": ".word[data-spot=\"\"]:nth-child(2) > .word__top > .depth[aria-label=\"Depth 1 of 5\"]",
+     "html": "<span class=\"depth\" aria-label=\"Depth 1 of 5\"><i class=\"on\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i></span>",
+     "summary": "Fix all of the following:   aria-label attribute cannot be used on \"span\" elements with no valid role attribute."
+    },
+    {
+     "target": ".word[data-spot=\"\"]:nth-child(3) > .word__top > .depth[aria-label=\"Depth 1 of 5\"]",
+     "html": "<span class=\"depth\" aria-label=\"Depth 1 of 5\"><i class=\"on\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i><i class=\"\"></i></span>",
+     "summary": "Fix all of the following:   aria-label attribute cannot be used on \"span\" elements with no valid role attribute."
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "color-contrast",
+   "impact": "serious",
+   "sc": [
+    "1.4.3"
+   ],
+   "bestPractice": false,
+   "help": "Elements must meet minimum color contrast ratio thresholds",
+   "where": [
+    "economics-hub | opened | 1440x900 | 1",
+    "geography-hub | opened | 1440x900 | 5",
+    "history-hub | opened | 1440x900 | 1",
+    "history-kq6 | opened | 1440x900 | 19",
+    "economics-chapter | opened | 1440x900 | 44",
+    "geography-chapter | opened | 1440x900 | 6",
+    "history-hub | opened | 390x844 | 12",
+    "economics-hub | opened | 390x844 | 5",
+    "geography-hub | opened | 390x844 | 2",
+    "history-kq6 | opened | 390x844 | 19",
+    "economics-chapter | opened | 390x844 | 44",
+    "geography-chapter | opened | 390x844 | 6",
+    "history/kq6.html | gate | 1440x900 | 24",
+    "economics/macro-policy.html | gate | 1440x900 | 49",
+    "geography/tectonics.html | gate | 1440x900 | 11",
+    "history/kq6.html | menu open | 1440x900 | 19",
+    "geography/tectonics.html | menu open | 1440x900 | 6",
+    "economics/macro-policy.html | menu open | 1440x900 | 44",
+    "history/kq6.html | scene 14 | 1440x900 | 18",
+    "geography/tectonics.html | scene 15 | 1440x900 | 5",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 43"
+   ],
+   "examples": [
+    {
+     "target": ".quiz__foot > .faint",
+     "html": "<span class=\"faint\" style=\"font-size:13px\">Choose an answer</span>",
+     "summary": "Fix any of the following:   Element has insufficient color contrast of 1.96 (foreground color: #444648, background color: #101318, font size: 9.8pt (13px), font weight: normal). Expected contrast rati"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "heading-order",
+   "impact": "moderate",
+   "sc": [],
+   "bestPractice": true,
+   "help": "Heading levels should only increase by one",
+   "where": [
+    "economics-hub | opened | 1440x900 | 3",
+    "geography-hub | opened | 1440x900 | 4",
+    "history-hub | opened | 1440x900 | 4",
+    "history-paper2 | opened | 1440x900 | 1",
+    "economics-chapter | opened | 1440x900 | 1",
+    "404 | opened | 1440x900 | 1",
+    "geography-chapter | opened | 1440x900 | 1",
+    "history-hub | opened | 390x844 | 4",
+    "economics-hub | opened | 390x844 | 3",
+    "geography-hub | opened | 390x844 | 4",
+    "history-paper2 | opened | 390x844 | 1",
+    "404 | opened | 390x844 | 1",
+    "economics-chapter | opened | 390x844 | 1",
+    "geography-chapter | opened | 390x844 | 1",
+    "economics/macro-policy.html | gate | 1440x900 | 1",
+    "geography/tectonics.html | gate | 1440x900 | 1",
+    "history-paper2 | unfolded | 1440x900 | 1",
+    "history.html | unfolded | 1440x900 | 4",
+    "geography/tectonics.html | menu open | 1440x900 | 1",
+    "economics/macro-policy.html | menu open | 1440x900 | 1",
+    "economics.html | unfolded | 1440x900 | 3",
+    "geography.html | unfolded | 1440x900 | 4",
+    "geography/tectonics.html | scene 15 | 1440x900 | 1",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": ".word[data-spot=\"\"]:nth-child(1) > .word__top > h4",
+     "html": "<h4>Identify</h4>",
+     "summary": "Fix any of the following:   Heading order invalid"
+    },
+    {
+     "target": "#pr-economics-0-0 > .pr__ms-in > .pr__block:nth-child(1) > h5",
+     "html": "<h5>How it is marked</h5>",
+     "summary": "Fix any of the following:   Heading order invalid"
+    },
+    {
+     "target": ".footer__grid > div:nth-child(2) > h4",
+     "html": "<h4>Subjects</h4>",
+     "summary": "Fix any of the following:   Heading order invalid"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "label-content-name-mismatch",
+   "impact": "serious",
+   "sc": [
+    "2.5.3"
+   ],
+   "bestPractice": false,
+   "help": "Elements must have their visible text as part of their accessible name",
+   "where": [
+    "economics-hub | opened | 1440x900 | 1",
+    "geography-hub | opened | 1440x900 | 1",
+    "history-hub | opened | 1440x900 | 1",
+    "history-paper2 | opened | 1440x900 | 1",
+    "history-kq6 | opened | 1440x900 | 1",
+    "economics-chapter | opened | 1440x900 | 1",
+    "404 | opened | 1440x900 | 1",
+    "geography-chapter | opened | 1440x900 | 1",
+    "history-hub | opened | 390x844 | 1",
+    "economics-hub | opened | 390x844 | 1",
+    "home | opened | 1440x900 | 1",
+    "geography-hub | opened | 390x844 | 1",
+    "history-paper2 | opened | 390x844 | 1",
+    "history-kq6 | opened | 390x844 | 1",
+    "404 | opened | 390x844 | 1",
+    "economics-chapter | opened | 390x844 | 1",
+    "geography-chapter | opened | 390x844 | 1",
+    "home | opened | 390x844 | 1",
+    "history/kq6.html | gate | 1440x900 | 1",
+    "economics/macro-policy.html | gate | 1440x900 | 1",
+    "geography/tectonics.html | gate | 1440x900 | 1",
+    "history-paper2 | unfolded | 1440x900 | 1",
+    "history/kq6.html | menu open | 1440x900 | 1",
+    "history.html | unfolded | 1440x900 | 1",
+    "geography/tectonics.html | menu open | 1440x900 | 1",
+    "economics/macro-policy.html | menu open | 1440x900 | 1",
+    "economics.html | unfolded | 1440x900 | 1",
+    "geography.html | unfolded | 1440x900 | 1",
+    "history/kq6.html | scene 14 | 1440x900 | 1",
+    "geography/tectonics.html | scene 15 | 1440x900 | 1",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": "a[aria-label=\"Meridian home\"]",
+     "html": "<a class=\"brand\" href=\"index.html\" aria-label=\"Meridian home\">",
+     "summary": "Fix any of the following:   Text inside the element is not included in the accessible name"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "target-size",
+   "impact": "serious",
+   "sc": [
+    "2.5.8"
+   ],
+   "bestPractice": false,
+   "help": "All touch targets must be 24px large, or leave sufficient space",
+   "where": [
+    "history-hub | opened | 1440x900 | 5"
+   ],
+   "examples": [
+    {
+     "target": "button[data-i=\"10\"]",
+     "html": "<button class=\"tl__ev\" data-i=\"10\" style=\"left: 1031.68px; top: 148px; --c: #ff6b6b; translate: none; rotate: none; scale: none; transform: scale(0, 0);\" aria-l",
+     "summary": "Fix any of the following:   Target has insufficient size (0.7px by 0.7px, should be at least 24px by 24px)   Target has insufficient space to its closest neighbors. Safe clickable space has a diameter"
+    },
+    {
+     "target": "button[data-i=\"11\"]",
+     "html": "<button class=\"tl__ev\" data-i=\"11\" style=\"left: 1041.6px; top: 148px; --c: #ff6b6b; translate: none; rotate: none; scale: none; transform: scale(0, 0);\" aria-la",
+     "summary": "Fix any of the following:   Target has insufficient size (0.7px by 0.7px, should be at least 24px by 24px)   Target has insufficient space to its closest neighbors. Safe clickable space has a diameter"
+    },
+    {
+     "target": "button[data-i=\"13\"]",
+     "html": "<button class=\"tl__ev\" data-i=\"13\" style=\"left: 1102.36px; top: 148px; --c: #ff6b6b; translate: none; rotate: none; scale: none; transform: scale(0, 0);\" aria-l",
+     "summary": "Fix any of the following:   Target has insufficient size (0.7px by 0.7px, should be at least 24px by 24px)   Target has insufficient space to its closest neighbors. Safe clickable space has a diameter"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "scrollable-region-focusable",
+   "impact": "serious",
+   "sc": [
+    "2.1.1",
+    "2.1.3"
+   ],
+   "bestPractice": false,
+   "help": "Scrollable region must have keyboard access",
+   "where": [
+    "history-paper2 | opened | 1440x900 | 1",
+    "geography-hub | opened | 390x844 | 1",
+    "geography-chapter | opened | 390x844 | 1",
+    "history-paper2 | unfolded | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": "aside",
+     "html": "<aside class=\"p2-sources\" data-p2-sources=\"\" aria-label=\"Sources A to F\">",
+     "summary": "Fix any of the following:   Element should have focusable content   Element should be focusable"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "empty-table-header",
+   "impact": "minor",
+   "sc": [],
+   "bestPractice": true,
+   "help": "Table header text should not be empty",
+   "where": [
+    "history-kq6 | opened | 1440x900 | 1",
+    "economics-chapter | opened | 1440x900 | 4",
+    "geography-chapter | opened | 1440x900 | 3",
+    "economics-chapter | opened | 390x844 | 1",
+    "history/kq6.html | gate | 1440x900 | 1",
+    "economics/macro-policy.html | gate | 1440x900 | 4",
+    "geography/tectonics.html | gate | 1440x900 | 3",
+    "history/kq6.html | menu open | 1440x900 | 1",
+    "geography/tectonics.html | menu open | 1440x900 | 3",
+    "economics/macro-policy.html | menu open | 1440x900 | 4",
+    "history/kq6.html | scene 14 | 1440x900 | 1",
+    "geography/tectonics.html | scene 15 | 1440x900 | 3",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 4"
+   ],
+   "examples": [
+    {
+     "target": "span[role=\"columnheader\"]:nth-child(1)",
+     "html": "<span role=\"columnheader\"></span>",
+     "summary": "Fix any of the following:   Element does not have text that is visible to screen readers"
+    }
+   ]
+  },
+  {
+   "kind": "violations",
+   "id": "region",
+   "impact": "moderate",
+   "sc": [],
+   "bestPractice": true,
+   "help": "All page content should be contained by landmarks",
+   "where": [
+    "history/kq6.html | menu open | 1440x900 | 40",
+    "geography/tectonics.html | menu open | 1440x900 | 34",
+    "economics/macro-policy.html | menu open | 1440x900 | 48"
+   ],
+   "examples": [
+    {
+     "target": ".chmenu__label:nth-child(1)",
+     "html": "<div class=\"chmenu__label\">Part 1 · Setting the scene</div>",
+     "summary": "Fix any of the following:   Some page content is not contained by landmarks"
+    },
+    {
+     "target": "a[href$=\"#kq6-p1\"] > .chmenu__content",
+     "html": "<span class=\"chmenu__content\"><span class=\"chmenu__num\">01</span><span class=\"chmenu__text\">An iron curtain across Europe</span></span>",
+     "summary": "Fix any of the following:   Some page content is not contained by landmarks"
+    },
+    {
+     "target": "a[href$=\"#kq6-p2\"] > .chmenu__content",
+     "html": "<span class=\"chmenu__content\"><span class=\"chmenu__num\">02</span><span class=\"chmenu__text\">The tools of control</span></span>",
+     "summary": "Fix any of the following:   Some page content is not contained by landmarks"
+    }
+   ]
+  },
+  {
+   "kind": "incomplete",
+   "id": "aria-prohibited-attr",
+   "impact": "serious",
+   "sc": [
+    "4.1.2"
+   ],
+   "bestPractice": false,
+   "help": "Elements must only use permitted ARIA attributes",
+   "where": [
+    "economics-hub | opened | 1440x900 | 2",
+    "geography-hub | opened | 1440x900 | 1",
+    "history-hub | opened | 1440x900 | 3",
+    "404 | opened | 1440x900 | 1",
+    "history-hub | opened | 390x844 | 3",
+    "economics-hub | opened | 390x844 | 2",
+    "geography-hub | opened | 390x844 | 1",
+    "404 | opened | 390x844 | 1",
+    "history-paper2 | unfolded | 1440x900 | 1",
+    "history.html | unfolded | 1440x900 | 3",
+    "economics.html | unfolded | 1440x900 | 2",
+    "geography.html | unfolded | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": ".parts",
+     "html": "<div class=\"parts\" aria-label=\"Marks per part\">",
+     "summary": "Fix all of the following:   aria-label attribute is not well supported on \"div\" elements with no valid role attribute."
+    },
+    {
+     "target": ".deck__stage",
+     "html": "<div class=\"deck__stage\" tabindex=\"0\" aria-label=\"Flashcards. Press Space to turn a card over, the right arrow if you know it, or the left arrow to see it again",
+     "summary": "Fix all of the following:   aria-label attribute is not well supported on \"div\" elements with no valid role attribute."
+    }
+   ]
+  },
+  {
+   "kind": "incomplete",
+   "id": "aria-valid-attr-value",
+   "impact": "critical",
+   "sc": [
+    "4.1.2"
+   ],
+   "bestPractice": false,
+   "help": "ARIA attributes must conform to valid values",
+   "where": [
+    "economics-hub | opened | 1440x900 | 1",
+    "geography-hub | opened | 1440x900 | 1",
+    "history-hub | opened | 1440x900 | 1",
+    "history-paper2 | opened | 1440x900 | 1",
+    "history-kq6 | opened | 1440x900 | 1",
+    "economics-chapter | opened | 1440x900 | 1",
+    "404 | opened | 1440x900 | 1",
+    "geography-chapter | opened | 1440x900 | 1",
+    "history-hub | opened | 390x844 | 1",
+    "economics-hub | opened | 390x844 | 1",
+    "home | opened | 1440x900 | 1",
+    "geography-hub | opened | 390x844 | 1",
+    "history-paper2 | opened | 390x844 | 1",
+    "history-kq6 | opened | 390x844 | 1",
+    "404 | opened | 390x844 | 1",
+    "economics-chapter | opened | 390x844 | 1",
+    "geography-chapter | opened | 390x844 | 1",
+    "home | opened | 390x844 | 1",
+    "history/kq6.html | gate | 1440x900 | 1",
+    "economics/macro-policy.html | gate | 1440x900 | 1",
+    "geography/tectonics.html | gate | 1440x900 | 1",
+    "history-paper2 | unfolded | 1440x900 | 1",
+    "history/kq6.html | menu open | 1440x900 | 1",
+    "history.html | unfolded | 1440x900 | 1",
+    "geography/tectonics.html | menu open | 1440x900 | 1",
+    "economics/macro-policy.html | menu open | 1440x900 | 1",
+    "economics.html | unfolded | 1440x900 | 1",
+    "geography.html | unfolded | 1440x900 | 1",
+    "history/kq6.html | scene 14 | 1440x900 | 1",
+    "geography/tectonics.html | scene 15 | 1440x900 | 1",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": ".nav__dial",
+     "html": "<button class=\"nav__dial\" type=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\" aria-controls=\"setmenu\" aria-label=\"Settings\">",
+     "summary": "Fix all of the following:   Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: aria-controls=\"setmenu\""
+    }
+   ]
+  },
+  {
+   "kind": "incomplete",
+   "id": "color-contrast",
+   "impact": "serious",
+   "sc": [
+    "1.4.3"
+   ],
+   "bestPractice": false,
+   "help": "Elements must meet minimum color contrast ratio thresholds",
+   "where": [
+    "economics-hub | opened | 1440x900 | 64",
+    "geography-hub | opened | 1440x900 | 74",
+    "history-hub | opened | 1440x900 | 63",
+    "history-paper2 | opened | 1440x900 | 111",
+    "history-kq6 | opened | 1440x900 | 385",
+    "economics-chapter | opened | 1440x900 | 544",
+    "404 | opened | 1440x900 | 14",
+    "geography-chapter | opened | 1440x900 | 242",
+    "history-hub | opened | 390x844 | 58",
+    "economics-hub | opened | 390x844 | 60",
+    "home | opened | 1440x900 | 27",
+    "geography-hub | opened | 390x844 | 70",
+    "history-paper2 | opened | 390x844 | 112",
+    "history-kq6 | opened | 390x844 | 380",
+    "404 | opened | 390x844 | 15",
+    "economics-chapter | opened | 390x844 | 541",
+    "geography-chapter | opened | 390x844 | 241",
+    "home | opened | 390x844 | 27",
+    "history/kq6.html | gate | 1440x900 | 372",
+    "economics/macro-policy.html | gate | 1440x900 | 533",
+    "geography/tectonics.html | gate | 1440x900 | 232",
+    "history-paper2 | unfolded | 1440x900 | 119",
+    "history/kq6.html | menu open | 1440x900 | 396",
+    "history.html | unfolded | 1440x900 | 60",
+    "geography/tectonics.html | menu open | 1440x900 | 255",
+    "economics/macro-policy.html | menu open | 1440x900 | 555",
+    "economics.html | unfolded | 1440x900 | 61",
+    "geography.html | unfolded | 1440x900 | 71",
+    "history/kq6.html | scene 14 | 1440x900 | 387",
+    "geography/tectonics.html | scene 15 | 1440x900 | 266",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 554"
+   ],
+   "examples": [
+    {
+     "target": "a[aria-label=\"Meridian home\"] > span",
+     "html": "<span>Meridian</span>",
+     "summary": "Fix any of the following:   Element's background color could not be determined due to a pseudo element"
+    },
+    {
+     "target": "small",
+     "html": "<small>I&amp;S revision</small>",
+     "summary": "Fix any of the following:   Element's background color could not be determined due to a pseudo element"
+    },
+    {
+     "target": ".nav__link[href$=\"history.html\"] > .nav__roll > span:nth-child(1)",
+     "html": "<span>History</span>",
+     "summary": "Fix any of the following:   Element's background color could not be determined due to a pseudo element"
+    }
+   ]
+  },
+  {
+   "kind": "incomplete",
+   "id": "link-in-text-block",
+   "impact": "serious",
+   "sc": [
+    "1.4.1"
+   ],
+   "bestPractice": false,
+   "help": "Links must be distinguishable without relying on color",
+   "where": [
+    "history-paper2 | opened | 1440x900 | 19",
+    "history-kq6 | opened | 1440x900 | 60",
+    "economics-chapter | opened | 1440x900 | 35",
+    "geography-chapter | opened | 1440x900 | 20",
+    "history-paper2 | opened | 390x844 | 19",
+    "history-kq6 | opened | 390x844 | 60",
+    "economics-chapter | opened | 390x844 | 35",
+    "geography-chapter | opened | 390x844 | 20",
+    "history/kq6.html | gate | 1440x900 | 60",
+    "economics/macro-policy.html | gate | 1440x900 | 35",
+    "geography/tectonics.html | gate | 1440x900 | 20",
+    "history-paper2 | unfolded | 1440x900 | 19",
+    "history/kq6.html | menu open | 1440x900 | 60",
+    "geography/tectonics.html | menu open | 1440x900 | 20",
+    "economics/macro-policy.html | menu open | 1440x900 | 35",
+    "history/kq6.html | scene 14 | 1440x900 | 60",
+    "geography/tectonics.html | scene 15 | 1440x900 | 20",
+    "economics/macro-policy.html | scene 15 | 1440x900 | 35"
+   ],
+   "examples": [
+    {
+     "target": "ol > li:nth-child(1) > a[rel=\"noopener\"]",
+     "html": "<a href=\"https://sourcebooks.web.fordham.edu/mod/1956soviet-coop1.asp\" rel=\"noopener\">sourcebooks.web.fordham.edu/mod/1956soviet-coop1.asp</a>",
+     "summary": "Fix any of the following:   Element's contrast ratio could not be determined due to a background gradient"
+    },
+    {
+     "target": "ol > li:nth-child(2) > a[rel=\"noopener\"]",
+     "html": "<a href=\"https://history.state.gov/historicaldocuments/frus1955-57v25/d166\" rel=\"noopener\">history.state.gov/historicaldocuments/frus1955-57v25/d166</a>",
+     "summary": "Fix any of the following:   Element's contrast ratio could not be determined due to a background gradient"
+    },
+    {
+     "target": "ol > li:nth-child(3) > a[rel=\"noopener\"]",
+     "html": "<a href=\"https://www.presidency.ucsb.edu/node/233787\" rel=\"noopener\">www.presidency.ucsb.edu/node/233787</a>",
+     "summary": "Fix any of the following:   Element's contrast ratio could not be determined due to a background gradient"
+    }
+   ]
+  },
+  {
+   "kind": "incomplete",
+   "id": "scrollable-region-focusable",
+   "impact": "serious",
+   "sc": [
+    "2.1.1",
+    "2.1.3"
+   ],
+   "bestPractice": false,
+   "help": "Scrollable region must have keyboard access",
+   "where": [
+    "history/kq6.html | menu open | 1440x900 | 1",
+    "geography/tectonics.html | menu open | 1440x900 | 1",
+    "economics/macro-policy.html | menu open | 1440x900 | 1"
+   ],
+   "examples": [
+    {
+     "target": ".chmenu__items",
+     "html": "<div class=\"chmenu__items\">",
+     "summary": "Fix any of the following:   Check that elements with a negative tabindex can receive keyboard focus so the region can be scrolled"
+    }
+   ]
+  }
+ ],
+ "passesSeen": [
+  "aria-allowed-attr",
+  "aria-allowed-role",
+  "aria-conditional-attr",
+  "aria-deprecated-role",
+  "aria-hidden-body",
+  "aria-hidden-focus",
+  "aria-prohibited-attr",
+  "aria-required-attr",
+  "aria-required-children",
+  "aria-required-parent",
+  "aria-roles",
+  "aria-valid-attr",
+  "aria-valid-attr-value",
+  "avoid-inline-spacing",
+  "button-name",
+  "bypass",
+  "color-contrast",
+  "definition-list",
+  "dlitem",
+  "document-title",
+  "duplicate-id-aria",
+  "empty-heading",
+  "empty-table-header",
+  "form-field-multiple-labels",
+  "heading-order",
+  "html-has-lang",
+  "html-lang-valid",
+  "label",
+  "label-content-name-mismatch",
+  "label-title-only",
+  "landmark-banner-is-top-level",
+  "landmark-contentinfo-is-top-level",
+  "landmark-main-is-top-level",
+  "landmark-no-duplicate-banner",
+  "landmark-no-duplicate-contentinfo",
+  "landmark-no-duplicate-main",
+  "landmark-one-main",
+  "landmark-unique",
+  "link-name",
+  "list",
+  "listitem",
+  "meta-viewport",
+  "meta-viewport-large",
+  "nested-interactive",
+  "page-has-heading-one",
+  "region",
+  "role-img-alt",
+  "scope-attr-valid",
+  "scrollable-region-focusable",
+  "skip-link",
+  "summary-name",
+  "svg-img-alt",
+  "tabindex",
+  "table-duplicate-name",
+  "target-size",
+  "td-headers-attr",
+  "th-has-data-cells"
+ ],
+ "inapplicableEverywhere": [
+  "accesskeys",
+  "area-alt",
+  "aria-braille-equivalent",
+  "aria-command-name",
+  "aria-dialog-name",
+  "aria-input-field-name",
+  "aria-meter-name",
+  "aria-progressbar-name",
+  "aria-tab-name",
+  "aria-text",
+  "aria-toggle-field-name",
+  "aria-tooltip-name",
+  "aria-treeitem-name",
+  "autocomplete-valid",
+  "blink",
+  "frame-focusable-content",
+  "frame-tested",
+  "frame-title",
+  "frame-title-unique",
+  "html-xml-lang-mismatch",
+  "image-alt",
+  "image-redundant-alt",
+  "input-button-name",
+  "input-image-alt",
+  "marquee",
+  "meta-refresh",
+  "no-autoplay-audio",
+  "object-alt",
+  "presentation-role-conflict",
+  "select-name",
+  "server-side-image-map",
+  "valid-lang",
+  "video-caption"
+ ],
+ "semantics": [
+  {
+   "page": "economics-hub",
+   "lang": "en",
+   "h1": 1,
+   "headings": 50,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 12,
+    "footer": 2,
+    "aside": 1,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 128
+    }
+   ],
+   "svgs": {
+    "total": 49,
+    "imgWithName": 1,
+    "imgNoName": 0,
+    "hidden": 18
+   },
+   "live": [
+    "div[aria-live=polite] ",
+    "div[aria-live=polite] Question 1 of 10 A firm sells "
+   ],
+   "tables": []
+  },
+  {
+   "page": "geography-hub",
+   "lang": "en",
+   "h1": 1,
+   "headings": 80,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 13,
+    "footer": 2,
+    "aside": 1,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 128
+    },
+    {
+     "cls": "inst__field",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 408
+    }
+   ],
+   "svgs": {
+    "total": 47,
+    "imgWithName": 2,
+    "imgNoName": 0,
+    "hidden": 8
+   },
+   "live": [
+    "div[aria-live=polite] 2Stage 2: Early expandingThe d",
+    "div[aria-live=polite] Question 1 of 10 What happens "
+   ],
+   "tables": [
+    {
+     "th": 10,
+     "scope": 10,
+     "caption": false
+    }
+   ]
+  },
+  {
+   "page": "history-hub",
+   "lang": "en",
+   "h1": 1,
+   "headings": 60,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 12,
+    "footer": 2,
+    "aside": 1,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 128
+    }
+   ],
+   "svgs": {
+    "total": 53,
+    "imgWithName": 0,
+    "imgNoName": 0,
+    "hidden": 8
+   },
+   "live": [
+    "div[aria-live=polite] June 2027 · Option B (20th cen",
+    "div[aria-live=polite] 191928 June 1919KQ1 Versailles",
+    "div[aria-live=polite] Question 1 of 10 Who led the P"
+   ],
+   "tables": []
+  },
+  {
+   "page": "history-paper2",
+   "lang": "en",
+   "h1": 1,
+   "headings": 4,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 2,
+    "header": 12,
+    "footer": 7,
+    "aside": 1,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 1
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 135
+    }
+   ],
+   "svgs": {
+    "total": 8,
+    "imgWithName": 0,
+    "imgNoName": 0,
+    "hidden": 8
+   },
+   "live": [],
+   "tables": [
+    {
+     "th": 3,
+     "scope": 0,
+     "caption": false
+    },
+    {
+     "th": 3,
+     "scope": 0,
+     "caption": false
+    },
+    {
+     "th": 3,
+     "scope": 0,
+     "caption": false
+    },
+    {
+     "th": 3,
+     "scope": 0,
+     "caption": false
+    },
+    {
+     "th": 3,
+     "scope": 0,
+     "caption": false
+    }
+   ]
+  },
+  {
+   "page": "history-kq6",
+   "lang": "en",
+   "h1": 1,
+   "headings": 47,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 8,
+    "footer": 1,
+    "aside": 0,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 120
+    },
+    {
+     "cls": "world",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 1440
+    },
+    {
+     "cls": "pillnav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 305
+    }
+   ],
+   "svgs": {
+    "total": 47,
+    "imgWithName": 1,
+    "imgNoName": 0,
+    "hidden": 43
+   },
+   "live": [
+    "div[role=status][aria-live=polite] Meridian HistoryKey question 6"
+   ],
+   "tables": []
+  },
+  {
+   "page": "economics-chapter",
+   "lang": "en",
+   "h1": 1,
+   "headings": 70,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 16,
+    "footer": 2,
+    "aside": 0,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 120
+    },
+    {
+     "cls": "world",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 1440
+    },
+    {
+     "cls": "pillnav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 335
+    }
+   ],
+   "svgs": {
+    "total": 74,
+    "imgWithName": 8,
+    "imgNoName": 0,
+    "hidden": 58
+   },
+   "live": [
+    "div[role=status][aria-live=polite] Meridian EconomicsTopic 4.1–4.",
+    "b[aria-live=off] 2008",
+    "p[aria-live=polite] Banks have made large losses o",
+    "div[aria-live=polite] Waiting for the policy to work"
+   ],
+   "tables": [
+    {
+     "th": 9,
+     "scope": 0,
+     "caption": false
+    }
+   ]
+  },
+  {
+   "page": "404",
+   "lang": "en",
+   "h1": 1,
+   "headings": 3,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 2,
+    "header": 1,
+    "footer": 1,
+    "aside": 0,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    }
+   ],
+   "svgs": {
+    "total": 10,
+    "imgWithName": 0,
+    "imgNoName": 0,
+    "hidden": 8
+   },
+   "live": [],
+   "tables": []
+  },
+  {
+   "page": "geography-chapter",
+   "lang": "en",
+   "h1": 1,
+   "headings": 61,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 3,
+    "header": 12,
+    "footer": 2,
+    "aside": 0,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 120
+    },
+    {
+     "cls": "world",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 1440
+    },
+    {
+     "cls": "pillnav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 294
+    }
+   ],
+   "svgs": {
+    "total": 53,
+    "imgWithName": 7,
+    "imgNoName": 0,
+    "hidden": 36
+   },
+   "live": [
+    "div[role=status][aria-live=polite] Meridian GeographyTopic 4 · Te"
+   ],
+   "tables": [
+    {
+     "th": 9,
+     "scope": 9,
+     "caption": false
+    }
+   ]
+  },
+  {
+   "page": "home",
+   "lang": "en",
+   "h1": 1,
+   "headings": 17,
+   "skipLink": {
+    "text": "Skip to content",
+    "href": "#content",
+    "target": true
+   },
+   "landmarks": {
+    "main": 1,
+    "nav": 2,
+    "header": 5,
+    "footer": 1,
+    "aside": 1,
+    "[role=\"main\"]": 0,
+    "[role=\"navigation\"]": 0,
+    "[role=\"banner\"]": 0,
+    "[role=\"contentinfo\"]": 0,
+    "[role=\"region\"][aria-label], section[aria-label]": 0
+   },
+   "imagesNoAlt": 0,
+   "canvases": [
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 300
+    },
+    {
+     "cls": "nav__aurora",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 143
+    },
+    {
+     "cls": "globe is-live",
+     "hidden": true,
+     "role": null,
+     "name": null,
+     "w": 1440
+    }
+   ],
+   "svgs": {
+    "total": 26,
+    "imgWithName": 0,
+    "imgNoName": 0,
+    "hidden": 11
+   },
+   "live": [
+    "div[aria-live=polite] HistoryWhy did the USA become ",
+    "div[aria-live=polite] History · Question 1 of 6 Whic"
+   ],
+   "tables": []
+  }
+ ],
+ "sceneText": [
+  {
+   "page": "geography/tectonics.html",
+   "scene": 15,
+   "panelWords": 175,
+   "figures": [
+    "figure caption",
+    "svg[img] \"Cross-section west to east\""
+   ],
+   "worldHidden": "true",
+   "hud": "true"
+  },
+  {
+   "page": "history/kq6.html",
+   "scene": 14,
+   "panelWords": 177,
+   "figures": [],
+   "worldHidden": "true",
+   "hud": "true"
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "scene": 15,
+   "panelWords": 146,
+   "figures": [],
+   "worldHidden": "true",
+   "hud": "true"
+  }
+ ],
+ "controls": [
+  {
+   "page": "history.html",
+   "lab": [],
+   "quizOptsAreButtons": true
+  },
+  {
+   "page": "economics.html",
+   "lab": [
+    {
+     "cls": "card lab",
+     "inputs": 18,
+     "ranges": 2,
+     "svgPointer": 0
+    }
+   ],
+   "quizOptsAreButtons": true
+  },
+  {
+   "page": "geography.html",
+   "lab": [],
+   "quizOptsAreButtons": true
+  }
+ ],
+ "keyboardTab": [
+  {
+   "page": "economics-hub",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 1,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "history-hub",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 1,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "geography-hub",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 2,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "history-paper2",
+   "vp": "1440x900",
+   "stops": 57,
+   "reachedEnd": true,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 4,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "history-kq6",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 0,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal Which communist state \"",
+    "summary.mono \"Facts and sources (3)\"",
+    "button.sc__check \"Check yourselfTap to reveal Name two organisations\"",
+    "summary.mono \"Facts and sources (4)\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "404",
+   "vp": "1440x900",
+   "stops": 17,
+   "reachedEnd": true,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 0,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 17
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 1,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal What does a country co\"",
+    "summary.mono \"Facts and sources (1)\"",
+    "button.sc__check \"Check yourselfTap to reveal Why did most countries\"",
+    "summary.mono \"Facts and sources (2)\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "1440x900",
+   "stops": 80,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 3,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal Where do most earthqua\"",
+    "summary.mono \"Facts and sources (1)\"",
+    "button.sc__check \"Check yourselfTap to reveal Which layer of the Ear\"",
+    "summary.mono \"Facts and sources (2)\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "home",
+   "vp": "1440x900",
+   "stops": 36,
+   "reachedEnd": true,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 0,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "a.nav__link \"HistoryHistory\"",
+    "a.nav__link \"EconomicsEconomics\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "history-hub",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [
+    "button.chip \"Not started\" by button.topic__btn",
+    "button.chip \"Revising\" by button.topic__btn",
+    "button.chip \"Confident\" by button.topic__btn"
+   ],
+   "partlyCovered": 11,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a.nav__cta \"PractisePractise\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "economics-hub",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [
+    "button.chip \"Not started\" by button.topic__btn",
+    "button.chip \"Revising\" by button.topic__btn",
+    "button.chip \"Confident\" by button.topic__btn",
+    "button.chip \"Not started\" by button.topic__btn",
+    "button.chip \"Revising\" by button.topic__btn",
+    "button.chip \"Confident\" by button.topic__btn"
+   ],
+   "partlyCovered": 13,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a.nav__cta \"PractisePractise\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "geography-hub",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [
+    "button.chip \"Not started\" by button.topic__btn",
+    "button.chip \"Revising\" by button.topic__btn"
+   ],
+   "partlyCovered": 17,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a.nav__cta \"PractisePractise\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "history-kq6",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 0,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal Which communist state \"",
+    "summary.mono \"Facts and sources (3)\"",
+    "button.sc__check \"Check yourselfTap to reveal Name two organisations\"",
+    "summary.mono \"Facts and sources (4)\""
+   ],
+   "backwardStops": 6
+  },
+  {
+   "page": "history-paper2",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 3,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a.nav__cta \"QuestionsQuestions\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "home",
+   "vp": "390x844",
+   "stops": 37,
+   "reachedEnd": true,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 2,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a.nav__cta \"Daily quizDaily quiz\""
+   ],
+   "backwardStops": 20
+  },
+  {
+   "page": "404",
+   "vp": "390x844",
+   "stops": 18,
+   "reachedEnd": true,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 1,
+   "fullyCovered": [],
+   "partlyCovered": 5,
+   "first": [
+    "a.skip \"Skip to content\"",
+    "a.brand \"Meridian home\"",
+    "button.nav__dial \"Settings\"",
+    "a. \"Home\""
+   ],
+   "backwardStops": 18
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 1,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal What does a country co\"",
+    "summary.mono \"Facts and sources (1)\"",
+    "button.sc__check \"Check yourselfTap to reveal Why did most countries\"",
+    "summary.mono \"Facts and sources (2)\""
+   ],
+   "backwardStops": 15
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "390x844",
+   "stops": 40,
+   "reachedEnd": false,
+   "noIndicator": [],
+   "noIndicatorCount": 0,
+   "outOfView": 0,
+   "fullyCovered": [],
+   "partlyCovered": 1,
+   "first": [
+    "button.sc__check \"Check yourselfTap to reveal Where do most earthqua\"",
+    "summary.mono \"Facts and sources (1)\"",
+    "button.sc__check \"Check yourselfTap to reveal Which layer of the Ear\"",
+    "summary.mono \"Facts and sources (2)\""
+   ],
+   "backwardStops": 7
+  }
+ ],
+ "keyboardChapter": [
+  {
+   "page": "geography/tectonics.html",
+   "vp": "1440x900",
+   "gateTabs": 1,
+   "gateFocused": "Enter quietly",
+   "entered": true,
+   "focusAfterEnter": "body",
+   "menuInDomOrder": {
+    "index": 168,
+    "of": 175
+   },
+   "menuTabs": 111,
+   "menuShiftTabs": null,
+   "menuOpen": "true",
+   "focusInMenu": true,
+   "focusedItem": "25",
+   "chosen": 25,
+   "active": 25,
+   "focusAfterChoice": "body.chapter",
+   "escClosed": "false",
+   "escFocus": true,
+   "pageDownFrom": 25,
+   "pageDownTo": 25
+  },
+  {
+   "page": "history/kq6.html",
+   "vp": "1440x900",
+   "gateTabs": 1,
+   "gateFocused": "Enter quietly",
+   "entered": true,
+   "focusAfterEnter": "body",
+   "menuInDomOrder": {
+    "index": 329,
+    "of": 336
+   },
+   "menuTabs": 167,
+   "menuShiftTabs": null,
+   "menuOpen": "true",
+   "focusInMenu": true,
+   "focusedItem": "2",
+   "chosen": 2,
+   "active": 2,
+   "focusAfterChoice": "body.chapter",
+   "escClosed": "false",
+   "escFocus": true,
+   "pageDownFrom": 2,
+   "pageDownTo": 3
+  },
+  {
+   "page": "history/kq6.html",
+   "vp": "390x844",
+   "gateTabs": 1,
+   "gateFocused": "Enter quietly",
+   "entered": true,
+   "focusAfterEnter": "body",
+   "menuInDomOrder": {
+    "index": 330,
+    "of": 337
+   },
+   "menuTabs": 167,
+   "menuShiftTabs": null,
+   "menuOpen": "true",
+   "focusInMenu": true,
+   "focusedItem": "2",
+   "chosen": 2,
+   "active": 2,
+   "focusAfterChoice": "body.chapter",
+   "escClosed": "false",
+   "escFocus": true,
+   "pageDownFrom": 2,
+   "pageDownTo": 3
+  },
+  {
+   "page": "geography/tectonics.html",
+   "vp": "390x844",
+   "gateTabs": 1,
+   "gateFocused": "Enter quietly",
+   "entered": true,
+   "focusAfterEnter": "body",
+   "menuInDomOrder": {
+    "index": 169,
+    "of": 176
+   },
+   "menuTabs": 112,
+   "menuShiftTabs": null,
+   "menuOpen": "true",
+   "focusInMenu": true,
+   "focusedItem": "0",
+   "chosen": 0,
+   "active": -1,
+   "focusAfterChoice": "body.chapter",
+   "escClosed": "false",
+   "escFocus": true,
+   "pageDownFrom": -1,
+   "pageDownTo": 1
+  }
+ ],
+ "keyboardPaper2": [
+  {
+   "vp": "1440x900",
+   "tabs": 6,
+   "control": {
+    "tag": "button",
+    "cls": "nav__dial",
+    "text": "",
+    "ariaLabel": "Settings",
+    "labelledby": null,
+    "title": null,
+    "expanded": "false",
+    "controls": "setmenu"
+   },
+   "after": {
+    "expanded": "true",
+    "controlledVisible": true,
+    "focusStayed": false,
+    "focusNow": "button."
+   }
+  },
+  {
+   "vp": "390x844",
+   "tabs": 3,
+   "control": {
+    "tag": "button",
+    "cls": "nav__dial",
+    "text": "",
+    "ariaLabel": "Settings",
+    "labelledby": null,
+    "title": null,
+    "expanded": "false",
+    "controls": "setmenu"
+   },
+   "after": {
+    "expanded": "true",
+    "controlledVisible": true,
+    "focusStayed": false,
+    "focusNow": "button."
+   }
+  }
+ ],
+ "targets": [
+  {
+   "page": "economics-hub",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 6,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-hub",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 6,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-hub",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 6,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-paper2",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 6,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-kq6",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics-chapter",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "404",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 9,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-chapter",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-hub",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics-hub",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "home",
+   "state": "opened",
+   "vp": "1440x900",
+   "total": 11,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-hub",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-paper2",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-kq6",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 8,
+   "small": 1,
+   "smallInline": 0,
+   "smallSpaced": 1,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "404",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 10,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics-chapter",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 8,
+   "small": 1,
+   "smallInline": 0,
+   "smallSpaced": 1,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-hub",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-chapter",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 8,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics-hub",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-hub",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-paper2",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "home",
+   "state": "opened",
+   "vp": "390x844",
+   "total": 12,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics-chapter",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 4,
+   "small": 1,
+   "smallInline": 0,
+   "smallSpaced": 1,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "404",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 10,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history-kq6",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 8,
+   "small": 5,
+   "smallInline": 4,
+   "smallSpaced": 1,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "home",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 12,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography-chapter",
+   "state": "opened",
+   "vp": "320x640",
+   "total": 6,
+   "small": 2,
+   "smallInline": 1,
+   "smallSpaced": 1,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "geography/tectonics.html",
+   "state": "scene 15",
+   "vp": "1440x900",
+   "total": 7,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "history/kq6.html",
+   "state": "scene 14",
+   "vp": "1440x900",
+   "total": 10,
+   "small": 3,
+   "smallInline": 3,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  },
+  {
+   "page": "economics/macro-policy.html",
+   "state": "scene 15",
+   "vp": "1440x900",
+   "total": 8,
+   "small": 0,
+   "smallInline": 0,
+   "smallSpaced": 0,
+   "failing": 0,
+   "examples": []
+  }
+ ],
+ "reflow": [
+  {
+   "page": "economics-hub",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": [
+    "button.btn \"Still learning\" 122>119",
+    "button.btn \"I know this\" 124>119"
+   ]
+  },
+  {
+   "page": "geography-hub",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": [
+    "button.btn \"Still learning\" 122>119",
+    "button.btn \"I know this\" 124>119"
+   ]
+  },
+  {
+   "page": "economics-hub",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": [
+    "button.btn \"Still learning\" 137>119",
+    "button.btn \"I know this\" 138>119"
+   ]
+  },
+  {
+   "page": "history-hub",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "div.tl__track right=4701",
+    "div.tl__era right=1750",
+    "span. right=1509"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 122>119",
+    "button.btn \"I know this\" 124>119"
+   ]
+  },
+  {
+   "page": "geography-hub",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": [
+    "button.btn \"Still learning\" 137>119",
+    "button.btn \"I know this\" 138>119"
+   ]
+  },
+  {
+   "page": "history-hub",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [
+    "div.tl__track right=4701",
+    "div.tl__era right=1750",
+    "span. right=1532"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 137>119",
+    "button.btn \"I know this\" 138>119"
+   ]
+  },
+  {
+   "page": "history-paper2",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=413",
+    "span.nav__roll right=401",
+    "span. right=401"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "economics-hub",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=406",
+    "span.nav__roll right=394",
+    "span. right=394"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=458",
+    "span.nav__roll right=446",
+    "span. right=446"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 152>148",
+    "button.btn \"I know this\" 152>148"
+   ]
+  },
+  {
+   "page": "economics-hub",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=449",
+    "span.nav__roll right=437",
+    "span. right=437"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 152>148",
+    "button.btn \"I know this\" 152>148"
+   ]
+  },
+  {
+   "page": "home",
+   "vp": "1440x900",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=413",
+    "span.nav__roll right=401",
+    "span. right=401"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "1440x900",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=458",
+    "span.nav__roll right=446",
+    "span. right=446"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 152>148",
+    "button.btn \"I know this\" 152>148"
+   ]
+  },
+  {
+   "page": "history-paper2",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 103,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 8,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=397",
+    "span.nav__roll right=385",
+    "span. right=385"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 119>113",
+    "button.btn \"I know this\" 121>113"
+   ]
+  },
+  {
+   "page": "economics-hub",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=390",
+    "span.nav__roll right=378",
+    "span. right=378"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 119>113",
+    "button.btn \"I know this\" 121>113"
+   ]
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "table.pr__table right=888",
+    "thead. right=888",
+    "tr. right=888"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=397",
+    "span.nav__roll right=385",
+    "span. right=385"
+   ],
+   "clipped": [
+    "button.btn \"Still learning\" 119>113",
+    "button.btn \"I know this\" 121>113"
+   ]
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 8,
+   "wide": [
+    "table.pr__table right=1081",
+    "thead. right=1081",
+    "tr. right=1081"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "390x844",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "390x844",
+   "mode": "text-spacing",
+   "overflowPx": 0,
+   "wide": [
+    "div.change__head right=487",
+    "span.change__level right=487",
+    "ul. right=487"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "320x640",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [
+    "header.pr__head right=333",
+    "p.eyebrow right=333",
+    "h3.h3 right=333"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "320x640",
+   "mode": "scene 13",
+   "overflowPx": 45,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=413",
+    "span.nav__roll right=401",
+    "span. right=401"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "economics-hub",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=406",
+    "span.nav__roll right=394",
+    "span. right=394"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=413",
+    "span.nav__roll right=401",
+    "span. right=401"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "320x640",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "div.change__head right=375",
+    "span.change__level right=375",
+    "ul. right=375"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "320x640",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [
+    "header.pr__head right=355",
+    "p.eyebrow right=355",
+    "h3.h3 right=355"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "360x780",
+   "mode": "scene 13",
+   "overflowPx": 5,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "360x780",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=687",
+    "span.nav__roll right=675",
+    "span. right=675"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "economics-hub",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=679",
+    "span.nav__roll right=667",
+    "span. right=667"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "a. right=735",
+    "span.nav__roll right=723",
+    "span. right=723"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "360x780",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [
+    "table.pr__table right=888",
+    "thead. right=888",
+    "tr. right=888"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "360x780",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "div.change__head right=375",
+    "span.change__level right=375",
+    "ul. right=375"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "640x800",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "640x800",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-hub",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "nav.nav__sub right=936",
+    "div.seg right=936",
+    "a. right=880"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "economics-hub",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "nav.nav__sub right=928",
+    "div.seg right=928",
+    "a. right=872"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-hub",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [
+    "nav.nav__sub right=984",
+    "div.seg right=984",
+    "a. right=817"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "640x800",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [
+    "table.pr__table right=898",
+    "thead. right=898",
+    "tr. right=898"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "history-paper2",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "640x800",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "history-kq6",
+   "vp": "768x1024",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "404",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "economics-chapter",
+   "vp": "768x1024",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  },
+  {
+   "page": "geography-chapter",
+   "vp": "768x1024",
+   "mode": "scene 13",
+   "overflowPx": 0,
+   "wide": [
+    "table.pr__table right=907",
+    "thead. right=907",
+    "tr. right=907"
+   ],
+   "clipped": []
+  },
+  {
+   "page": "home",
+   "vp": "768x1024",
+   "mode": "plain",
+   "overflowPx": 0,
+   "wide": [],
+   "clipped": []
+  }
+ ],
+ "contrast": [
+  {
+   "page": "/index.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 195,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 784,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/economics.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 625,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/geography.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 907,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/kq6-paper2.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 425,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/kq6.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1487,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/economics/macro-policy.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1686,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/no-such-page.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 25,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/index.html",
+   "theme": "light",
+   "applied": "light",
+   "checked": 195,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history.html",
+   "theme": "light",
+   "applied": "light",
+   "checked": 784,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/economics.html",
+   "theme": "light",
+   "applied": "light",
+   "checked": 623,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/geography/tectonics.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1089,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/geography.html",
+   "theme": "light",
+   "applied": "light",
+   "checked": 907,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/kq6-paper2.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 425,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/no-such-page.html",
+   "theme": "light",
+   "applied": "light",
+   "checked": 25,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/history/kq6.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1487,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/economics/macro-policy.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1686,
+   "fails": 0,
+   "list": []
+  },
+  {
+   "page": "/geography/tectonics.html",
+   "theme": "dark",
+   "applied": "dark",
+   "checked": 1089,
+   "fails": 0,
+   "list": []
+  }
+ ],
+ "motion": [
+  {
+   "page": "economics-hub",
+   "reducedMotion": "no-preference",
+   "running": 0,
+   "infinite": 0,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "home",
+   "reducedMotion": "no-preference",
+   "running": 4,
+   "infinite": 2,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": true
+  },
+  {
+   "page": "history-hub",
+   "reducedMotion": "no-preference",
+   "running": 0,
+   "infinite": 0,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "geography-hub",
+   "reducedMotion": "no-preference",
+   "running": 1,
+   "infinite": 1,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "history-paper2",
+   "reducedMotion": "no-preference",
+   "running": 0,
+   "infinite": 0,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "economics-chapter",
+   "reducedMotion": "no-preference",
+   "running": 1,
+   "infinite": 1,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "history-kq6",
+   "reducedMotion": "no-preference",
+   "running": 1,
+   "infinite": 1,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "geography-chapter",
+   "reducedMotion": "no-preference",
+   "running": 1,
+   "infinite": 1,
+   "lenis": true,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "home",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": false
+  },
+  {
+   "page": "history-hub",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "economics-hub",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "geography-hub",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "history-paper2",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "history-kq6",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "economics-chapter",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  },
+  {
+   "page": "geography-chapter",
+   "reducedMotion": "reduce",
+   "running": 0,
+   "infinite": 0,
+   "lenis": false,
+   "homeLoaderVisibleAtStart": null
+  }
+ ],
+ "known": [
+  {
+   "check": "kq6-360",
+   "overflow": 5,
+   "path": [
+    "main.ch",
+    "div.",
+    "section.sc",
+    "header.part.ch-wrap",
+    "h2.display.part__title"
+   ],
+   "rect": [
+    16,
+    291,
+    275
+   ],
+   "position": "static",
+   "transform": "none",
+   "visibility": "visible",
+   "opacity": "1",
+   "text": "Part 4Czechoslovakia, 1968"
+  },
+  {
+   "check": "reload-deep",
+   "before": {
+    "scene": 15,
+    "y": 25922
+   },
+   "after": {
+    "scene": 15,
+    "y": 25478,
+    "restoration": "auto"
+   }
+  }
+ ]
+}
