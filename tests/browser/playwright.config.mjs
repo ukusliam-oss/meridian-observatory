@@ -35,5 +35,7 @@ export default defineConfig({
   projects: [
     { name: 'functional', testMatch: /(routes|journeys|states)\.spec\.mjs/ },
     { name: 'visual', testMatch: /visual\.spec\.mjs/, use: { reducedMotion: 'reduce' } },
+    // measurements, not gates; run alone (`npm run perf`, one worker) and summarised by perf/summarise.mjs
+    { name: 'perf', testMatch: /perf\.spec\.mjs/, timeout: 600_000 },
   ],
 });
