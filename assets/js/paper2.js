@@ -73,7 +73,10 @@ document.addEventListener('click', e => {
 });
 
 boot();
-root.classList.add('is-ready');
+// shown once the title's serif is in (preloaded; at most 2 s): drawn in the fallback first, the title took other line
+// breaks and everything under it moved when the serif arrived (a layout shift of 0.12-0.18 on a slow line)
+Promise.race([Promise.all(['400 1em "Instrument Serif"', 'italic 400 1em "Instrument Serif"'].map(f => document.fonts?.load(f))), new Promise(r => setTimeout(r, 2000))])
+  .catch(() => {}).then(() => root.classList.add('is-ready'));
 
 // The room opens like the rest of the site: the title's words sharpen out of a blur in a random order (1 s each, 0.1 s
 // apart), the paper's line decodes, then the blocks light up as they come into view (core.js reveal).

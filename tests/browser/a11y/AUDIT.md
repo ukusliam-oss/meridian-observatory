@@ -224,7 +224,7 @@ A keyboard jump at 390 px fetches what a deep link to the same scene already doe
 
 **Acceptance tests.** The `keyboard-chapter-route` rows (three chapters, 1440 and 390 px) and the `topics-inert` rows (three hubs, 390 px) in `specs/a11y.spec.mjs` assert. The older `keyboard-chapter` rows still record a Tab-only walk (`menuTabs`), which the skip link does not shorten.
 
-**WP-02F, pointer scene choice (issue #26): fixed (2026-11-04).** Not yet released.
+**WP-02F, pointer scene choice (issue #26): fixed.** It is in production as M10 (`4378240`), verified live, and the issue is closed.
 
 **Root cause.** Menu items are links to `#scene`, so a pointer choice ran `goTo(i)` and then `core.js`'s anchor handler. The anchor handler scrolled to the section's start under the nav. That is inside the scene's hold, with its title on screen, except where the section opens a part:
 
@@ -260,4 +260,35 @@ A keyboard jump at 390 px fetches what a deep link to the same scene already doe
 | Pointer focus | Unchanged |
 
 **Acceptance test.** The journeys rows "the pointer reaches the scene chosen from the menu" (three chapters, 1440 and 390 px, five scenes each) fail on M9 and pass now.
+
+**A11Y-06 and A11Y-07: fixed by WP-03 (2026-11-08).** Not yet released.
+
+**Root causes:**
+
+- **Phone part titles.** Below 760 px they were a fixed 3.4rem, and "CZECHOSLOVAKIA," was wider than the screen at 320 and 360 px.
+- **Text spacing.** With WCAG text spacing, the long words of part titles and the chapter title's one-line lead ran off the screen.
+
+**What changed** (`assets/css/chapter.css`, phones only; desktop is unchanged):
+
+- part titles `min(3.4rem, 10.8vw)`;
+- the chapter title `min(2.3rem, 9.6vw)`, so its lead keeps to one line, and the lead may wrap when it still would not fit (text spacing);
+- scene titles `min(2rem, 8.6vw)`.
+
+**Results, the `reflow` rows of `npm run a11y`:**
+
+| Row | M-003C overflow | Now |
+|---|---|---|
+| KQ6 at 320 px | 45 px | 0 |
+| KQ6 at 360 px | 5 px | 0 |
+| KQ6, 390 px with text spacing | 103 px | 0 |
+| Economics, 390 px with text spacing | 8 px | 0 |
+| Geography, 390 px with text spacing | 8 px | 0 |
+
+- KQ6's 360 px route test passes as an ordinary test.
+- Part titles stay within 3 lines in plain settings. One Economics part title ("After / Comparing the three") was already 4 lines on every width, desktop included, and is unchanged; it is recorded for WP-04 (issue #32).
+
+**Left as found:**
+
+- **Geography at 320 px with text spacing** (issue #31). Only while heights load, the one-line "Loading heights" status runs 19 px past the screen. It is deliberately zero-height, so that removing it moves nothing, and wrapping it would bring the shift back.
+- **The practice cards** (toolkit and subject hubs) at 320 px (issue #30). Their fixed-column grids are wider than the card, which cuts the text off (`overflow: hidden`). Letting the card shrink only moved the cut into the opened mark scheme, and the hubs too. This needs the practice component laid out again for 320 px: a separate package.
 
