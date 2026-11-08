@@ -178,7 +178,7 @@ Real phones have weaker GPUs and CPUs than this M5. Mobile results here are the 
 **Paper 2: 0.46-0.57, and up to 0.73 on Pages.**
 
 - **The notes and footer.** The room is written in by `paper2.js`, so its notes and footer drew at the top of the empty page and were pushed out.
-  - **Fix:** `main` and the footer stay hidden until `html.is-ready`.
+  - **Fix:** `main` and the footer stay hidden until `html.is-ready`. If the script never runs (it failed to load), a CSS animation shows them after 8 s anyway, so the back link and the footer's links stay usable. This also holds under reduced motion.
 - **The hero.** Where the title's serif arrived late, the hero moved again (0.12-0.18).
   - **Fix:** the serif is preloaded, and `is-ready` waits for it (2 s at most).
 - **Measured with Lighthouse locally** (both presets, 3 runs): desktop 0.458 → 0 and mobile 0.565 → 0. LCP rose by 49 and 28 ms.

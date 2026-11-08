@@ -285,10 +285,10 @@ A keyboard jump at 390 px fetches what a deep link to the same scene already doe
 | Geography, 390 px with text spacing | 8 px | 0 |
 
 - KQ6's 360 px route test passes as an ordinary test.
-- Part titles stay within 3 lines in plain settings. One Economics part title ("After / Comparing the three") was already 4 lines on every width, desktop included, and is unchanged.
+- Part titles stay within 3 lines in plain settings. One Economics part title ("After / Comparing the three") was already 4 lines on every width, desktop included, and is unchanged; it is recorded for WP-04 (issue #32).
 
 **Left as found:**
 
-- **Geography at 320 px with text spacing.** Only while heights load, the one-line "Loading heights" status runs 19 px past the screen. It is deliberately zero-height, so that removing it moves nothing, and wrapping it would bring the shift back.
-- **The practice cards** (toolkit and subject hubs) at 320 px. Their fixed-column grids are wider than the card, which cuts the text off (`overflow: hidden`). Letting the card shrink only moved the cut into the opened mark scheme, and the hubs too. This needs the practice component laid out again for 320 px: a separate package.
+- **Geography at 320 px with text spacing** (issue #31). Only while heights load, the one-line "Loading heights" status runs 19 px past the screen. It is deliberately zero-height, so that removing it moves nothing, and wrapping it would bring the shift back.
+- **The practice cards** (toolkit and subject hubs) at 320 px (issue #30). Their fixed-column grids are wider than the card, which cuts the text off (`overflow: hidden`). Letting the card shrink only moved the cut into the opened mark scheme, and the hubs too. This needs the practice component laid out again for 320 px: a separate package.
 
