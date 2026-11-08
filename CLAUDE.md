@@ -412,15 +412,17 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   (`src/scene/lens.js` with `display: true`: the globe's display values taken back to linear, toned by brightness only
   so map hues keep their legend's, strong colour gives up 28%; `look` 0 draws without it). A scene is a 60vh length of
   empty scroll (the flight), a title card (date, italic lead, capitals), captions held at the foot of the frame
-  (`.sc__step` > sticky `.sc__fix`; each paragraph cut at sentence ends into captions of about equal length, at most
-  ~46 words; lit by the caption line at 75% of the screen) and its notes (charts, chains, judgement, checks, facts)
+  (`.sc__step` > fixed `.sc__fix`, the directed pages' transition: each sharpens in place out of a 6 px blur in 1.1 s
+  and blurs away in .7 s, never moving; a step is lit while it is under the middle of the screen; each paragraph cut
+  at sentence ends into captions of about equal length, at most ~46 words. Sticky captions that rose into place and
+  slid away were tried and dropped as odd) and its notes (charts, chains, judgement, checks, facts)
   running over the dimmed frame like credits (`world.setDim`). The HUD and the ribbon's track are gone; the year stays
   bottom right in the serif. A scene with `scene: { film, shots, years, hint, keys }` (tq-25 `eyja`, kq6-g4 `berlin`,
   mp-a3 `prices`) mounts `assets/js/{eyja,berlin,prices}.js` over the globe once the reader stops within two scenes
   of it: as the camera lands the film comes up, its shots follow the steps, and its last step asks the reader to point.
   Heights, terrain and films load only after the scroll has stopped for 250 ms (a jump spends a while in the long
-  scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; `holdOf` lands on a scene's title card at rest
-  (the card's top at 30% of the screen). The 12 chapter screenshot baselines were updated to the film look (approved
+  scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; `holdOf` lands on a scene's title card
+  (the card step's top at 30% of the screen; the card itself holds at the frame's middle). The 12 chapter screenshot baselines were updated to the film look (approved
   2026-11-08); the scene baselines show the title card.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own

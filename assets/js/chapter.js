@@ -450,13 +450,13 @@ function sceneHeading(i) { return $(`.sc[data-i="${i}"] .sc__title`); }
 
 // ── scroll → progress ─────────────────────────────────────────────────────
 // A scene holds (p = i exactly) from its title card to the end of its notes; the camera flies in the empty length of
-// scroll before each title card (and over a part's title). Captions are lit by the caption line, three quarters of the
-// way down the screen, where each comes to rest.
+// scroll before each title card (and over a part's title). As on the directed pages, a step is lit while it is under
+// the middle of the screen.
 let holds = [], heroAnchor = 0, capsEnd = [], stepsAt = [], notesAt = [];
 const panels = $$('[data-panel]');
 const sections = $$('.sc[data-i]');
 const stepEls = panels.map(p => $$('.sc__step', p));
-const CAP_LINE = 0.75;
+const CAP_LINE = 0.5;
 function measure() {
   const y = scrollY, vh = innerHeight, abs = el => { const r = el.getBoundingClientRect(); return [y + r.top, y + r.bottom]; };
   stepsAt = stepEls.map(list => list.map(abs));
@@ -511,7 +511,7 @@ function dimAt(k, y) {
 }
 function goTo(i) {
   // to the scene's title card at rest
-  const y = holds[i][0] - innerHeight * 0.5 + innerHeight * 0.45;
+  const y = holds[i][0] - innerHeight * 0.5 + innerHeight * 0.3;
   if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
 }
 
@@ -627,7 +627,7 @@ const fx = scenes.map((s, k) => {
   };
 });
 // how far an element of the notes has come up through the caption line: 0 as its top reaches it, 1 as its foot does
-function riseOf(el, y) { const r = el.getBoundingClientRect(); return (innerHeight * CAP_LINE - r.top) / Math.max(1, r.height); }
+function riseOf(el, y) { const r = el.getBoundingClientRect(); return (innerHeight * 0.75 - r.top) / Math.max(1, r.height); }
 const stepAt = (n, count) => -0.1 + n * (0.8 / Math.max(1, count));
 function updatePanels(y, ep, near) {
   for (let k = Math.max(0, near - 1); k <= Math.min(N - 1, near + 1); k++) {
