@@ -5,6 +5,8 @@
 
 const { gsap, ScrollTrigger, SplitText, Flip, DrawSVGPlugin, CustomEase, Lenis } = window;
 const root = document.documentElement;
+// the WP-04 art-direction prototype (Transit, end of site.css) is on wherever a page sets data-ad; ?m11 shows the released design
+if (/[?&]m11\b/.test(location.search)) root.removeAttribute('data-ad');
 
 // the three speeds: controls, text, the stage
 export const DUR = { ui: 0.3, text: 1, stage: 2 };

@@ -1022,3 +1022,174 @@ html.is-booting { overflow: hidden; }
 @keyframes lost-turn { 0% { transform: scaleX(1); } 25% { transform: scaleX(0); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
 @keyframes lost-ping { 0% { transform: scale(1); opacity: .8; } 70%, 100% { transform: scale(5); opacity: 0; } }
 @media (max-width: 760px) { .lost__globe { right: -30vw; width: 110vw; } }
+
+/* ── Transit: the WP-04 art-direction prototype (Phase B, awaiting approval) ─────────────────────────────────
+   Everything below is scoped to html[data-ad="transit"], set on the home page, KQ6 and the Economics chapter only;
+   `?m11` in the address removes it (core.js), so each slice can be compared with the released design on the same page.
+   It sits at the end of this file rather than in its own stylesheet: a second render-blocking request cost the home
+   page ~300 ms of first paint on Lighthouse's mobile profile.
+
+   The idea. A transit instrument records a star at the instant it crosses the meridian. Here the meridian is one fine
+   graduated line that every chapter is read along: the scale passes it as the page scrolls, a reticle marks the reading
+   line (the 50% line the chapter already holds its scenes on), and the scene being read lights its stretch of it.
+   Sequences (chains of analysis, cascades of events) are plotted on the line itself; what has not been reached yet is
+   quieter, never faint. Readings (dates, scene numbers, labels) are Plex Mono; reading is Inter; the serif capitals are
+   kept for the monuments (the home title, chapter and part titles) and scene titles are set in mixed case.
+   Glass stays for the instruments people press (nav pill, menu, checks); reading sits on a plain night plate. */
+
+:root[data-ad="transit"] {
+  --mer: rgb(255 255 255 / .2);         /* the meridian */
+  --mer-tick: rgb(255 255 255 / .2);    /* minor graduations, every 24 px */
+  --mer-major: rgb(255 255 255 / .36);  /* major graduations, every 120 px */
+  --pl: 34px;                           /* from the meridian to the text */
+  /* the meridian's x inside any full-width box: the left edge of the chapter's column */
+  --mx: max(var(--gutter), (100% - 1240px) / 2);
+  /* unread and read: text keeps at least 4.5:1 on the plate when unread; reading lights it to full */
+  --unread: rgb(238 237 246 / .66);
+  --unread-2: rgb(238 237 246 / .6);
+}
+@media (max-width: 760px) { :root[data-ad="transit"] { --pl: 20px; } }
+
+/* ── primary navigation: subjects read as indices on a scale, the current one lit ───────────── */
+[data-ad] .nav__link::before { width: 1px; height: 9px; border-radius: 0; box-shadow: none !important; opacity: .8; transition: height .4s var(--ease), opacity .4s; }
+[data-ad] .nav__link:hover::before, [data-ad] .nav__link:focus-visible::before { height: 13px; opacity: 1; }
+[data-ad] .nav__link[aria-current="page"]::before { height: 15px; opacity: 1; filter: drop-shadow(0 0 4px var(--c)); }
+
+/* ── home: the observatory's crosshair (the meridian through the planet, the horizon under it) ── */
+[data-ad] .hero__copy { position: relative; }
+[data-ad] .hero__copy::before { content: ""; position: absolute; left: 50%; bottom: calc(100% + 22px); width: 1px; height: clamp(0px, 7vh, 64px); pointer-events: none;
+  background: linear-gradient(transparent, var(--mer)); }
+[data-ad] .hero__foot .wrap { padding-top: 30px; }
+/* the horizon: a graduated hairline across the column, brighter where the meridian meets it */
+[data-ad] .hero__foot .wrap::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 7px; pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, var(--mer) 18%, var(--mer) 82%, transparent) left bottom / 100% 1px no-repeat,
+    linear-gradient(90deg, var(--mer-tick) 0 1px, transparent 1px) calc(50% + .5px) bottom / 40px 5px repeat-x;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); }
+[data-ad] .hero__foot .wrap::after { content: ""; position: absolute; left: 50%; top: -46px; width: 1px; height: 54px; pointer-events: none;
+  background: linear-gradient(transparent, rgb(255 255 255 / .55)); }
+/* the subject codes are readings on the horizon, not pills */
+[data-ad] .codes { gap: 4px 34px; justify-content: center; }
+[data-ad] .code-chip { height: 34px; padding: 0 2px; gap: 10px; border: 0; border-radius: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  font: 500 var(--fs-label)/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--text-2); }
+[data-ad] .code-chip b { font-weight: 500; }
+[data-ad] .code-chip::before { width: 1px; height: 12px; border-radius: 0; box-shadow: 0 0 8px var(--c); }
+[data-ad] .code-chip:hover b { color: var(--c); }
+/* the scroll cue runs twice once the overture has finished, then rests (it was endless) */
+[data-ad] .scroll-cue span::after { animation-iteration-count: 2; }
+[data-ad]:not(.is-booted) .scroll-cue span::after { animation-play-state: paused; }
+
+/* ── chapter: the meridian ─────────────────────────────────────────── */
+[data-ad] .ch-hero { position: relative; }
+[data-ad] .ch-hero .ch-wrap, [data-ad] .part { padding-left: var(--pl); }
+/* it comes down out of the chapter's opening and runs through every scene */
+[data-ad] .ch-hero::after { content: ""; position: absolute; left: var(--mx); top: 58%; bottom: 0; width: 1px; pointer-events: none;
+  background: linear-gradient(transparent, var(--mer)); }
+[data-ad] [data-scenes] { position: relative; }
+[data-ad] [data-scenes]::after { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--mx) - 12px); width: 13px; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(var(--mer), var(--mer)) right top / 1px 100% no-repeat,
+    linear-gradient(var(--mer-tick) 0 1px, transparent 1px) right 1px top / 5px 24px repeat-y,
+    linear-gradient(var(--mer-major) 0 1px, transparent 1px) right 1px top / 11px 120px repeat-y; }
+/* the reticle: the reading line, where a scene holds while it is read */
+[data-ad] [data-scenes]::before { content: ""; position: sticky; z-index: 3; top: 50vh; display: block; width: 23px; height: 9px; margin: 0 0 -9px calc(var(--mx) - 11px); pointer-events: none;
+  background: radial-gradient(circle, var(--acc) 0 2px, transparent 2.6px) center / 9px 9px no-repeat, linear-gradient(var(--acc), var(--acc)) center / 23px 1px no-repeat;
+  filter: drop-shadow(0 0 5px var(--acc)); translate: 0 -4px; }
+
+/* ── the reading plate (was a rounded glass card) ─────────────────── */
+[data-ad] .sc__panel { width: min(540px, 100%); padding: 30px 52px 30px var(--pl); border: 0; border-radius: 0; background: none; box-shadow: none;
+  -webkit-backdrop-filter: none; backdrop-filter: none; }
+[data-ad] .sc__panel::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: rgb(6 7 11 / .86); -webkit-backdrop-filter: var(--glass-panel-fx); backdrop-filter: var(--glass-panel-fx);
+  --fade: linear-gradient(transparent, #000 26px, #000 calc(100% - 26px), transparent);
+  -webkit-mask: linear-gradient(90deg, #000 90%, transparent), var(--fade); -webkit-mask-composite: source-in;
+  mask: linear-gradient(90deg, #000 90%, transparent), var(--fade); mask-composite: intersect; }
+/* the scene being read lights its stretch of the meridian */
+[data-ad] .sc__panel::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; pointer-events: none; opacity: 0;
+  background: linear-gradient(transparent, var(--acc) 64px, var(--acc) calc(100% - 64px), transparent); box-shadow: 0 0 10px var(--acc);
+  transition: opacity .8s var(--ease); }
+[data-ad] .sc.is-active .sc__panel::after, [data-ad].no-webgl .sc__panel::after { opacity: 1; }
+@media (max-width: 760px) { [data-ad] .sc__panel { padding: 24px 18px 22px var(--pl); }
+  [data-ad] .sc__panel::before { -webkit-mask: var(--fade); mask: var(--fade); } }
+
+/* a scene opens with its reading: number and date, in mono, like a log entry */
+[data-ad] [data-scenes] { counter-reset: scene; }
+[data-ad] .sc { counter-increment: scene; }
+[data-ad] .sc__date { margin: 0 0 16px; font: 500 var(--fs-label)/1.4 var(--mono); letter-spacing: .04em; text-transform: uppercase; font-style: normal; color: var(--acc); }
+[data-ad] .sc__date::before { content: counter(scene, decimal-leading-zero); display: inline-block; margin-right: 12px; padding-right: 12px; border-right: 1px solid var(--line-2); color: var(--text-2); }
+/* scene titles in mixed case: a sentence reads faster than capitals, and the capitals stay for the monuments */
+[data-ad] .sc__title { text-transform: none; font-size: clamp(2.15rem, 1.45rem + 1.6vw, 3rem); line-height: 1; letter-spacing: -.012em; }
+[data-ad] .sc__title em { color: var(--read-2); }
+/* a title without a lead phrase ("Full employment against stable prices") reads as one sentence, not a split word */
+[data-ad] .sc__title em.w { display: inline; font-style: normal; color: inherit; }
+/* phones keep WP-03's approved title size, with a little less leading than on desktop: a keyboard jump to a scene can
+   land its panel low on a phone screen, and the focused title must still end inside the screen */
+@media (max-width: 760px) { [data-ad] .sc__title { font-size: min(2rem, 8.6vw); line-height: .96; } [data-ad] .sc__date { margin-bottom: 10px; } }
+[data-ad] .sc__body { margin-top: 22px; }
+
+/* blocks are indexed on the meridian instead of ruled across the plate */
+[data-ad] .sc__block { position: relative; margin-top: 34px; padding-top: 0; border-top: 0; }
+[data-ad] .sc__block::before { content: ""; position: absolute; left: calc(-1 * var(--pl) - 5px); top: 6px; width: 11px; height: 1px; background: var(--mer-major); }
+[data-ad] .sc__label { margin-bottom: 12px; color: var(--text-2); }
+/* why it matters: the scene's idea, a serif statement marked on the meridian */
+[data-ad] .sc__why p { font-size: 22px; line-height: 1.24; }
+[data-ad] .sc__why::after { content: ""; position: absolute; left: calc(-1 * var(--pl) - 1px); top: 26px; bottom: 3px; width: 3px; border-radius: 2px; background: var(--acc); opacity: .4; transition: opacity .8s var(--ease), box-shadow .8s; }
+[data-ad] .sc.is-active .sc__why::after, [data-ad].no-webgl .sc__why::after { opacity: 1; box-shadow: 0 0 12px var(--acc); }
+
+/* judgement: two columns of argument and a verdict, ruled rather than boxed */
+[data-ad] .sc__judge { gap: 18px 22px; }
+[data-ad] .sc__judge > div { padding: 0 0 0 14px; border: 0; border-left: 1px solid var(--line-2); border-radius: 0; background: none; }
+[data-ad] .sc__verdict { padding: 16px 0 0 !important; border: 0 !important; border-top: 1px solid color-mix(in oklab, var(--acc) 45%, transparent) !important; background: none !important; }
+[data-ad] .sc__verdict p { font-size: 21px; }
+[data-ad] .sc__mis p { border-radius: 4px; }
+/* the controls a student presses keep a frame; it is squarer, so it reads as an instrument, not a card */
+[data-ad] .sc__check { border-radius: 6px; background: rgb(255 255 255 / .03); }
+
+/* ── sequences on the meridian ─────────────────────────────────────── */
+/* chain of analysis: each step a node on the line; a step not reached yet is quieter (≥ 4.5:1), a reached one is
+   lit and joined to the last by a lit stretch of the line; the step that moves the map is a diamond */
+[data-ad] .chain2 { margin-top: 2px; }
+[data-ad] .chain2 li { grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 0; opacity: 1; transform: none; color: var(--unread); transition: color .5s var(--ease); }
+[data-ad] .chain2 li > .mono { display: block; width: auto; height: auto; padding-top: 3px; border: 0; border-radius: 0; background: none !important; box-shadow: none !important; color: var(--unread-2); transition: color .5s var(--ease); }
+[data-ad] .chain2 li::before { content: ""; position: absolute; left: calc(-1 * var(--pl) - 3px); top: 16px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ink); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .5); transition: background .5s var(--ease), box-shadow .5s var(--ease); }
+[data-ad] .chain2 li.is-globe::before { border-radius: 1px; rotate: 45deg; }
+[data-ad] .chain2 li:not(:last-child)::after { left: calc(-1 * var(--pl)); top: 20px; bottom: -12px; width: 1px; background: var(--acc); opacity: 0; transition: opacity .5s var(--ease); }
+[data-ad] .chain2 li.is-on { color: var(--read); }
+[data-ad] .chain2 li.is-on > .mono { color: var(--acc); }
+[data-ad] .chain2 li.is-on::before { background: var(--acc); box-shadow: 0 0 0 3px color-mix(in oklab, var(--acc) 24%, transparent), 0 0 12px var(--acc); }
+[data-ad] .chain2 li.is-on:has(+ li.is-on)::after { opacity: .9; }
+[data-ad].no-motion .chain2 li { color: var(--read); }
+
+/* cascade of events: the same nodes; the whole run lights in turn when the scene is read */
+[data-ad] .cascade::before { display: none; }
+[data-ad] .cascade li { grid-template-columns: 1fr; padding: 10px 0 12px; opacity: 1; transition: none; }
+[data-ad] .cascade li > .mono, [data-ad] .cascade li > b, [data-ad] .cascade li > span:last-child { grid-column: 1; }
+[data-ad] .cascade li > * { transition: color .6s var(--ease) calc(var(--k) * 240ms); }
+[data-ad] .cascade li > .mono { color: var(--unread-2); }
+[data-ad] .cascade b { color: var(--unread); }
+[data-ad] .cascade li > span:last-child { color: var(--unread); }
+[data-ad] .cascade__dot { position: absolute; left: calc(-1 * var(--pl) - 4px); top: 14px; width: 9px; height: 9px; margin: 0;
+  background: var(--ink); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .5); }
+[data-ad] .cascade li:not(:last-child)::after { content: ""; position: absolute; left: calc(-1 * var(--pl)); top: 23px; bottom: -14px; width: 1px; background: var(--acc); opacity: 0;
+  transition: opacity .5s var(--ease) calc(var(--k) * 240ms + 240ms); }
+[data-ad] :is(.sc.is-active, .no-webgl *) .cascade li > .mono { color: var(--acc); }
+[data-ad] :is(.sc.is-active, .no-webgl *) .cascade b { color: #fff; }
+[data-ad] :is(.sc.is-active, .no-webgl *) .cascade li > span:last-child { color: var(--read); }
+[data-ad] :is(.sc.is-active, .no-webgl *) .cascade__dot { background: var(--acc); box-shadow: 0 0 0 3px color-mix(in oklab, var(--acc) 24%, transparent), 0 0 14px var(--acc); }
+[data-ad] :is(.sc.is-active, .no-webgl *) .cascade li::after { opacity: .9; }
+
+/* ── part openers: the monument, its stretch of the meridian lit ───── */
+[data-ad] .part { position: relative; }
+[data-ad] .part::before { content: ""; position: absolute; left: 0; top: 12%; bottom: 12%; width: 1px; pointer-events: none;
+  background: linear-gradient(transparent, var(--acc), transparent); box-shadow: 0 0 12px var(--acc); }
+[data-ad] .part .tag { height: auto; padding: 0; border: 0; border-radius: 0; background: none; color: var(--acc); letter-spacing: .06em; }
+[data-ad] .part .tag::before { content: ""; width: 22px; height: 1px; margin: 0 12px 0 calc(-1 * var(--pl) - 11px); background: var(--acc); }
+
+/* ── the chapter opening: the cue runs twice once the chapter is entered, then rests ────── */
+[data-ad] .ch-cue::before { animation-iteration-count: 2; } /* at rest the line stands drawn */
+[data-ad]:not(.is-ready) .ch-cue::before { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ad] .chain2 li, [data-ad] .chain2 li > *, [data-ad] .cascade li > *, [data-ad] .sc__panel::after { transition: none; }
+}
