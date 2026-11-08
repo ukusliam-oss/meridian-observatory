@@ -407,6 +407,20 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
 - Quality, measured at DPR 2 on the M5 (KQ6, headless with the real GPU): 60 fps on all three; canvas 1800×1125
   (saver), 2520×1575 (standard), 2880×1800 (high). The headless GPU timer reads unreliably high; trust the built-in
   browser's earlier figures (standard 7.2 ms, high 17.9 ms at the hero).
+- The chapters as film (WP-04X, 2026-11-08, after the three directed scenes): every scene of the three chapters is shot
+  like the directed pages, which no longer exist as pages of their own. The globe is seen through their lens
+  (`src/scene/lens.js` with `display: true`: the globe's display values taken back to linear, toned by brightness only
+  so map hues keep their legend's, strong colour gives up 28%; `look` 0 draws without it). A scene is a 60vh length of
+  empty scroll (the flight), a title card (date, italic lead, capitals), captions held at the foot of the frame
+  (`.sc__step` > sticky `.sc__fix`; each paragraph cut at sentence ends into captions of about equal length, at most
+  ~46 words; lit by the caption line at 75% of the screen) and its notes (charts, chains, judgement, checks, facts)
+  running over the dimmed frame like credits (`world.setDim`). The HUD and the ribbon's track are gone; the year stays
+  bottom right in the serif. A scene with `scene: { film, shots, years, hint, keys }` (tq-25 `eyja`, kq6-g4 `berlin`,
+  mp-a3 `prices`) mounts `assets/js/{eyja,berlin,prices}.js` over the globe once the reader stops within two scenes
+  of it: as the camera lands the film comes up, its shots follow the steps, and its last step asks the reader to point.
+  Heights, terrain and films load only after the scroll has stopped for 250 ms (a jump spends a while in the long
+  scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; the 12 chapter screenshot baselines are not
+  updated (awaiting approval).
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

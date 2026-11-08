@@ -1052,6 +1052,12 @@ export default {
         city: 'berlin',
       },
       title: '9 November: the Wall opens',
+      // directed on its own (src/scene/berlin.js, WP-04X): as the camera lands, the night city on the real 1989 border
+      // takes the frame; Bornholmer Straße opens with the last caption, then the reader asks which side a place was on
+      scene: { film: 'berlin', shots: [0, 0, 0, 0, 0, 1, 2],
+        hint: 'Move across the city to see which side a place was on, and how far it was from the Wall.',
+        keysLabel: 'Ask about',
+        keys: [{ label: 'The Brandenburg Gate', v: 'gate' }, { label: 'Bornholmer Straße', v: 'bornholmer' }, { label: 'Bernauer Straße', v: 'bernauer' }] },
       body: `<p>In East Germany, protest grew week by week. On <b>9 October</b> about <b>70,000</b> people marched in <b>Leipzig</b>. The authorities had prepared to use force, but the march stayed peaceful. A week later 120,000 marched. On <b>18 October</b> Erich Honecker was pushed out by his own Politburo.</p>
 <p>The new leaders hoped to calm the country by easing travel rules. On the evening of <b>9 November</b>, at a live press conference, Politburo member <b>Günter Schabowski</b> announced the new rules. Asked when they started, he answered "immediately". In fact they were meant to start the next day.</p>
 <p>Thousands of East Berliners went to the crossings. At about 11.30 p.m. the overwhelmed guards at <b>Bornholmer Straße</b> opened the barrier.</p>`,

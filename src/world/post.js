@@ -49,7 +49,7 @@ const COMP = `uniform sampler2D uSrc, uBloom; uniform float uBloomK, uExposure, 
     gl_FragColor = vec4(c, 1.);
   }`;
 
-const encodeOut = m => {
+export const encodeOut = m => {
   m.userData.srgbOut = true;
   const prev = m.onBeforeCompile;
   m.onBeforeCompile = (sh, r) => { prev?.call(m, sh, r); sh.fragmentShader = sh.fragmentShader.replace('#include <colorspace_fragment>', 'gl_FragColor = sRGBTransferOETF( gl_FragColor );'); };

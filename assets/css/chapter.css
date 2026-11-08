@@ -517,17 +517,6 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 /* ── the HUD: the instrument's frame over the map (chapter.js). It sits on the world layer, so panels pass over it
    and blur it like anything else on the map. Ticks at the four corners, the scene's number and the camera's position
    at the bottom right under the date ribbon (the panels hold the left), in the readings' faint mono. ── */
-.hud { position: absolute; inset: 16px; z-index: 1; pointer-events: none; transition: opacity .4s var(--ease); }
-.hud > i { position: absolute; width: 10px; height: 10px; border: 0 solid rgb(255 255 255 / .3); }
-.hud > i:nth-child(1) { left: 0; top: 0; border-width: 1px 0 0 1px; }
-.hud > i:nth-child(2) { right: 0; top: 0; border-width: 1px 1px 0 0; }
-.hud > i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 1px 1px; }
-.hud > i:nth-child(4) { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
-.hud__read { position: absolute; right: calc(var(--gutter) - 16px); bottom: 12px; display: grid; justify-items: end; gap: 5px; margin: 0;
-  font-size: 11px; letter-spacing: .04em; color: rgb(255 255 255 / .5); font-variant-numeric: tabular-nums; white-space: pre; }
-.hud__read span:first-child { color: rgb(255 255 255 / .72); }
-.is-past .hud { opacity: 0; }
-@media (max-width: 760px) { .hud__read { display: none; } .hud { inset: 10px; } }
 
 /* ── glossary chips (chapter.js): a term already introduced, recalled in a later scene ── */
 .gl { display: inline; padding: 0; font: inherit; color: inherit; text-align: inherit; cursor: help;
@@ -542,3 +531,116 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 .gl-card[hidden] { display: none; }
 .gl-card__k { font: 500 11px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--acc); }
 .gl-card__d { font-size: 15px; line-height: 1.5; color: rgb(255 255 255 / .88); }
+
+/* ── a scene directed as a film of its own (WP-04X): its still, its title, the way in ── */
+.sc__film:focus-visible { outline: 2px solid var(--acc); outline-offset: 6px; border-radius: 6px; }
+
+/* ── the chapter as a film (WP-04X) ───────────────────────────────────
+   Every scene is shot like the directed scenes: the frame is seen through their lens (the engine draws its own
+   vignette, grade and grain, so the CSS vignette goes), the voice is the serif's, centred and quiet over a large
+   image, and one accent (the chapter's colour) is all the colour the words carry. A scene is a length of empty scroll
+   in which the camera flies, a title card, captions that come to rest at the foot of the frame while the shot holds,
+   and its notes running over the dimmed frame like a film's credits. */
+.chapter { --cap-b: clamp(104px, 13vh, 150px); --film-ink: #ece7de; --film-2: rgb(236 231 222 / .78); --film-3: rgb(236 231 222 / .62); }
+.world__vignette { display: none; }
+.film { position: absolute; inset: 0; z-index: 1; }
+.film canvas { display: block; width: 100%; height: 100%; }
+.sc, .sc + .sc { padding: 0; }
+.sc__fly { height: 60vh; }
+.sc__step { min-height: 80vh; display: flex; flex-direction: column; justify-content: flex-end; }
+.sc__fix { position: sticky; bottom: var(--cap-b); width: min(100% - 2 * var(--gutter), 720px); margin-inline: auto; display: grid; justify-items: center; gap: 16px; text-align: center;
+  opacity: 0; filter: blur(6px); transition: opacity .7s ease, filter .7s ease; }
+.sc__step.is-on .sc__fix { opacity: 1; filter: none; transition: opacity 1.1s cubic-bezier(.16, 1, .3, 1), filter 1.1s cubic-bezier(.16, 1, .3, 1); }
+/* the title card holds at the frame's middle */
+.sc__card { min-height: 90vh; justify-content: flex-start; }
+.sc__card .sc__fix { top: 34vh; bottom: auto; gap: 18px; }
+.sc__kick { margin: 0; font: 400 14px/1.3 var(--serif); letter-spacing: .24em; text-transform: uppercase; color: var(--film-2); }
+.sc__kick::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 12px 2px 0; border-radius: 50%; background: var(--acc); box-shadow: 0 0 10px var(--acc); }
+.sc__date { font-style: normal; color: var(--film-2); }
+.sc__title, .part__title { margin: 0; font-family: var(--serif); font-weight: 400; line-height: .92; color: var(--film-ink); text-wrap: balance; }
+.sc__title em, .part__title em { display: block; margin-bottom: .55em; font-size: clamp(1.25rem, .9rem + 1.1vw, 2.1rem); line-height: 1.1; font-style: italic; color: var(--film-2); }
+.sc__title span, .part__title span { display: block; font-size: clamp(2.3rem, 1rem + 4.2vw, 5.4rem); letter-spacing: .01em; text-transform: uppercase; text-shadow: 0 0 40px rgb(0 0 0 / .5); }
+/* captions: serif, centred, over the lower third */
+.sc__body { margin: 0; font-size: inherit; line-height: inherit; color: inherit; }
+.sc__cap { max-width: 40ch; margin: 0; font: 400 clamp(1.18rem, .98rem + .62vw, 1.6rem)/1.3 var(--serif); text-wrap: pretty; color: rgb(236 231 222 / .9); text-shadow: 0 1px 24px rgb(0 0 0 / .7); }
+.sc__cap b { font-weight: 400; color: #fff; }
+.sc__cap .gl { font: inherit; }
+/* a directed scene's question: a hint, the places to ask about, the answer */
+.sc__hint { max-width: 46ch; margin: 0; font: 400 14px/1.5 var(--sans); color: var(--film-2); text-shadow: 0 1px 16px rgb(0 0 0 / .8); }
+.sc__keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; }
+.sc__keys button { font: 400 15px var(--serif); letter-spacing: .1em; text-transform: uppercase; color: var(--film-ink); background: none; border: 0; border-bottom: 1px solid rgb(236 231 222 / .35); padding: 8px 0 5px; cursor: pointer; }
+.sc__keys button:hover { border-color: var(--film-ink); }
+.sc__keys button:focus-visible { outline: 1px solid var(--acc); outline-offset: 6px; }
+.sc__read { min-height: 1.5em; margin: 0; font: 400 13px var(--sans); letter-spacing: .06em; color: var(--acc); font-variant-numeric: tabular-nums; }
+.no-webgl .sc__ask { display: none; }
+
+/* the notes: the frame dims and they run over it like credits, in one column */
+.sc__notes { width: min(100% - 2 * var(--gutter), 620px); margin: 0 auto; padding: 34vh 0 30vh; display: grid; gap: 40px; color: var(--film-2); }
+.sc__notes .sc__block { margin: 0; padding: 0; border: 0; }
+.sc__label, .sc__notes .mono, .sc__chart .mono { font-family: var(--serif); font-size: 13px; font-weight: 400; letter-spacing: .2em; text-transform: uppercase; color: var(--film-3); }
+.sc__notes > .sc__block > .sc__label, .sc__notes > .sc__chart > figcaption:first-child { display: block; margin-bottom: 14px; text-align: center; }
+.sc__why p { font: 400 clamp(1.35rem, 1.05rem + .9vw, 1.85rem)/1.25 var(--serif); font-style: normal; text-align: center; text-wrap: balance; color: var(--film-ink); }
+.sc__eval { display: grid; gap: 10px; font-size: 15.5px; line-height: 1.5; }
+.sc__mis p { padding: 0; border-radius: 0; background: none !important; font: 400 1.2rem/1.35 var(--serif); }
+.sc__mis .is-wrong { color: var(--film-3); }
+.sc__mis .is-right { color: var(--film-ink); }
+.sc__mis .sc__label { display: block; margin-bottom: 6px; }
+.sc__judge > div { background: none; border: 0; border-top: 1px solid rgb(236 231 222 / .14); border-radius: 0; padding: 14px 0 0; }
+.sc__verdict { background: none !important; border-color: rgb(236 231 222 / .14) !important; text-align: center; }
+.sc__verdict p { font-size: clamp(1.25rem, 1rem + .7vw, 1.6rem); }
+.sc__check { background: none; border: 1px solid rgb(236 231 222 / .16); border-radius: 4px; }
+.sc__check .q { font: 400 1.2rem/1.35 var(--serif); }
+.sc__check .a { color: var(--film-ink); }
+.sc__check[aria-expanded="true"] { border-color: color-mix(in oklab, var(--acc) 50%, transparent); }
+.sc__facts summary { justify-content: center; gap: 14px; color: var(--film-2); }
+.src { background: none; border: 1px solid color-mix(in oklab, var(--acc) 45%, transparent); }
+.sc__chart { margin: 0; }
+
+/* parts and the opening: title cards over the frame */
+.part { min-height: 100vh; margin: 0; display: grid; place-items: center; text-align: center; }
+.part__in { width: min(100% - 2 * var(--gutter), 900px); display: grid; justify-items: center; gap: 22px; }
+.part__title span { font-size: clamp(2.6rem, 1rem + 5.6vw, 7rem); }
+.part__fps { display: grid; gap: 6px; font: 400 14px/1.45 var(--sans); color: var(--film-3); max-width: 60ch; }
+.part__fps span { color: var(--film-2); }
+.ch-hero { align-items: center; justify-content: center; text-align: center; }
+.ch-hero .ch-wrap { display: grid; justify-items: center; }
+.ch-hero .mono { font: 400 14px/1.5 var(--serif); letter-spacing: .2em; text-transform: uppercase; color: var(--film-2); max-width: 56ch; }
+.ch-hero__title { max-width: min(16em, 100%) !important; font-family: var(--serif); font-weight: 400; line-height: .95; text-transform: uppercase; color: var(--film-ink); text-wrap: balance; }
+.ch-hero__title em { display: block; margin-bottom: .45em; font-size: .42em; line-height: 1.1; text-transform: none; white-space: normal; background: none !important; -webkit-background-clip: border-box; background-clip: border-box; color: var(--film-2) !important; }
+.ch-hero__row { justify-content: center; }
+.ch-cue { color: var(--film-3); font-family: var(--serif); letter-spacing: .2em; }
+.ch-cue::before { background: linear-gradient(var(--film-ink), transparent); }
+.ch-draft { color: var(--film-3); }
+
+/* what is read off the frame: the year in the serif at the foot, right; place names lettered on the map */
+.ribbon { left: auto; right: clamp(18px, 3vw, 40px); bottom: 24px; width: auto; }
+.ribbon__track, .ribbon__ends { display: none; }
+.ribbon__date { margin: 0; }
+.ribbon__year { font-size: clamp(2.4rem, 1.6rem + 2vw, 3.6rem); line-height: 1; opacity: .88; color: var(--film-ink); }
+.world__marker span { background: none; border: 0; -webkit-backdrop-filter: none; backdrop-filter: none; padding: 2px 4px; font: 400 13px/1.2 var(--serif); letter-spacing: .16em; text-transform: uppercase; color: var(--film-ink); text-shadow: 0 1px 12px #000, 0 0 3px #000; }
+
+/* the end of the chapter, in the same voice */
+.ch-end__title { font-family: var(--serif); font-weight: 400; text-transform: uppercase; }
+.ch-card { background: none; border: 0; border-top: 1px solid rgb(236 231 222 / .14); border-radius: 0; padding: 26px 0 0; }
+.ch-card h3 { font-family: var(--serif); letter-spacing: .2em; }
+
+@media (max-width: 760px) {
+  .chapter { --cap-b: calc(env(safe-area-inset-bottom) + 150px); }
+  .sc__step { min-height: 76vh; }
+  .sc__card .sc__fix { top: 26vh; }
+  .sc__title span { font-size: min(2.2rem, 8.6vw); }
+  .part__title span { font-size: min(3rem, 10.4vw); }
+}
+@media (prefers-reduced-motion: reduce) { .sc__fix, .sc__step.is-on .sc__fix { transition: none; filter: none; } }
+.ch-hero__row { flex-direction: column; gap: 18px; }
+.ch-hero__row .mono { max-width: 52ch; font-size: 13px; color: var(--film-3); }
+.sc__check .sc__label { display: flex; justify-content: space-between; gap: 16px; }
+/* the captions rest low and the notes run under a dimmed nav: no band under the nav over the frame */
+.chapter .nav::before { display: none; }
+.world__legend, .world__labels { transition: opacity .5s ease; }
+.has-film .world__legend, .has-film .world__labels, .is-notes .world__legend, .is-notes .world__labels, .is-card .world__labels { opacity: 0; pointer-events: none; }
+/* a film's subtitles: a soft shade behind each caption, so it reads over a bright frame as over a dark one */
+.sc__step:not(.sc__card) .sc__fix { isolation: isolate; }
+.sc__step:not(.sc__card) .sc__fix::before { content: ""; position: absolute; inset: -34% -14%; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgb(5 6 10 / .66), rgb(5 6 10 / .34) 62%, transparent); }
+/* the shade reaches past the caption's column; clipped (not a scroll box, so the captions still hold) */
+.sc { overflow-x: clip; }

@@ -23,7 +23,7 @@ import { R_KM, clamp, smooth, ll, setViewport, placeCamera, footprint, textureSi
 import { geoInterpolate, geoDistance } from 'd3-geo';
 import { mesh } from 'topojson-client';
 import { DEG, dayNum, PALETTE, WALL_DOWN, featuresOf, countriesAt, runJob } from './paint.js';
-import { createPost } from './post.js';
+import { createLens } from '../scene/lens.js';
 import { pointsLayer, plateLines, loadDem, terrainPatch, sectionOf, cutaway, PLATE_COLOR, DEPTH_STOPS, VOLCANO_COLOR, MMI_COLOR, MMI_ROMAN } from './layers.js';
 
 export { PALETTE, ll };
@@ -987,11 +987,12 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     markerEls.set(i, list); return list;
   };
 
-  // ── light: with `look` the frame goes through the post pipeline (bloom, shoulder, grade, vignette, grain) ──────
-  // look 1: the light's shaders only (the sun-side rim and air, the sea's glint); look 2 adds the post pipeline, which
-  // measured 10.7 ms of GPU a frame at DPR 1.75 on an M5 (KQ6 hero: 7.2 → 17.9 ms median), too much for smaller Macs
+  // ── light: with `look` the frame is seen through the directed scenes' lens (src/scene/lens.js: filmic tone, the
+  // near-monochrome grade that keeps strong colour, vignette, soft edges, the darker lower third, grain), so the chapters
+  // and the scenes are one film. look 0 (saver) draws the frame as it is.
   let cap = dprCap;
-  let post = look >= 2 ? createPost(renderer, { phone }) : null;
+  const LENS = { phone, exposure: 1.5, sat: 0.2, grain: 0.03, display: true };
+  let post = look >= 1 ? createLens(renderer, LENS) : null;
   const draw = () => (post ? post.render(scene, camera) : renderer.render(scene, camera));
 
   // ── camera ────────────────────────────────────────────────────────────────
@@ -1006,7 +1007,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap ?? (phone ? 1.5 : 1.75)));
     renderer.setSize(W, H, false);
     setViewport(camera, W, H);
-    if (post) post.setSize(W, H, renderer.getPixelRatio());
+    if (post) post.setSize(Math.round(W * renderer.getPixelRatio()), Math.round(H * renderer.getPixelRatio()));
     lineRes.set(W, H);
     if (refKey(W, H) !== refKey(...REF)) { REF = [W, H]; stateCache.clear(); } // the next frames ask for textures that fit
     for (const list of markerEls.values()) list.forEach(m => { m.w = 0; });
@@ -1138,15 +1139,17 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     // the settings menu's quality: the pixel ratio's cap and the light (0 none, 1 shaders, 2 shaders and post)
     setQuality({ dpr, look: l }) {
       cap = dpr; earthU.uLook.value = air.material.uniforms.uLook.value = l ? 1 : 0;
-      if (l >= 2 && !post) post = createPost(renderer, { phone });
-      if (l < 2 && post) { post.dispose(); post = null; }
+      if (l >= 1 && !post) post = createLens(renderer, LENS);
+      if (l < 1 && post) { post.dispose(); post = null; }
       resize();
     },
     // the height profile along a section line: { prof: [{ d km, h m }], total km }, or null without the site's heights
     async profile(site, from, to) { const dem = await demOf(site); return dem ? sectionOf(dem, from, to, 1) : null; },
     heightsReady: site => demOf(site).then(Boolean),
     stats,
-    get post() { return post; }, // the light's settings, when `look` is 2
+    get post() { return post; }, // the lens, when `look` is 1 or more
+    // the frame darkens while the scene's notes are read over it (1 clear … 0.4 dim)
+    setDim(k) { if (post && post.uniforms.uDim.value !== k) { post.uniforms.uDim.value = k; dirty = true; } },
     camera, // for checks in the preview
     destroy() { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); paint.destroy(); renderer.dispose(); },
   };

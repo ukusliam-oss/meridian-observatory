@@ -84,11 +84,11 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`journeys at ${vpNam
     const w = watch(page);
     await open(page, 'history/kq6.html');
     await menuJump(page, 13); await expect.poll(() => activeScene(page)).toBe(13);
-    await expect(page.locator('.sc.is-active .sc__panel')).toBeVisible();
+    await expect(page.locator('.sc.is-active [data-panel]')).toBeVisible();
     await open(page, 'economics/macro-policy.html');
     await menuJump(page, 14); await expect.poll(() => activeScene(page)).toBe(14);
-    await expect(page.locator('.sc.is-active .sc__panel')).toBeVisible();
-    await expect(page.locator('[data-world] canvas')).toBeVisible();
+    await expect(page.locator('.sc.is-active [data-panel]')).toBeVisible();
+    await expect(page.locator('[data-world] .world__canvas')).toBeVisible();
     expect(await noHorizontalOverflow(page)).toBe(true);
     expect(w.errors).toEqual([]);
   });

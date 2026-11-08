@@ -120,7 +120,7 @@ for (let run = 1; run <= RUNS; run++) for (const vpName of WIDTHS) test.describe
     record({ scenario: 'menu-26', ...env(vpName), run, ...m, net: net.since(n1) });
     // rapid scroll from 26 back to scene 4 over 3 s
     await armCamera(page);
-    const n2 = net.snapshot(), t0 = await page.evaluate(() => { window.__meridianLenis.scrollTo(document.querySelectorAll('.sc')[3].querySelector('.sc__panel').getBoundingClientRect().top + scrollY - innerHeight / 2, { duration: 3, force: true }); return performance.now(); });
+    const n2 = net.snapshot(), t0 = await page.evaluate(() => { window.__meridianLenis.scrollTo(document.querySelectorAll('.sc')[3].querySelector('.sc__card').getBoundingClientRect().top + scrollY - innerHeight * 0.3, { duration: 3, force: true }); return performance.now(); });
     const r = await arrival(page, 3, 'tq-3', t0); await settled(page);
     record({ scenario: 'rapid-scroll', ...env(vpName), run, ...r, net: net.since(n2), tiles: (await engine(page)).mx.tiles });
   });
@@ -144,7 +144,7 @@ for (let run = 1; run <= RUNS; run++) for (const vpName of WIDTHS) test.describe
     const rows = [];
     for (let k = 0; k <= 16; k++) {
       const id = await sceneId(page, k); await armCamera(page);
-      const t0 = await page.evaluate(k => { const q = document.querySelectorAll('.sc')[k].querySelector('.sc__panel'); window.__meridianLenis.scrollTo(q.getBoundingClientRect().top + scrollY - innerHeight / 2, { duration: 1.2, force: true }); return performance.now(); }, k);
+      const t0 = await page.evaluate(k => { const q = document.querySelectorAll('.sc')[k].querySelector('.sc__card'); window.__meridianLenis.scrollTo(q.getBoundingClientRect().top + scrollY - innerHeight * 0.3, { duration: 1.2, force: true }); return performance.now(); }, k);
       const sr = await when(page, `${C.active(k)} && ${C.shown(id, t0)}`, 10_000);
       await page.waitForTimeout(5000);
       const st = await page.evaluate(id => ({ tr: window.__mx.tDone.find(x => x.id === id && x.any)?.t ?? null, needed: window.__mx.tStart.some(x => x.id === id) }), id);

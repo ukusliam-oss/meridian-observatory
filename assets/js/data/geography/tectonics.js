@@ -455,6 +455,12 @@ export default {
       camera: { lat: 63.63, lon: -19.62, alt: 34, tilt: 50, ground: 1 },
       map: { borders: 'none', relief3d: { site: 'eyjafjallajokull', exag: 1.5 }, markers: [{ at: [63.63, -19.62], label: 'Summit crater' }] },
       title: 'Example: Eyjafjallajökull, Iceland, 2010',
+      // directed on its own (src/scene/eyja.js, WP-04X): as the camera lands, the volcano from its real heights takes the
+      // frame; a shot per step (card and captions, then the question), the last asking where meltwater would run
+      scene: { film: 'eyja', shots: [0, 0, 1, 1, 2, 2, 2],
+        hint: 'Move across the ice to see which way its meltwater runs: the steepest way down, calculated from the heights.',
+        keysLabel: 'Trace the meltwater from',
+        keys: [{ label: 'The summit crater', v: '63.63,-19.62' }, { label: 'The north ice', v: '63.648,-19.625' }, { label: 'The east ice', v: '63.618,-19.56' }] },
       body: `<p><b>Causes</b>: Iceland lies on the Mid-Atlantic Ridge, where the North American and Eurasian plates move apart. Magma rises into the gaps. Eyjafjallajökull is a strato-volcano covered by an ice cap, shown here with its heights raised one and a half times.</p>
         <p><b>Impacts</b>: the summit eruption began on 14 April 2010 under the ice. Meltwater floods poured down the valleys, and about 800 local people were evacuated. Fine ash spread over Europe and closed most airspace from 15 to 20 April: more than 100,000 flights were cancelled, and airlines lost about US$1.7 billion.</p>
         <p><b>Responses</b>: monitoring gave two to three hours' warning to close the main road, and road workers cut holes in it in three places to steer the flood water to the sea and protect the bridges. In the longer term, aviation authorities changed the rules so that planes could fly through areas of thin ash, so that airspace would not have to close completely again.</p>`,

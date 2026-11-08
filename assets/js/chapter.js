@@ -3,7 +3,7 @@
 // The text works without WebGL: if the globe cannot start, the page is still a complete chapter.
 // The page names its data file in <body data-chapter>; anything a chapter does not set falls back to KQ6's values.
 
-import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, decode, navOffset } from './core.js';
+import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, navOffset } from './core.js';
 import { MT, strokeBorder, aurora, animIcon, drawIn, nudge } from './glass.js';
 const { default: data } = await import(document.body.dataset.chapter || './data/history/kq6.js');
 const usesValues = data.scenes.some(s => (s.map && (s.map.data || s.map.spikes)) || (s.chart && (s.chart.series || []).some(sr => sr.ind)));
@@ -121,7 +121,7 @@ function drawSection(fig, sec, exag) {
   fig.classList.add('is-drawn');
 }
 function chain(c) {
-  return `<div class="sc__block"><span class="sc__label mono">${esc(c.title || 'Chain of analysis')}</span><ol class="chain2" data-chain>${c.steps.map((x, k) => `<li${k === c.globe ? ' class="is-globe"' : ''}><span class="mono">${k + 1}</span><span>${esc(x)}</span></li>`).join('')}</ol></div>`;
+  return `<div class="sc__block"><span class="sc__label">${esc(c.title || 'Chain of analysis')}</span><ol class="chain2" data-chain>${c.steps.map((x, k) => `<li${k === c.globe ? ' class="is-globe"' : ''}><span class="mono">${k + 1}</span><span>${esc(x)}</span></li>`).join('')}</ol></div>`;
 }
 function chart(c, id) {
   if (c.series && c.series[0] && !Array.isArray(c.series[0])) return lineChart(c, id);
@@ -151,37 +151,64 @@ function cascade(list) {
   return `<ol class="sc__block cascade">${list.map((c, k) => `<li style="--k:${k}"><span class="cascade__dot"></span><span class="mono">${esc(c.when)}</span><b>${esc(c.country)}</b><span>${esc(c.how)} <a class="src mono" href="#src-${c.src}">${srcNo(c.src)}</a></span></li>`).join('')}</ol>`;
 }
 
+// ── the scene as a film (WP-04X) ─────────────────────────────────────────
+// Every scene is shot like the directed scenes: a title card, then its text as captions that hold at the foot of the
+// frame while the shot holds, then its notes (charts, chains, judgement, checks, facts) running over the dimmed frame
+// like a film's credits. A paragraph is cut at its sentence ends into captions of about the same length, each a few
+// seconds' reading (at most ~46 words), so no caption is a wall of text and none is a stray half-line.
+const words = t => plain(t).split(' ').filter(Boolean).length;
+function captions(html) {
+  const out = [];
+  for (const p of html.match(/<p>[\s\S]*?<\/p>/g) || [html]) {
+    const sents = p.replace(/^<p>|<\/p>$/g, '').trim().split(/(?<=[.!?]["”’)]?)\s+(?=[A-Z"“‘(<])/);
+    const total = sents.reduce((n, t) => n + words(t), 0), each = total / Math.ceil(total / 46);
+    let cur = [], n = 0;
+    for (const t of sents) { const w = words(t); if (cur.length && n + w / 2 > each) { out.push(cur.join(' ')); cur = []; n = 0; } cur.push(t); n += w; }
+    if (cur.length) out.push(cur.join(' '));
+  }
+  return out;
+}
+// a title card: a lead before a colon stands above in italic, the rest in capitals
+const cardTitle = t => { const i = t.indexOf(': '); return i > 0 ? `<em>${esc(t.slice(0, i + 1))}</em><span>${esc(t.slice(i + 2))}</span>` : `<span>${esc(t)}</span>`; };
+const step = (inner, cls = '') => `<div class="sc__step${cls}"><div class="sc__fix">${inner}</div></div>`;
+// a directed scene's own question to the reader: the pointer (or a button) asks the scene, the answer is read out
+const askStep = x => step(`${x.hint ? `<p class="sc__hint">${esc(x.hint)}</p>` : ''}
+  <div class="sc__keys" role="group" aria-label="${esc(x.keysLabel || 'Ask the scene')}">${x.keys.map(k => `<button type="button" data-key="${esc(k.v)}">${esc(k.label)}</button>`).join('')}</div>
+  <p class="sc__read" data-read aria-live="polite"></p>`, ' sc__ask');
 function sceneHTML(s, i) {
   const pi = partOf(i), part = parts[pi];
-  const opener = part.first === i ? `<header class="part ch-wrap" data-part="${pi}">
-      <span class="tag mono">Part ${pi + 1} of ${parts.length}</span>
-      <h2 class="display part__title"><em>${pi === parts.length - 1 ? 'After' : 'Part ' + (pi + 1)}</em>${esc(s.part)}</h2>
-      <div class="part__fps mono">${[...new Set(part.scenes.flatMap(k => scenes[k].syllabus || []))].sort()
+  const opener = part.first === i ? `<header class="part" data-part="${pi}"><div class="part__in">
+      <p class="sc__kick">Part ${pi + 1} of ${parts.length}</p>
+      <h2 class="part__title"><em>${pi === parts.length - 1 ? 'After' : 'Part ' + (pi + 1)}</em><span>${esc(s.part)}</span></h2>
+      <div class="part__fps">${[...new Set(part.scenes.flatMap(k => scenes[k].syllabus || []))].sort()
         .map(t => (data.focusPoints || data.syllabus || []).find(f => f.id === t)).filter(Boolean)
         .filter(f => !data.focusPoints || f.id.startsWith('FP')).map(f => `<span>${f.id} · ${esc(f.text)}</span>`).join('')}</div>
-    </header>` : '';
-  const judge = s.judgement ? `<div class="sc__block"><span class="sc__label mono">Judgement</span><div class="sc__judge">
-      <div class="for"><span class="mono">Arguments for</span><ul>${s.judgement.for.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div class="against"><span class="mono">Arguments against</span><ul>${s.judgement.against.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div class="sc__verdict"><span class="mono">A supported judgement</span><p>${esc(s.judgement.verdict)}</p></div></div></div>` : '';
+    </div></header>` : '';
+  const judge = s.judgement ? `<div class="sc__block"><span class="sc__label">Judgement</span><div class="sc__judge">
+      <div class="for"><span class="sc__label">Arguments for</span><ul>${s.judgement.for.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="against"><span class="sc__label">Arguments against</span><ul>${s.judgement.against.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="sc__verdict"><span class="sc__label">A supported judgement</span><p>${esc(s.judgement.verdict)}</p></div></div></div>` : '';
   const mis = s.misconception ? `<div class="sc__block sc__mis">
-      <p class="is-wrong"><span class="mono">Common mistake</span>${esc(s.misconception.wrong)}</p>
-      <p class="is-right"><span class="mono">In fact</span>${esc(s.misconception.right)}</p></div>` : '';
+      <p class="is-wrong"><span class="sc__label">Common mistake</span>${esc(s.misconception.wrong)}</p>
+      <p class="is-right"><span class="sc__label">In fact</span>${esc(s.misconception.right)}</p></div>` : '';
   return `<section class="sc" id="${s.id}" data-i="${i}">${opener}
-    <div class="ch-wrap"><article class="sc__panel" data-panel>
-      <p class="sc__date">${esc(s.dateLabel)}</p>
-      <h2 class="display sc__title">${title(s.title)}</h2>
-      <div class="sc__body">${s.body}</div>
-      ${s.map && s.map.relief3d && !s.map.section ? demLine(s) : ''}
-      ${s.chart ? chart(s.chart, s.id) : ''}${s.map && s.map.section && s.map.relief3d ? section(s) : ''}${s.chain ? chain(s.chain) : ''}${s.compare ? compare(s.compare) : ''}${s.cascade ? cascade(s.cascade) : ''}
-      <div class="sc__block sc__why"><span class="sc__label mono">Why it matters</span><p>${esc(s.why)}</p></div>
-      ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label mono">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
-      ${mis}${judge}
-      <div class="sc__block"><button class="sc__check" type="button" aria-expanded="false"><span class="mono"><span>Check yourself</span><span>Tap to reveal</span></span>
-        <span class="q">${esc(s.check.q)}</span><span class="a">${esc(s.check.a)}</span></button></div>
-      <details class="sc__block sc__facts"><summary class="mono">Facts and sources (${s.facts.length})</summary>
-        <ol>${s.facts.map(f => `<li>${esc(f.text)}<a class="src mono" href="#src-${f.src}" title="${esc(data.sources[f.src].title)}">${srcNo(f.src)}</a></li>`).join('')}</ol></details>
-    </article></div></section>`;
+    <div class="sc__film" data-panel>
+      <div class="sc__fly" aria-hidden="true"></div>
+      ${step(`<p class="sc__kick sc__date">${esc(s.dateLabel)}</p><h2 class="sc__title">${cardTitle(s.title)}</h2>`, ' sc__card')}
+      <div class="sc__body">${captions(s.body).map(c => step(`<p class="sc__cap">${c}</p>`)).join('')}</div>
+      ${s.scene && s.scene.keys ? askStep(s.scene) : ''}
+      <div class="sc__notes">
+        ${s.map && s.map.relief3d && !s.map.section ? demLine(s) : ''}
+        ${s.chart ? chart(s.chart, s.id) : ''}${s.map && s.map.section && s.map.relief3d ? section(s) : ''}${s.chain ? chain(s.chain) : ''}${s.compare ? compare(s.compare) : ''}${s.cascade ? cascade(s.cascade) : ''}
+        <div class="sc__block sc__why"><span class="sc__label">Why it matters</span><p>${esc(s.why)}</p></div>
+        ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+        ${mis}${judge}
+        <div class="sc__block"><button class="sc__check" type="button" aria-expanded="false"><span class="sc__label"><span>Check yourself</span><span>Tap to reveal</span></span>
+          <span class="q">${esc(s.check.q)}</span><span class="a">${esc(s.check.a)}</span></button></div>
+        <details class="sc__block sc__facts"><summary class="sc__label">Facts and sources (${s.facts.length})</summary>
+          <ol>${s.facts.map(f => `<li>${esc(f.text)}<a class="src mono" href="#src-${f.src}" title="${esc(data.sources[f.src].title)}">${srcNo(f.src)}</a></li>`).join('')}</ol></details>
+      </div>
+    </div></section>`;
 }
 
 $('[data-scenes]').innerHTML = scenes.map(sceneHTML).join('');
@@ -422,20 +449,21 @@ function focusHeading(h) { if (!h) return; h.tabIndex = -1; h.focus({ preventScr
 function sceneHeading(i) { return $(`.sc[data-i="${i}"] .sc__title`); }
 
 // ── scroll → progress ─────────────────────────────────────────────────────
-// A scene holds (p = i exactly) while its panel fills the reading line in the middle of the screen; the
-// camera flies between scenes in the gap between two panels, including the part title screens.
-let holds = [], heroAnchor = 0;
+// A scene holds (p = i exactly) from its title card to the end of its notes; the camera flies in the empty length of
+// scroll before each title card (and over a part's title). Captions are lit by the caption line, three quarters of the
+// way down the screen, where each comes to rest.
+let holds = [], heroAnchor = 0, capsEnd = [], stepsAt = [], notesAt = [];
 const panels = $$('[data-panel]');
 const sections = $$('.sc[data-i]');
+const stepEls = panels.map(p => $$('.sc__step', p));
+const CAP_LINE = 0.75;
 function measure() {
-  const y = scrollY, vh = innerHeight;
-  // on narrow screens the panel covers the map, so a scene settles while its panel is still entering from below
-  const narrow = innerWidth <= 900;
-  holds = panels.map(p => {
-    const r = p.getBoundingClientRect(), top = y + r.top, bot = top + r.height, m = Math.min(vh * 0.3, r.height * 0.3);
-    const start = narrow ? top - vh * 0.32 : top + m;
-    return [start, Math.max(start, bot - m)];
-  });
+  const y = scrollY, vh = innerHeight, abs = el => { const r = el.getBoundingClientRect(); return [y + r.top, y + r.bottom]; };
+  stepsAt = stepEls.map(list => list.map(abs));
+  notesAt = panels.map(p => abs($('.sc__notes', p)));
+  holds = panels.map((p, k) => { const start = stepsAt[k][0][0] - vh * (CAP_LINE - 0.5); return [start, Math.max(start + 1, notesAt[k][1] - vh * 0.2)]; });
+  // a map that steps through years moves through them while the captions are read, and rests on the last under the notes
+  capsEnd = panels.map((p, k) => Math.max(holds[k][0] + 1, notesAt[k][0] - vh * 0.5));
   heroAnchor = vh * 0.5;
 }
 function progressAt(y) {
@@ -454,15 +482,36 @@ function engineP(y) {
   if (c < holds[0][0]) return progressAt(y);
   for (let k = 0; k < N; k++) {
     if (c <= holds[k][1]) {
-      const u = span[k] > 1 ? Math.max(0, Math.min(1, (c - holds[k][0]) / Math.max(1, holds[k][1] - holds[k][0]))) : 0;
+      const u = span[k] > 1 ? Math.max(0, Math.min(1, (c - holds[k][0]) / (capsEnd[k] - holds[k][0]))) : 0;
       return base[k] + u * (span[k] - 1);
     }
     if (k < N - 1 && c < holds[k + 1][0]) return base[k] + span[k] - 1 + (c - holds[k][1]) / (holds[k + 1][0] - holds[k][1]);
   }
   return eScenes.length - 1;
 }
+// the step of scene k under the caption line, and how far through it (null outside the scene's steps)
+function stepOf(k, y) {
+  const A = y + innerHeight * CAP_LINE, list = stepsAt[k] || [];
+  for (let n = 0; n < list.length; n++) if (A >= list[n][0] && A < list[n][1]) return { n, f: (A - list[n][0]) / Math.max(1, list[n][1] - list[n][0]), count: list.length };
+  return null;
+}
+let litEl = null;
+function lightSteps(y, near) {
+  let el = null;
+  for (let k = Math.max(0, near - 1); k <= Math.min(N - 1, near + 1) && !el; k++) { const st = stepOf(k, y); if (st) el = stepEls[k][st.n]; }
+  if (el === litEl) return;
+  litEl?.classList.remove('is-on'); litEl = el; el?.classList.add('is-on');
+  // a title card stands alone on the frame: the map's place names wait for the first caption
+  root.classList.toggle('is-card', !!el?.classList.contains('sc__card'));
+}
+// the frame darkens while the notes run over it, and clears again before the camera flies on
+function dimAt(k, y) {
+  const vh = innerHeight, top = notesAt[k][0] - y, bot = notesAt[k][1] - y;
+  return 1 - 0.68 * smooth(vh * 0.95, vh * 0.45, top) * (1 - smooth(vh * 0.6, vh * 0.15, bot));
+}
 function goTo(i) {
-  const y = holds[i][0] - innerHeight * 0.5 + 4;
+  // to the scene's title card at rest
+  const y = holds[i][0] - innerHeight * 0.5 + innerHeight * 0.45;
   if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
 }
 
@@ -487,22 +536,6 @@ function roll(el, html) {
 }
 let lastShown = -2, lastFr = -1, heightsAt = 0;
 const navBar = $('.nav');
-// the HUD: the instrument's frame over the map, under the panels (corner ticks, the scene's number, where the camera
-// is, its readings running as it flies). It takes the count from the panel and the pill, so each fact is said once.
-const hud = document.createElement('div');
-hud.className = 'hud';
-hud.setAttribute('aria-hidden', 'true');
-hud.innerHTML = '<i></i><i></i><i></i><i></i><p class="hud__read mono"><span data-hud-n></span><span data-hud-cam></span></p>';
-$('[data-world]').append(hud);
-const hudN = $('[data-hud-n]', hud), hudCam = $('[data-hud-cam]', hud);
-const deg = (v, pos, neg) => `${Math.abs(v).toFixed(2)}°${v >= 0 ? pos : neg}`;
-let camText = '';
-function readCamera() {
-  if (!world) return;
-  const c = world.camera.position, r = c.length(), lat = Math.asin(c.y / r) * 180 / Math.PI, lon = Math.atan2(c.x, c.z) * 180 / Math.PI;
-  const t = `${deg(lat, 'N', 'S')}  ${deg(lon, 'E', 'W')}  ·  ALT ${Math.round((r - 1) * 6371).toLocaleString('en-GB')} KM`;
-  if (t !== camText) { camText = t; hudCam.textContent = t; }
-}
 function updateUI(p) {
   const i = Math.max(0, Math.floor(p)), f = p - Math.floor(p);
   const near = p < 0 ? 0 : Math.min(N - 1, Math.round(p));
@@ -512,7 +545,9 @@ function updateUI(p) {
   needle.style.left = `${((d - T0) / (T1 - T0) * 100).toFixed(2)}%`;
   const ep = eScenes.length ? engineP(lenis ? lenis.scroll : scrollY) : -1, es = eScenes[Math.max(0, Math.round(ep))];
   const shown = ep >= -0.5 && es && es.map && (es.map.spikes || es.map.data);
-  yearEl.textContent = shown ? (shown.month ? shown.month.replace(/-(\d\d)$/, (m, mm) => ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+mm - 1]).split(' ').reverse().join(' ') : shown.year) : new Date(d * 864e5).getUTCFullYear();
+  const film = films.get(near);
+  if (film && film.o > 0.5 && film.year != null) yearEl.textContent = film.year;
+  else yearEl.textContent = shown ? (shown.month ? shown.month.replace(/-(\d\d)$/, (m, mm) => ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+mm - 1]).split(' ').reverse().join(' ') : shown.year) : new Date(d * 864e5).getUTCFullYear();
   ribbon.classList.toggle('is-on', p > -0.6 && p < N - 0.6);
   // the bar dims for study as the first screen leaves (p from -0.7 to -0.1), and comes back with it
   const st = Math.min(1, Math.max(0, (p + 0.7) / 0.6));
@@ -521,7 +556,6 @@ function updateUI(p) {
   if (key !== lastShown) {
     lastShown = key;
     const s = scenes[near];
-    decode(hudN, key < 0 ? `${N} SCENES` : `SCENE ${String(near + 1).padStart(2, '0')} / ${N}`, 420);
     // the scene's date is said once, on its panel: the ribbon reads the year, the pill names the part and the scene
     labelEl.textContent = '';
     roll(pillPart, esc(p < -0.5 ? CFG.pill.part : s.part));
@@ -530,9 +564,6 @@ function updateUI(p) {
     sections.forEach((sec, k) => sec.classList.toggle('is-active', key >= 0 && k === near));
     // paint the neighbouring scenes while the reader is reading, so no paint lands mid-flight
     if (world) [base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].filter(k => k != null).forEach((k, n) => idle(() => world.prepare(k), n * 120));
-    // heights only once the reader has stopped near a scene: a jump or a fast scroll flies past the others without fetching them
-    clearTimeout(heightsAt);
-    if (world) heightsAt = setTimeout(() => [base[near], base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].forEach(k => k != null && world.heights(k)), 250);
   }
   const fr = Math.min(1, Math.max(0, (p + 1) / N));
   if (Math.abs(fr - lastFr) > 1e-4) {
@@ -542,6 +573,7 @@ function updateUI(p) {
 }
 
 // ── globe ─────────────────────────────────────────────────────────────────
+let lastY = NaN;
 const idle = (f, delay = 0) => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 1200 }) : f()), delay);
 let world = null;
 let hero = null;
@@ -594,18 +626,21 @@ const fx = scenes.map((s, k) => {
     lc: lc && { el: lc, x0: +lc.dataset.x0, x1: +lc.dataset.x1, l: +lc.dataset.l, r: +lc.dataset.r, clip: lc.querySelector('[data-clip]'), cur: lc.querySelector('[data-cursor]'), last: '' },
   };
 });
-// panel progress: 0 when the panel reaches the reading line, 1 when it leaves; negative while it approaches
-function panelT(k, y) { const c = y + innerHeight * 0.5; return (c - holds[k][0]) / Math.max(1, holds[k][1] - holds[k][0]); }
-const stepAt = (n, count) => -0.3 + n * (0.65 / Math.max(1, count));
+// how far an element of the notes has come up through the caption line: 0 as its top reaches it, 1 as its foot does
+function riseOf(el, y) { const r = el.getBoundingClientRect(); return (innerHeight * CAP_LINE - r.top) / Math.max(1, r.height); }
+const stepAt = (n, count) => -0.1 + n * (0.8 / Math.max(1, count));
 function updatePanels(y, ep, near) {
   for (let k = Math.max(0, near - 1); k <= Math.min(N - 1, near + 1); k++) {
-    const e = fx[k], t = panelT(k, y);
-    e.steps.forEach((li, n) => li.classList.toggle('is-on', reduced || t >= stepAt(n, e.steps.length)));
-    if (e.globe != null && world) world.setGate(k, reduced ? (t >= stepAt(e.globe, e.steps.length) ? 1 : 0) : smooth(stepAt(e.globe, e.steps.length), stepAt(e.globe, e.steps.length) + 0.18, t));
+    const e = fx[k];
+    if (e.steps.length) {
+      const t = riseOf(e.steps[0].parentElement, y);
+      e.steps.forEach((li, n) => li.classList.toggle('is-on', reduced || t >= stepAt(n, e.steps.length)));
+      if (e.globe != null && world) world.setGate(k, reduced ? (t >= stepAt(e.globe, e.steps.length) ? 1 : 0) : smooth(stepAt(e.globe, e.steps.length), stepAt(e.globe, e.steps.length) + 0.18, t));
+    }
     if (e.lc) {
-      // a chart beside a map that steps through years follows the map; any other chart draws as its panel arrives
+      // a chart beside a map that steps through years follows the map; any other chart draws as it comes up
       const yr = span[k] > 1 ? mapYear(k, ep) : null;
-      const x = reduced ? e.lc.x1 : yr != null ? Math.min(e.lc.x1, Math.max(e.lc.x0, yr)) : e.lc.x0 + (e.lc.x1 - e.lc.x0) * smooth(-0.35, 0.25, t);
+      const x = reduced ? e.lc.x1 : yr != null ? Math.min(e.lc.x1, Math.max(e.lc.x0, yr)) : e.lc.x0 + (e.lc.x1 - e.lc.x0) * smooth(-0.1, 0.7, riseOf(e.lc.el, y));
       const px = e.lc.l + (x - e.lc.x0) / Math.max(1e-6, e.lc.x1 - e.lc.x0) * (e.lc.r - e.lc.l);
       const key = px.toFixed(1); if (key === e.lc.last) continue; e.lc.last = key;
       e.lc.clip.setAttribute('width', (px + 1).toFixed(1));
@@ -617,6 +652,83 @@ function updatePanels(y, ep, near) {
     }
   }
 }
+
+// ── directed scenes (WP-04X) ───────────────────────────────────────────────
+// A scene that has been directed on its own (src/scene/*) takes the frame from the globe where the chapter reaches it:
+// the camera flies to the place on the globe, and as it lands the scene's own film comes up over it. The scene's steps
+// choose its shots (each held through a step and moved in the step's last third, as on the directed pages); its last
+// step asks the reader to point.
+const FILMS = {
+  eyja: { src: './eyja.js', ask: (w, x, y) => w.traceAt(x, y), key: (w, v) => w.traceFrom(...v.split(',').map(Number)),
+    say: t => `From ${t.from.toLocaleString('en-GB')} m to ${t.to < 30 ? 'the plain' : t.to.toLocaleString('en-GB') + ' m'}: ${t.km.toFixed(1)} km of valley.` },
+  berlin: { src: './berlin.js', ask: (w, x, y) => w.askAt(x, y), key: (w, v, m) => w.askPlace(...m.PLACES[v]),
+    step: (w, n, count) => w.setCrossing(n >= count - 2),
+    say: r => `${r.sector ? { us: 'West Berlin · the American sector', uk: 'West Berlin · the British sector', fr: 'West Berlin · the French sector', su: 'East Berlin · the Soviet sector' }[r.sector] : 'East Germany, outside Berlin'} · ${r.km < 1 ? Math.round(r.km * 100) * 10 + ' m' : r.km.toFixed(1) + ' km'} from the Wall` },
+  prices: { src: './prices.js', ask: (w, x, y) => w.countryAt(x, y), key: (w, v) => w.country(v),
+    step: (w, n) => w.setTarget(n >= 1),
+    say: c => `${c.name} · 2019 ${c.at(2019).toFixed(1)}% · 2022 ${c.at(2022).toFixed(1)}% · 2024 ${c.at(2024).toFixed(1)}%` },
+};
+const films = new Map();
+async function loadFilm(k) {
+  const spec = scenes[k].scene, kind = FILMS[spec.film], el = document.createElement('div');
+  el.className = 'film'; el.style.opacity = 0; el.style.visibility = 'hidden';
+  $('[data-world]').append(el);
+  const f = { el, spec, kind, w: null, mod: null, o: 0 };
+  films.set(k, f);
+  try {
+    f.mod = await import(kind.src);
+    f.w = await f.mod.createScene(el, { reduced, phone });
+    if (f.w.onYear) f.w.onYear(v => { f.year = Math.round(v); if (f.o > 0.5) yearEl.textContent = f.year; });
+    lastY = NaN;
+  } catch (err) { console.warn('Scene unavailable:', err); el.remove(); }
+}
+// heights, terrain and directed scenes only once the reader has stopped near a scene: a scene's text is long now, so a
+// jump or a fast scroll spends a while in the scenes it passes, and must fetch nothing for them
+function stopped(near) {
+  clearTimeout(heightsAt);
+  heightsAt = setTimeout(() => {
+    if (!world) return;
+    [base[near], base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].forEach(k => k != null && world.heights(k));
+    scenes.forEach((s, k) => { if (s.scene && s.scene.film && !films.has(k) && Math.abs(near - k) <= 2) loadFilm(k); });
+  }, 250);
+}
+function updateFilms(p, y) {
+  let held = false;
+  for (const [k, f] of films) {
+    const d = Math.abs(p - k), o = reduced ? (d < 0.5 ? 1 : 0) : 1 - smooth(0.02, 0.3, d);
+    held ||= o > 0.5;
+    if (o !== f.o) { f.o = o; f.el.style.opacity = o.toFixed(3); f.el.style.visibility = o > 0 ? 'visible' : 'hidden'; }
+    if (!f.w || o <= 0) continue;
+    const st = stepOf(k, y), count = stepsAt[k].length;
+    // through a step its shot holds; in the step's last third it moves to the next step's (the first two hold the first)
+    const n = st ? st.n : (y + innerHeight * CAP_LINE < stepsAt[k][0][0] ? 0 : count - 1), u = st ? smooth(0.62, 1, st.f) : 0;
+    const at = (list, m) => list[Math.min(list.length - 1, m)];
+    const shots = f.spec.shots || [0], nx = Math.min(count - 1, n + 1);
+    f.w.setShot(at(shots, n) + (at(shots, nx) - at(shots, n)) * (n === count - 1 ? 0 : u));
+    if (f.spec.years && f.w.setYear) f.w.setYear(at(f.spec.years, n) + (at(f.spec.years, nx) - at(f.spec.years, n)) * (n === count - 1 ? 0 : u));
+    f.w.setDim(dimAt(k, y));
+    f.kind.step?.(f.w, n, count);
+  }
+  // while a directed scene holds the frame, the globe's legend and place names are not its: they step aside
+  root.classList.toggle('has-film', held);
+}
+// the reader's question to the scene on screen: the pointer anywhere over it (not over the text's buttons and links)
+let askT = 0, askX = -99, askY = -99;
+function askFilm() { const st = litEl?.classList.contains('sc__ask') && litEl.closest('.sc'); if (!st) return null; const f = films.get(+st.dataset.i); return f && f.w && f.o > 0.9 ? { f, read: $('[data-read]', litEl) } : null; }
+function asked(a, r) { if (a && r) a.read.textContent = a.f.kind.say(r); }
+addEventListener('pointermove', e => {
+  const a = askFilm(); if (!a || e.target.closest('button, a')) return;
+  const now = performance.now();
+  if (now - askT < 120 || Math.hypot(e.clientX - askX, e.clientY - askY) < 12) return;
+  askT = now; askX = e.clientX; askY = e.clientY;
+  asked(a, a.f.kind.ask(a.f.w, e.clientX, e.clientY));
+}, { passive: true });
+addEventListener('pointerdown', e => { const a = askFilm(); if (a && !e.target.closest('button, a')) asked(a, a.f.kind.ask(a.f.w, e.clientX, e.clientY)); });
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-key]'); if (!b) return;
+  const f = films.get(+b.closest('.sc').dataset.i); if (!f || !f.w) return;
+  $('[data-read]', b.closest('.sc__ask')).textContent = f.kind.say(f.kind.key(f.w, b.dataset.key, f.mod));
+});
 
 // ── sound (chapters with `sound: true`): one tap on the loader starts it, the nav toggle switches it ─────────
 // Browsers let audio start only from a tap, so the loader waits with two buttons: with sound (the default) or quietly.
@@ -700,18 +812,21 @@ async function start() {
   setPct(1);
   measure();
   // keyed on the scroll position, not the scene: inside a held panel the scene stays the same while years and steps move
-  let lastY = NaN;
   gsap.ticker.add(() => {
     const y = lenis ? lenis.scroll : scrollY;
     if (y === lastY) return; lastY = y;
-    const p = progressAt(y), ep = engineP(y);
+    const p = progressAt(y), ep = engineP(y), near = p < 0 ? 0 : Math.min(N - 1, Math.round(p));
     // past the last scene (lab, toolkit): the map's ribbon, legend and labels step aside
     root.classList.toggle('is-past', y + innerHeight * 0.5 > holds[N - 1][1] + innerHeight * 0.35);
-    if (world) world.setProgress(ep);
+    const dim = p < 0 ? 1 : dimAt(near, y);
+    if (world) { world.setProgress(ep); world.setDim(dim); }
+    root.classList.toggle('is-notes', dim < 0.7);
     updateUI(p);
-    updatePanels(y, ep, p < 0 ? 0 : Math.min(N - 1, Math.round(p)));
+    lightSteps(y, near);
+    stopped(near);
+    updatePanels(y, ep, near);
+    updateFilms(p, y);
   });
-  gsap.ticker.add(readCamera); // the camera also drifts on the hero, so its reading is taken every frame
   addEventListener('resize', () => { measure(); lastY = NaN; });
   document.fonts?.ready.then(() => { measure(); lastY = NaN; });
   new ResizeObserver(() => { measure(); lastY = NaN; }).observe($('[data-scenes]'));

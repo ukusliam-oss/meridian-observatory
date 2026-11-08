@@ -84,6 +84,12 @@ export default {
       camera: { lat: 30, lon: 10, alt: 13000 },
       map: { borders: 'modern', data: { id: 'PCPIPCH', years: [2019, 2021, 2022, 2024] }, focus: ['USA', 'GBR', 'IND', 'TUR'] },
       title: 'Aim 3: stable prices and low inflation',
+      // directed on its own (src/scene/prices.js, WP-04X): as the camera lands, the world's inflation stands up as a
+      // landscape; the second caption runs through 2019 to 2024, then the reader points at a country to read it
+      scene: { film: 'prices', shots: [0, 0, 1, 2, 3], years: [2019, 2019, 2019, 2024, 2022],
+        hint: 'The warm line marks 2%: a country is above it where the line runs round its side. Point at a country to read its inflation.',
+        keysLabel: 'Read the inflation of',
+        keys: [{ label: 'The United States', v: 'USA' }, { label: 'The United Kingdom', v: 'GBR' }, { label: 'India', v: 'IND' }, { label: 'Türkiye', v: 'TUR' }] },
       body: `<p><b>Stable prices</b> means a low and steady rate of inflation. If inflation is high, money buys less each year and it becomes hard to plan.</p>
         <p>Scroll through the years. Inflation was low almost everywhere in 2019. By 2022 it had risen sharply in most countries, then it fell again by 2024.</p>
         <p>Many governments give their central bank a target. The US Federal Reserve has aimed for <b>2%</b> since 2012. India's target is <b>4%</b>, with a band from 2% to 6%.</p>`,

@@ -89,7 +89,7 @@ export async function menuJump(page, k) {
 // the scroll position at which scene k's camera holds still: step down from its panel's top until the camera stops
 export async function holdOf(page, k) {
   return page.evaluate(async k => {
-    const panel = document.querySelectorAll('.sc')[k].querySelector('.sc__panel');
+    const panel = document.querySelectorAll('.sc')[k].querySelector('[data-panel]');
     const top = panel.getBoundingClientRect().top + scrollY - innerHeight / 2, L = window.__meridianLenis;
     const cam = () => window.__meridianWorld.camera.position.toArray();
     const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));

@@ -63,7 +63,7 @@ for (const vpName of ['1440x900', '390x844']) test.describe(`states at ${vpName}
   test('rapid scroll to the last scene: lands, and the scenes flown past fetch no heights', async ({ page }) => {
     const w = watch(page), t = countTerrain(page);
     await open(page, GEO);
-    await page.evaluate(() => { const c = document.querySelectorAll('.sc'); window.__meridianLenis.scrollTo(c[25].querySelector('.sc__panel').getBoundingClientRect().top + scrollY - innerHeight / 2, { duration: 3, force: true }); });
+    await page.evaluate(() => { const c = document.querySelectorAll('.sc'); window.__meridianLenis.scrollTo(c[25].querySelector('.sc__card').getBoundingClientRect().top + scrollY - innerHeight * 0.3, { duration: 3, force: true }); });
     await expect.poll(() => activeScene(page), { timeout: 20_000 }).toBe(25);
     expect(await settle(page)).toBe(true);
     // only the landing scene's neighbourhood: Eyjafjallajökull (scene 26) and, from the slow end of the scroll, Merapi (17) at most
