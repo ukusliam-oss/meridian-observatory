@@ -11,7 +11,7 @@ const read = document.querySelector('[data-read]');
 let world = null, active = 0;
 
 // the title sharpens out of the night letter by letter (the home page's overture, here once)
-const h = document.querySelector('.ey-h span');
+const h = document.querySelector('.cs-h span');
 if (h && !reduced) h.innerHTML = [...h.textContent].map((c, i) => `<i style="--d:${(0.15 + Math.random() * 0.9).toFixed(2)}s">${c}</i>`).join('');
 requestAnimationFrame(() => root.classList.add('is-in'));
 
