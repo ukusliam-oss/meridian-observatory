@@ -19,7 +19,7 @@ def shell(page, title, desc, main, script, subject='', head=''):
                    for k, h, n, c in [('home', 'index.html', 'Home', 'text')] + [(k, f'{k}.html', n[:4] + '.' if n == 'Economics' else n[:4] + '.' if n == 'Geography' else n, c) for k, n, c in SUBJ])
     vendor = ''.join(f'<script src="assets/vendor/{f}" defer></script>' for f in ['gsap.min.js', 'ScrollTrigger.min.js', 'SplitText.min.js', 'Flip.min.js', 'DrawSVGPlugin.min.js', 'CustomEase.min.js', 'lenis.min.js'])
     return f'''<!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark"{' data-ad="transit"' if page == 'home' else ''}>
 <head>
 <meta charset="utf-8">{head}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

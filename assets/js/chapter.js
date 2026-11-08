@@ -40,7 +40,7 @@ const title = t => {
   const i = t.indexOf(': ');
   if (i > 0) return `<em>${esc(t.slice(0, i + 1))}</em>${esc(t.slice(i + 2))}`;
   const s = t.indexOf(' ');
-  return s > 0 ? `<em>${esc(t.slice(0, s))}</em>${esc(t.slice(s + 1))}` : esc(t);
+  return s > 0 ? `<em class="w">${esc(t.slice(0, s))}</em> ${esc(t.slice(s + 1))}` : esc(t); // .w: a first word, not a lead phrase
 };
 const parts = [];
 scenes.forEach((s, i) => { if (!parts.length || parts.at(-1).name !== s.part) parts.push({ name: s.part, first: i, scenes: [] }); parts.at(-1).scenes.push(i); });
