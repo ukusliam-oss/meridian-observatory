@@ -11,7 +11,7 @@
     "build": "npm run dots && esbuild src/globe.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/globe.js",
     "maps": "node tools/build-maps.mjs",
     "world": "esbuild src/world/engine.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/world.js && esbuild src/world/paint-worker.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/world-paint.js",
-    "scene": "esbuild src/scene/eyja.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/eyja.js && esbuild src/scene/berlin.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/berlin.js",
+    "scene": "esbuild src/scene/eyja.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/eyja.js && esbuild src/scene/berlin.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/berlin.js && esbuild src/scene/prices.js --bundle --minify --format=esm --target=es2020 --outfile=assets/js/prices.js",
     "serve": "python3 -m http.server 5183",
     "check": "node tools/check.mjs"
   },

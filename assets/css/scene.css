@@ -48,3 +48,11 @@ a { color: inherit; }
 .no-webgl .cs-stage { background: radial-gradient(80% 60% at 60% 40%, #2a2724, var(--night)); }
 @media (max-width: 760px) { .cs-top { padding: 18px 16px; } .cs-brand { display: none; } .cs-step > div, .cs-step > p { bottom: 7vh; } }
 @media (prefers-reduced-motion: reduce) { .cs-step > div, .cs-step > p, .cs-h span i { transition: none; } }
+/* the year a data scene is showing, and its one key: an instrument reading, bottom right */
+.cs-instr { position: fixed; right: clamp(18px, 3vw, 40px); bottom: 24px; z-index: 3; display: grid; justify-items: end; gap: 8px; }
+.cs-year { margin: 0; font: 400 clamp(2.4rem, 1.6rem + 2vw, 3.6rem)/1 var(--serif); color: var(--ink); font-variant-numeric: tabular-nums; opacity: .88; }
+.cs-legend { margin: 0; display: flex; align-items: center; gap: 10px; font: 400 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.cs-legend::before { content: ""; width: 26px; height: 1px; background: var(--ember); box-shadow: 0 0 8px var(--ember); }
+[data-beat="0"] .cs-instr, [data-beat="5"] .cs-instr { opacity: 0; }
+.cs-instr { transition: opacity .8s ease; }
+@media (max-width: 760px) { .cs-instr { top: 12px; bottom: auto; } .cs-year { font-size: 2rem; } }
