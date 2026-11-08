@@ -295,8 +295,15 @@
   .is-past .chapter::after { opacity: 0; }
   .ch-hero { padding-bottom: calc(env(safe-area-inset-bottom) + 160px); }
   .ch-hero__title { margin: 16px 0 18px; }
-  .sc__title { font-size: 2rem; }
-  .part__title { font-size: 3.4rem; }
+  /* the longest word must fit the screen whole, also under WCAG text spacing ("CZECHOSLOVAKIA," is the widest); the
+     size only gives way below ~500 px */
+  .part__title { font-size: min(3.4rem, 10.8vw); }
+  /* the chapter title's lead keeps to one line, the title giving way a little below ~380 px so that it can; where it
+     still would run off the screen (WCAG text spacing) it wraps. Scene titles give way the same way, for their longest
+     words under text spacing ("Eyjafjallajökull,") */
+  .ch-hero__title { font-size: min(2.3rem, 9.6vw); }
+  .ch-hero__title em { white-space: normal; }
+  .sc__title { font-size: min(2rem, 8.6vw); }
   .pillnav__text { min-width: 0; max-width: 58vw; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -331,6 +338,9 @@
 .p2-bg .mono { display: block; color: var(--text-3); margin-bottom: 8px; }
 .p2-bg p + p { margin-top: .6em; }
 
+/* the room is written in by paper2.js (title, sources, questions, notes); until it has been (html.is-ready) its main
+   and footer are not shown, or the notes and footer drew at the top and were pushed out: a layout shift of 0.45-0.56 */
+html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; }
 .p2-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 32px; align-items: start; }
 .p2-sources { position: sticky; top: calc(var(--nav-h) + 20px); max-height: calc(100vh - var(--nav-h) - 40px); overflow: auto; display: grid; gap: 18px;
   padding-right: 6px; overscroll-behavior: contain; scrollbar-width: thin; }

@@ -165,3 +165,24 @@ Real phones have weaker GPUs and CPUs than this M5. Mobile results here are the 
 3. Start painting a jump's destination when the jump is chosen (finding 3).
 4. Measure on a real phone and on the school network before any data-volume work (finding 4, and the gaps).
 5. Decide the home overture's length as a design question (finding 5).
+
+## 9. Phase 2 status
+
+**Finding 2 (layout shift): fixed by WP-03 (2026-11-08).** Not yet released. The shifts were traced with the Layout Instability API, not taken from Lighthouse's score.
+
+**Economics: 0.38-0.60.** `policy-lab.js` added its own stylesheet and drew the lab before that stylesheet applied. The gauges (`.plab__aim svg`) took the browser's default size, 361 px tall, for a frame, then shrank to 64 px. The local server delivered the stylesheet in the same frame, which is why the shift showed only on Pages.
+
+- **Fix:** the lab is drawn once its stylesheet has loaded.
+- **Measured** with the stylesheet held back 0.3 or 1 s, three runs each: desktop 0.596 → 0.001, mobile 0.386 → 0.003.
+
+**Paper 2: 0.46-0.57, and up to 0.73 on Pages.**
+
+- **The notes and footer.** The room is written in by `paper2.js`, so its notes and footer drew at the top of the empty page and were pushed out.
+  - **Fix:** `main` and the footer stay hidden until `html.is-ready`.
+- **The hero.** Where the title's serif arrived late, the hero moved again (0.12-0.18).
+  - **Fix:** the serif is preloaded, and `is-ready` waits for it (2 s at most).
+- **Measured with Lighthouse locally** (both presets, 3 runs): desktop 0.458 → 0 and mobile 0.565 → 0. LCP rose by 49 and 28 ms.
+- **Measured with the serif held back 1 s:** desktop 0.583 → 0 and mobile 0.738 → 0. Past the 2 s cap it is 0.06-0.07.
+
+**Not measured yet:** production CLS on Pages, which is checked after release.
+

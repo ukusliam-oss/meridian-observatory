@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 import { ROUTES, VIEWPORTS, open, watch, noHorizontalOverflow } from '../lib/meridian.mjs';
 
 // known product defects, in production as well (README, Known issues): the test is expected to fail until they are fixed
-const KNOWN_OVERFLOW = new Set(['history-kq6@360x780']); // the document is 365 px wide at 360 px
+const KNOWN_OVERFLOW = new Set([]); // none since WP-03 (KQ6 at 360 px was 365 px wide: its Part 4 title)
 
 for (const vp of VIEWPORTS) test.describe(`routes at ${vp.name}`, () => {
   test.use({ viewport: { width: vp.width, height: vp.height } });

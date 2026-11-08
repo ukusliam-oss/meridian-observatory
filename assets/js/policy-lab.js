@@ -6,7 +6,12 @@
 import { reduced as reducedPref, esc } from './core.js';
 
 const css = new URL('../css/policy-lab.css', import.meta.url).href;
-if (!document.querySelector(`link[href="${css}"]`)) document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: css }));
+let sheet = document.querySelector(`link[href="${css}"]`);
+if (!sheet) document.head.append(sheet = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: css }));
+// The lab is drawn once its stylesheet applies. Drawn before (it often was, on a real line), its gauges took the
+// browser's default size, 361 px tall, for a frame and then shrank to 64 px: a layout shift of 0.38-0.60 on the
+// deployed chapter. A stylesheet that fails to load still lets it draw.
+const styled = sheet.sheet ? Promise.resolve() : new Promise(r => { sheet.addEventListener('load', r, { once: true }); sheet.addEventListener('error', r, { once: true }); });
 
 const DT = 0.25; // quarters between samples
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -59,7 +64,8 @@ function towards(aim, w, b) {
   return Math.abs(gap) < aim.eps ? 0 : -Math.sign(gap);
 }
 
-export function mountPolicyLab(el, model, { reduced = reducedPref } = {}) {
+export async function mountPolicyLab(el, model, opts) { await styled; return mount(el, model, opts); }
+function mount(el, model, { reduced = reducedPref } = {}) {
   const H = model.horizon, aims = model.aims, byId = Object.fromEntries(aims.map(a => [a.id, a]));
   const srcKeys = Object.keys(model.sources || {});
   const modes = [...model.scenarios.map(s => ({ id: s.id, label: s.label })), { id: 'manual', label: model.manual.label }];
