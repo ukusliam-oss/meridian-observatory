@@ -419,8 +419,9 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   mp-a3 `prices`) mounts `assets/js/{eyja,berlin,prices}.js` over the globe once the reader stops within two scenes
   of it: as the camera lands the film comes up, its shots follow the steps, and its last step asks the reader to point.
   Heights, terrain and films load only after the scroll has stopped for 250 ms (a jump spends a while in the long
-  scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; the 12 chapter screenshot baselines are not
-  updated (awaiting approval).
+  scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; `holdOf` lands on a scene's title card at rest
+  (the card's top at 30% of the screen). The 12 chapter screenshot baselines were updated to the film look (approved
+  2026-11-08); the scene baselines show the title card.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

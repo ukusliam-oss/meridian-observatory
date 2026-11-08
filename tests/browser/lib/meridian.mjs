@@ -86,21 +86,11 @@ export async function menuJump(page, k) {
   await item.click();
 }
 
-// the scroll position at which scene k's camera holds still: step down from its panel's top until the camera stops
+// the scroll position at which scene k holds with its title card at rest (the card's top at 30% of the screen, inside
+// the scene's hold). Stepping down until the camera stopped found the flight's first half under reduced motion, where
+// the camera snaps and stands still on the scene before.
 export async function holdOf(page, k) {
-  return page.evaluate(async k => {
-    const panel = document.querySelectorAll('.sc')[k].querySelector('[data-panel]');
-    const top = panel.getBoundingClientRect().top + scrollY - innerHeight / 2, L = window.__meridianLenis;
-    const cam = () => window.__meridianWorld.camera.position.toArray();
-    const raf = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    let prev = null;
-    for (let d = 0; d < 2400; d += 40) {
-      if (L) L.scrollTo(top + d, { immediate: true, force: true }); else scrollTo(0, top + d); await raf(); // no Lenis with reduced motion
-      const c = cam(); if (prev && Math.hypot(c[0] - prev[0], c[1] - prev[1], c[2] - prev[2]) < 1e-7) return top + d;
-      prev = c;
-    }
-    return top;
-  }, k);
+  return page.evaluate(k => document.querySelectorAll('.sc')[k].querySelector('.sc__card').getBoundingClientRect().top + scrollY - innerHeight * 0.3, k);
 }
 
 // settled: the engine has drawn nothing new for `quiet` ms and no terrain or heights request is open, within `max` ms.
