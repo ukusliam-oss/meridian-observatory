@@ -24,6 +24,7 @@ import { geoInterpolate, geoDistance } from 'd3-geo';
 import { mesh } from 'topojson-client';
 import { DEG, dayNum, PALETTE, WALL_DOWN, featuresOf, countriesAt, runJob } from './paint.js';
 import { createPost } from './post.js';
+import { subsolar, sunrise, elevation } from './sun.js';
 import { pointsLayer, plateLines, loadDem, terrainPatch, sectionOf, cutaway, PLATE_COLOR, DEPTH_STOPS, VOLCANO_COLOR, MMI_COLOR, MMI_ROMAN } from './layers.js';
 
 export { PALETTE, ll };
@@ -93,7 +94,7 @@ const earthFrag = /* glsl */`
 #endif
   uniform vec4 uSlotA, uSlotB;      // x: value row (< 0: no data layer), y: d0, z: d1, w: ramp row
   uniform float uWA, uWB;           // inside each state, how far its values have moved towards the other state's row
-  uniform float uMix, uHatch, uLook; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
+  uniform float uMix, uHatch, uLook, uNight; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
   vec2 lonlat() { return vec2(vUv.x * 360.0 - 180.0, vUv.y * 180.0 - 90.0); }
   vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
@@ -188,7 +189,12 @@ const earthFrag = /* glsl */`
     vec4 land = mix(a, b, uMix);
     float focus = mix(fa, fb, uMix);
     vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
-    float lit = 0.42 + 0.58 * smoothstep(-0.35, 0.9, dot(n, normalize(uLight)));
+    // uNight 0: the art-directed light (night never darker than 42%); 1: the real Sun of a scene's moment, a true
+    // terminator a little softer than civil twilight, and the night side lit only by the instruments (below)
+    float sl = dot(n, normalize(uLight));
+    float day = mix(smoothstep(-0.35, 0.9, sl), smoothstep(-0.05, 0.22, sl), uNight);
+    float floor0 = mix(0.42, 0.06, uNight);
+    float lit = floor0 + (1.0 - floor0) * day;
     float base = relief();
     float rel = mix(terrain(uTA, uBoxA, base), terrain(uTB, uBoxB, base), uMix);
     float shade = clamp(0.2 + 0.93 * rel, 0.48, 1.24);
@@ -197,7 +203,15 @@ const earthFrag = /* glsl */`
     vec3 lc = land.rgb * (1.0 + 0.28 * focus) + uFocus * 0.06 * focus;
     // land (alpha 255) takes the terrain shading; painted water (shelf, lakes, rivers: alpha 254) is lit by the globe only
     float water = step(0.5, land.a) * (1.0 - smoothstep(0.9965, 0.999, land.a));
-    vec3 col = mix(ocean, mix(lc * lit * shade, land.rgb * (0.8 + 0.2 * lit), water), clamp(land.a / 0.996, 0.0, 1.0));
+    // a real moment (uNight): daylight brings up the relief in a neutral light; on the night side the map keeps its own
+    // colours at a low, even instrument level (a display, not sunlight); a thin warm band runs where the Sun is on the
+    // horizon. The fixed light (uNight 0) is as before.
+    float inst = uNight * (1.0 - day);
+    float dawn = exp(-pow((sl - 0.01) / 0.05, 2.0));
+    vec3 landN = mix(lc * 0.17, lc * shade + vec3(0.15, 0.16, 0.18) * max(shade - 0.3, 0.0), day) + (lc * 0.25 + vec3(0.12, 0.05, 0.018)) * dawn;
+    vec3 landLit = mix(lc * lit * shade, landN, uNight);
+    ocean = mix(ocean, mix(uOcean * 0.5, uOceanLift * 1.6 + vec3(0.004, 0.014, 0.04), day) + vec3(0.07, 0.03, 0.01) * dawn, uNight);
+    vec3 col = mix(ocean, mix(landLit, land.rgb * mix(0.8 + 0.2 * lit, mix(0.3, 1.0, day), uNight), water), clamp(land.a / 0.996, 0.0, 1.0));
     // a fine film grain on land, one device pixel per grain, so large fills read as a surface and not as plastic
     float grain = fract(sin(dot(floor(gl_FragCoord.xy), vec2(12.9898, 78.233))) * 43758.5453);
     col *= 1.0 + (grain - 0.5) * 0.05 * land.a;
@@ -212,12 +226,12 @@ const earthFrag = /* glsl */`
       float D = a2 / (3.14159 * pow(nh * nh * (a2 - 1.0) + 1.0, 2.0));
       float F = 0.02 + 0.98 * pow(1.0 - max(dot(v, hv), 0.0), 5.0);
       col += vec3(1.0, 0.95, 0.86) * D * F * max(dot(n, L), 0.0) * 0.22 * wm;
-      col += uRim * rim * 0.55 * (0.3 + 0.7 * smoothstep(-0.3, 0.5, dot(n, L)));
+      col += uRim * rim * 0.55 * (0.3 + 0.7 * smoothstep(-0.3, 0.5, dot(n, L))) * (1.0 - 0.75 * inst);
     } else col += uRim * rim * 0.55;
     gl_FragColor = vec4(col, 1.0);
   }`;
 const airFrag = /* glsl */`
-  uniform vec3 uRim, uLight; uniform float uLook; varying vec3 vN; varying vec3 vW;
+  uniform vec3 uRim, uLight; uniform float uLook, uNight; varying vec3 vN; varying vec3 vW;
   void main() {
     vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
     float f = pow(clamp(1.0 - abs(dot(n, v)), 0.0, 1.0), 2.4);
@@ -225,8 +239,13 @@ const airFrag = /* glsl */`
       // one scattering, cheaply: bright where the sun is, a warm band at the day's edge, a thin bright limb
       float sun = dot(n, normalize(uLight));
       float day = smoothstep(-0.35, 0.3, sun), edge = exp(-pow((sun + 0.05) / 0.18, 2.0));
-      vec3 c = mix(uRim, vec3(1.0, 0.62, 0.4), edge * 0.55);
-      gl_FragColor = vec4(c * (1.0 + 0.6 * pow(f, 6.0)), f * 0.9 * mix(0.22, 1.1, day));
+      vec3 c = mix(uRim, vec3(1.0, 0.62, 0.4), edge * mix(0.55, 0.9, uNight));
+      float a = f * 0.9 * mix(0.22, 1.1, day);
+      // a real-time night: the dark limb keeps only the airglow, the thin green line astronauts describe
+      float dark = uNight * (1.0 - day);
+      c = mix(c, vec3(0.42, 0.95, 0.6), dark);
+      a = mix(a, pow(f, 7.0) * 0.5, dark);
+      gl_FragColor = vec4(c * (1.0 + 0.6 * pow(f, 6.0)), a);
     } else gl_FragColor = vec4(uRim, f * 0.9);
   }`;
 const tubeVert = /* glsl */`
@@ -615,7 +634,13 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
   // relief: Natural Earth shaded relief, a world image plus a sharper one over Europe
   const flat = new DataTexture(new Uint8Array([219, 219, 219, 255]), 1, 1); flat.needsUpdate = true;
-  const light = new Vector3(-0.6, 0.55, 0.9);
+  const light = new Vector3(-0.6, 0.55, 0.9), fixedLight = light.clone();
+  // a scene that names its moment (`sun`, an ISO time) is lit by the Sun as it was then; setSun() lets the page move that
+  // moment (a clock the reader turns), easing the Sun between two moments and then drawing nothing more
+  const sunOf = ms => { const [la, lo] = subsolar(ms); return ll(la, lo); };
+  let sunOverride = null, sunTween = null, shownMoment = null;
+  const momentOf = s => (s && s.sun ? (sunOverride ?? Date.parse(s.sun)) : null);
+  const lightOf = s => { const ms = momentOf(s); return ms == null ? fixedLight : sunOf(ms); };
   const rim = new Color('#8f86ff');
   const earthU = {
     uGA: { value: null }, uDA: { value: null }, uGB: { value: null }, uDB: { value: null },
@@ -626,7 +651,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     uRelW: { value: flat }, uRelE: { value: flat }, uTA: { value: blank }, uTB: { value: blank },
     uQA: { value: blank }, uQB: { value: blank }, uQBoxA: { value: new Vector4() }, uQBoxB: { value: new Vector4() },
     uRelBox: { value: new Vector4(...(relief?.europeBox || [0, 0, 1, 1])) },
-    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uCut: { value: new Vector3(0, 0, 0) },
+    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uNight: { value: 0 }, uLight: { value: light }, uCut: { value: new Vector3(0, 0, 0) },
     uOcean: { value: new Color('#06080d') }, uOceanLift: { value: new Color('#0c1220') }, uRim: { value: rim }, uFocus: { value: new Color(PALETTE.focus) },
   };
   if (relief) {
@@ -641,7 +666,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   }));
   earth.rotation.y = -Math.PI / 2; // equirectangular u=0 at lon -180
   const air = new Mesh(new SphereGeometry(1.06, 96, 64), new ShaderMaterial({
-    uniforms: { uRim: { value: rim }, uLight: { value: light }, uLook: { value: look ? 1 : 0 } }, vertexShader: shellVert, fragmentShader: airFrag,
+    uniforms: { uRim: { value: rim }, uLight: { value: light }, uLook: { value: look ? 1 : 0 }, uNight: earthU.uNight }, vertexShader: shellVert, fragmentShader: airFrag,
     side: BackSide, transparent: true, blending: AdditiveBlending, depthWrite: false,
   }));
   globe.add(earth, air);
@@ -1054,12 +1079,26 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     // the hero drifts slowly until the reader starts scrolling
     const heroCam = { ...hero.camera, lon: hero.camera.lon + (reduced ? 0 : Math.sin(time * 0.06) * 12) };
     const alt = placeCamera(camera, i < 0 ? heroCam : sA.camera, j < 0 ? heroCam : sB.camera, tt, W, H);
+    camera.updateMatrixWorld(); // labels are projected before the render: with last frame's matrix they lag a frame, and after a jump stay wrong
     lineLift = 1 + clamp(alt / R_KM * 0.002, 1e-6, 0.0015);
     // a chapter that goes all round the world (Geography) carries its light with the camera, from the upper left as
     // the fixed light falls on Europe, so no scene lands on the night side
     if (lightMode === 'camera') {
       const d = camera.position.clone().normalize(), east = new Vector3(0, 1, 0).cross(d).normalize(), north = d.clone().cross(east);
       light.copy(d).addScaledVector(east, -0.75).addScaledVector(north, 0.6);
+    }
+    else {
+      let sunLive = false;
+      if (sunTween) {
+        const k = reduced ? 1 : clamp((now - sunTween.t0) / sunTween.dur);
+        sunOverride = sunTween.from + (sunTween.to - sunTween.from) * (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+        if (k >= 1) sunTween = null; else sunLive = true;
+      }
+      const la = lightOf(i < 0 ? null : sA), lb = lightOf(j < 0 ? null : sB);
+      shownMoment = momentOf(i < 0 ? null : sA) ?? momentOf(sB);
+      light.copy(la).lerp(lb, tt).normalize();
+      earthU.uNight.value = ((i >= 0 && sA.sun) ? 1 - tt : 0) + ((j >= 0 && sB.sun) ? tt : 0);
+      if (sunLive) dirty = true; // one more frame until the Sun has arrived
     }
 
     // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank. At rest on a
@@ -1128,6 +1167,15 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     setProgress(p) { progress = p; },
     // flows of a panel wait for the step of its chain that sends them (0 hidden, 1 drawn)
     setGate(panel, g) { if (gates.get(panel) !== g) { gates.set(panel, g); dirty = true; } },
+    // move the moment of the scenes that name one (ms UTC; null: back to each scene's own), easing over `ms` unless reduced
+    setSun(at, { ms = 1400 } = {}) {
+      if (at == null) { sunOverride = null; sunTween = null; dirty = true; return; }
+      const cur = sunOverride ?? shownMoment;
+      sunTween = reduced || cur == null ? null : { from: cur, to: at, t0: performance.now(), dur: ms };
+      if (!sunTween) sunOverride = at;
+      dirty = true;
+    },
+    sunrise, elevation,
     pointOf: key => point.get(key),
     // paint a coming state and build its overlays and labels in idle time, so its first frame does no work
     prepare(i) { if (i >= -1 && i < scenes.length) { texturesOf(i); overlayFor(i); markersFor(i); patchOf(i); } },

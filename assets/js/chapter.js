@@ -151,6 +151,45 @@ function cascade(list) {
   return `<ol class="sc__block cascade">${list.map((c, k) => `<li style="--k:${k}"><span class="cascade__dot"></span><span class="mono">${esc(c.when)}</span><b>${esc(c.country)}</b><span>${esc(c.how)} <a class="src mono" href="#src-${c.src}">${srcNo(c.src)}</a></span></li>`).join('')}</ol>`;
 }
 
+// WP-04X: one scene directed as a sequence of four beats inside one held panel. The world (a wide shot of the Earth as
+// it was lit at the scene's moment), the approach (the camera comes down while one sentence holds), the evidence (a clock
+// the reader turns between the moments the facts give; the Sun follows) and the reading (the scene's text on a plate).
+// Everything it shows comes from the scene's own data; the sunrise is calculated, and says so.
+const TZ = 1; // the scene's local time: CET, UTC+1 (no summer time in November 1956)
+const clockOf = ms => { const d = new Date(ms + TZ * 36e5); return [d.getUTCHours(), d.getUTCMinutes()]; };
+const ukTime = ms => { const [h, m] = clockOf(ms); return `${h % 12 || 12}.${String(m).padStart(2, '0')} ${h < 12 ? 'a.m.' : 'p.m.'}`; };
+function cinemaHTML(s, mis, judge) {
+  const c = s.cinema, [h, m] = clockOf(Date.parse(s.sun));
+  const stops = c.moments.map((x, k) => `<button type="button" class="cx-stop" data-k="${k}" aria-pressed="${k === 0}"${x.sunrise ? ' hidden' : ''}>
+      <b class="mono">${x.at ? ukTime(Date.parse(x.at)).replace(' ', '&nbsp;') : ''}</b><span>${esc(x.label)}</span></button>`).join('');
+  const hours = [4, 5, 6, 7].map(x => `<span style="--x:${(x - 4) / 3}">${x}.00</span>`).join('');
+  return `<div class="cx" data-panel data-cx>
+    <div class="cx-beat cx-world" data-beat-at="1"><div class="ch-wrap cx-world__in">
+      <p class="cx-where mono">${esc(c.where)}</p>
+      <p class="cx-hour" aria-hidden="true">${h}<i>.</i>${String(m).padStart(2, '0')}<small class="mono">a.m.</small></p>
+      <h2 class="display sc__title cx-title">${title(s.title)}</h2>
+      <p class="cx-note mono">Local time. The globe is lit as the Earth was at that moment.</p>
+    </div></div>
+    <div class="cx-beat cx-approach" data-beat-at="2" data-move><p class="ch-wrap cx-line" aria-hidden="true"><span>${esc(c.line)}</span></p></div>
+    <div class="cx-beat cx-evidence" data-beat-at="3"><div class="ch-wrap cx-evidence__in">
+      <p class="cx-ask mono">Move the clock</p>
+      <div class="cx-clock" role="group" aria-label="Moments on 4 November 1956"><div class="cx-scale" aria-hidden="true">${hours}</div>${stops}</div>
+      <p class="cx-sun mono" data-cx-sun></p>
+      <figure class="cx-record" aria-live="polite"><figcaption class="mono" data-cx-cap></figcaption><p data-cx-text></p></figure>
+    </div></div>
+    <div class="cx-beat cx-reading" data-beat-at="4"><div class="ch-wrap"><article class="cx-plate">
+      <p class="sc__date">${esc(s.dateLabel)}</p>
+      <div class="sc__body">${s.body}</div>
+      <div class="sc__block sc__why"><span class="sc__label mono">Why it matters</span><p>${esc(s.why)}</p></div>
+      ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label mono">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+      ${mis}${judge}
+      <div class="sc__block"><button class="sc__check" type="button" aria-expanded="false"><span class="mono"><span>Check yourself</span><span>Tap to reveal</span></span>
+        <span class="q">${esc(s.check.q)}</span><span class="a">${esc(s.check.a)}</span></button></div>
+      <details class="sc__block sc__facts"><summary class="mono">Facts and sources (${s.facts.length})</summary>
+        <ol>${s.facts.map(f => `<li>${esc(f.text)}<a class="src mono" href="#src-${f.src}" title="${esc(data.sources[f.src].title)}">${srcNo(f.src)}</a></li>`).join('')}</ol></details>
+    </article></div></div>
+  </div>`;
+}
 function sceneHTML(s, i) {
   const pi = partOf(i), part = parts[pi];
   const opener = part.first === i ? `<header class="part ch-wrap" data-part="${pi}">
@@ -167,6 +206,7 @@ function sceneHTML(s, i) {
   const mis = s.misconception ? `<div class="sc__block sc__mis">
       <p class="is-wrong"><span class="mono">Common mistake</span>${esc(s.misconception.wrong)}</p>
       <p class="is-right"><span class="mono">In fact</span>${esc(s.misconception.right)}</p></div>` : '';
+  if (s.cinema) return `<section class="sc sc--cx" id="${s.id}" data-i="${i}" data-beat="0">${opener}${cinemaHTML(s, mis, judge)}</section>`;
   return `<section class="sc" id="${s.id}" data-i="${i}">${opener}
     <div class="ch-wrap"><article class="sc__panel" data-panel>
       <p class="sc__date">${esc(s.dateLabel)}</p>
@@ -424,18 +464,62 @@ function sceneHeading(i) { return $(`.sc[data-i="${i}"] .sc__title`); }
 // ── scroll → progress ─────────────────────────────────────────────────────
 // A scene holds (p = i exactly) while its panel fills the reading line in the middle of the screen; the
 // camera flies between scenes in the gap between two panels, including the part title screens.
-let holds = [], heroAnchor = 0;
+let holds = [], heroAnchor = 0, moves = [];
 const panels = $$('[data-panel]');
 const sections = $$('.sc[data-i]');
+// directed scenes (WP-04X): their beats, their clock, and the moment the reader has chosen
+const cx = scenes.map((s, k) => s.cinema ? { k, s, sec: sections[k], beats: $$('[data-beat-at]', sections[k]), at: [], chosen: 0,
+  moments: s.cinema.moments.map(m => ({ ...m, ms: m.at ? Date.parse(m.at) : null })) } : null).filter(Boolean);
+function cxMoment(x, k, user) {
+  const m = x.moments[k];
+  if (!m || m.ms == null) return;
+  x.chosen = k; x.sec.dataset.moment = k;
+  $$('.cx-stop', x.sec).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.k === k)));
+  $('[data-cx-cap]', x.sec).textContent = `${ukTime(m.ms)}  ·  ${m.src ? `Source ${srcNo(m.src)}` : 'Calculated'}`;
+  $('[data-cx-text]', x.sec).textContent = m.text;
+  if (world) {
+    const [la, lo] = x.s.cinema.place, e = world.elevation(la, lo, m.ms);
+    $('[data-cx-sun]', x.sec).textContent = Math.abs(e + 0.833) < 0.3 ? 'Sun on the horizon at Budapest' : `Sun ${Math.abs(e).toFixed(1)}° ${e < 0 ? 'below' : 'above'} the horizon at Budapest`;
+    if (user) world.setSun(m.ms);
+  }
+  // the moment's place on the map is the one labelled; the others step back
+  $$('.world__marker').forEach(el => el.classList.toggle('is-cue', !!m.cue && el.textContent.includes(m.cue)));
+}
+function cxSetup() {
+  for (const x of cx) {
+    const t0 = Date.parse(x.s.sun), [la, lo] = x.s.cinema.place;
+    x.moments.forEach((m, k) => {
+      if (m.sunrise && world) { m.ms = world.sunrise(m.sunrise[0], m.sunrise[1], t0); const b = $(`.cx-stop[data-k="${k}"]`, x.sec); if (m.ms && b) { $('b', b).innerHTML = ukTime(m.ms).replace(' ', '&nbsp;'); b.hidden = false; } }
+      const [h, mi] = m.ms ? clockOf(m.ms) : [0, 0], b = $(`.cx-stop[data-k="${k}"]`, x.sec);
+      if (b) b.style.setProperty('--x', ((h + mi / 60 - 4) / 3).toFixed(4));
+    });
+    x.sec.addEventListener('click', e => { const b = e.target.closest('.cx-stop'); if (b) cxMoment(x, +b.dataset.k, true); });
+    cxMoment(x, 0, false);
+  }
+}
+function cxTick(y, p) {
+  const c = y + innerHeight * 0.5, near = p < -0.5 ? -1 : Math.round(p);
+  for (const x of cx) {
+    let b = 0;
+    if (near === x.k) x.at.forEach((t, n) => { if (c >= t) b = n + 1; });
+    if (x.sec.dataset.beat !== String(b)) { x.sec.dataset.beat = b; root.classList.toggle('cx-open', b === 1 || b === 2); root.classList.toggle('cx-clock', b === 3); }
+    // leaving the scene puts its clock back to its own moment
+    if (near !== x.k && x.chosen !== 0) { cxMoment(x, 0, false); world?.setSun(null); }
+  }
+}
 function measure() {
   const y = scrollY, vh = innerHeight;
   // on narrow screens the panel covers the map, so a scene settles while its panel is still entering from below
   const narrow = innerWidth <= 900;
   holds = panels.map(p => {
     const r = p.getBoundingClientRect(), top = y + r.top, bot = top + r.height, m = Math.min(vh * 0.3, r.height * 0.3);
-    const start = narrow ? top - vh * 0.32 : top + m;
+    // a directed scene opens on its first beat at every width (its title is in that beat)
+    const start = narrow && !p.hasAttribute('data-cx') ? top - vh * 0.32 : top + m;
     return [start, Math.max(start, bot - m)];
   });
+  // a directed scene: where its camera move runs (the approach beat crossing the reading line), and where each beat starts
+  moves = panels.map(p => { const mv = p.querySelector('[data-move]'); if (!mv) return null; const r = mv.getBoundingClientRect(); return [y + r.top, y + r.bottom]; });
+  cx.forEach(x => { x.at = x.beats.map(b => y + b.getBoundingClientRect().top); });
   heroAnchor = vh * 0.5;
 }
 function progressAt(y) {
@@ -454,7 +538,8 @@ function engineP(y) {
   if (c < holds[0][0]) return progressAt(y);
   for (let k = 0; k < N; k++) {
     if (c <= holds[k][1]) {
-      const u = span[k] > 1 ? Math.max(0, Math.min(1, (c - holds[k][0]) / Math.max(1, holds[k][1] - holds[k][0]))) : 0;
+      const mv = moves[k];
+      const u = span[k] < 2 ? 0 : Math.max(0, Math.min(1, mv ? (c - mv[0]) / Math.max(1, mv[1] - mv[0]) : (c - holds[k][0]) / Math.max(1, holds[k][1] - holds[k][0])));
       return base[k] + u * (span[k] - 1);
     }
     if (k < N - 1 && c < holds[k + 1][0]) return base[k] + span[k] - 1 + (c - holds[k][1]) / (holds[k + 1][0] - holds[k][1]);
@@ -563,6 +648,12 @@ function buildEngineScenes() {
   scenes.forEach((s, k) => {
     const spec = s.map.spikes || s.map.data;
     const steps = spec && Array.isArray(spec.years) && spec.years.length > 1 ? spec.years : [spec ? (spec.years ? spec.years[0] : spec.year ?? spec.month) : null];
+    // a directed scene opens on its own wide shot, then comes down to the scene's camera (one panel, two engine scenes)
+    if (s.cinema && s.cinema.opening) {
+      base.push(eScenes.length); span.push(2);
+      eScenes.push({ ...s, camera: s.cinema.opening, map: { ...s.map, arrows: [], markers: [] }, panel: k }, { ...s, panel: k });
+      return;
+    }
     base.push(eScenes.length); span.push(steps.length);
     steps.forEach((y, n) => {
       const when = y == null ? {} : (String(y).includes('-') ? { month: y, year: +String(y).slice(0, 4) } : { year: y });
@@ -698,6 +789,7 @@ async function start() {
     } else world.heightsReady(el.dataset.dem).then(ok => { if (ok) el.remove(); else el.textContent = 'Heights unavailable. Flat relief shown.'; });
   });
   setPct(1);
+  cxSetup();
   measure();
   // keyed on the scroll position, not the scene: inside a held panel the scene stays the same while years and steps move
   let lastY = NaN;
@@ -710,6 +802,7 @@ async function start() {
     if (world) world.setProgress(ep);
     updateUI(p);
     updatePanels(y, ep, p < 0 ? 0 : Math.min(N - 1, Math.round(p)));
+    cxTick(y, p);
   });
   gsap.ticker.add(readCamera); // the camera also drifts on the hero, so its reading is taken every frame
   addEventListener('resize', () => { measure(); lastY = NaN; });

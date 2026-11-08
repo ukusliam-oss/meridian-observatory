@@ -274,6 +274,20 @@ export default {
         city: null,
       },
       title: '4 November: the Soviet invasion',
+      // WP-04X prototype: the scene is lit by the real Sun at 4.15 a.m. in Budapest (CET, UTC+1), and opens on a wide shot
+      // before the camera comes down to Hungary; the reader can move the clock between the moments the facts below give
+      sun: '1956-11-04T03:15:00Z',
+      cinema: {
+        where: 'Budapest · 4 November 1956',
+        place: [47.498, 19.04],
+        opening: { lat: 41, lon: 50, alt: 15500 },
+        line: 'At 4.15 a.m. on 4 November 1956 Soviet forces launched a major attack on Hungary.',
+        moments: [
+          { at: '1956-11-04T03:15:00Z', label: 'Attack', text: 'Soviet forces attacked at 4.15 a.m. on 4 November.', src: 'nsa-hungary-1956', cue: 'Soviet forces' },
+          { at: '1956-11-04T04:20:00Z', label: 'Broadcast', text: 'At 5.20 a.m. Nagy announced the invasion in a 35-second broadcast, then sought asylum in the Yugoslav embassy.', src: 'nsa-hungary-1956', cue: 'Nagy' },
+          { sunrise: [47.498, 19.04], label: 'Sunrise', text: 'Sunrise in Budapest on this date, calculated from the Sun\'s position.' },
+        ],
+      },
       body: `<p>At 4.15 a.m. on <b>4 November 1956</b> Soviet forces launched a major attack on Hungary. At 5.20 a.m. Nagy announced the invasion in a short radio broadcast. Within hours he took refuge in the Yugoslav embassy.</p>
 <p><b>János Kádár</b>, a member of Nagy's government, had been flown secretly to Moscow. He returned with the invasion to head a new government with Soviet backing. Hungarians fought back, but by <b>11 November</b> the revolt had been crushed.</p>
 <p>Britannica estimates that about <b>2,500 Hungarians</b> and <b>700 Soviet soldiers</b> died in the fighting. An estimated <b>200,000 refugees</b> fled Hungary, mostly to Austria. Kádár took the oath of office on 7 November.</p>`,
