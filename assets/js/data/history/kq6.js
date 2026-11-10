@@ -215,7 +215,7 @@ export default {
         'A United Nations committee later called the rising "a spontaneous national uprising". It was led by students, workers and intellectuals, many of them communists.',
       ],
       // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
-      sky: { sun: [-11.3, -120], floor: 0.14, exposure: 1.15 },
+      sky: { sun: [-11.3, -120], floor: 0.2, exposure: 1.15 },
       camera: { lat: 47.50, lon: 19.05, alt: 450 },
       map: {
         borders: '1956-10-23',

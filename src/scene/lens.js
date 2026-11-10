@@ -9,7 +9,7 @@ import { encodeOut } from '../world/post.js';
 
 const postVert = /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 const postFrag = /* glsl */`
-  uniform sampler2D tScene; uniform vec2 uRes; uniform float uGrain, uExp, uSat, uDim, uDisplay;
+  uniform sampler2D tScene; uniform vec2 uRes; uniform float uGrain, uExp, uSat, uDim, uDisplay, uDof;
   varying vec2 vUv;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
   vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
@@ -17,11 +17,15 @@ const postFrag = /* glsl */`
     vec2 c = vUv - 0.5; float r = length(c * vec2(uRes.x / uRes.y, 1.0));
     float k = smoothstep(0.38, 1.0, r);
     // the lens: colour fringes and softness grow towards the edges of the frame
-    vec2 dir = c * 0.012 * k, px = 1.0 / uRes;
+    vec2 dir = c * (uDisplay > 0.5 ? 0.006 : 0.012) * k, px = 1.0 / uRes;
     vec3 col = vec3(texture2D(tScene, vUv + dir).r, texture2D(tScene, vUv).g, texture2D(tScene, vUv - dir).b);
+    // and a long lens's depth: in a shot tilted towards the horizon the far ground, at the top of the frame, goes soft
+    float kd = max(k, uDof * smoothstep(0.6, 0.97, vUv.y));
     vec3 soft = vec3(0.0);
-    for (int i = 0; i < 6; i++) { float a = float(i) * 1.0472; soft += texture2D(tScene, vUv + vec2(cos(a), sin(a)) * px * (1.0 + 7.0 * k)).rgb; }
-    col = mix(col, soft / 6.0, k * 0.85);
+    // the six taps turn a little from pixel to pixel, so a small bright light goes soft instead of into a hexagon
+    float turn = hash(gl_FragCoord.xy * 0.71) * 1.0472;
+    for (int i = 0; i < 6; i++) { float a = float(i) * 1.0472 + turn; soft += texture2D(tScene, vUv + vec2(cos(a), sin(a)) * px * (1.0 + 7.0 * kd)).rgb; }
+    col = mix(col, soft / 6.0, kd * 0.85);
     if (uDisplay > 0.5) {
       // the globe's frame: toned by its brightness alone, so a map's hues stay its legend's, and even its strongest
       // colour gives up a little of itself to the grade
@@ -43,7 +47,7 @@ const postFrag = /* glsl */`
 
 export function createLens(renderer, { phone = false, exposure = 1, grain = 0.035, sat = 0.18, display = false } = {}) {
   const rt = new WebGLRenderTarget(4, 4, { type: HalfFloatType, samples: phone ? 0 : 4 });
-  const uniforms = { tScene: { value: rt.texture }, uRes: { value: new Vector2() }, uGrain: { value: grain }, uExp: { value: exposure }, uSat: { value: sat }, uDim: { value: 1 }, uDisplay: { value: display ? 1 : 0 } };
+  const uniforms = { tScene: { value: rt.texture }, uRes: { value: new Vector2() }, uGrain: { value: grain }, uExp: { value: exposure }, uSat: { value: sat }, uDim: { value: 1 }, uDisplay: { value: display ? 1 : 0 }, uDof: { value: 0 } };
   const clear = new Color(), clearIn = new Color();
   const scene = new Scene(), cam = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
   scene.add(new Mesh(new PlaneGeometry(2, 2), new ShaderMaterial({ uniforms, vertexShader: postVert, fragmentShader: postFrag, depthTest: false, depthWrite: false })));

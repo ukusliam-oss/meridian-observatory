@@ -94,7 +94,7 @@ const earthFrag = /* glsl */`
 #endif
   uniform vec4 uSlotA, uSlotB;      // x: value row (< 0: no data layer), y: d0, z: d1, w: ramp row
   uniform float uWA, uWB;           // inside each state, how far its values have moved towards the other state's row
-  uniform float uMix, uHatch, uLook, uFloor; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
+  uniform float uMix, uHatch, uLook, uFloor, uHaze; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
   vec2 lonlat() { return vec2(vUv.x * 360.0 - 180.0, vUv.y * 180.0 - 90.0); }
   vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
@@ -215,6 +215,16 @@ const earthFrag = /* glsl */`
       col += vec3(1.0, 0.95, 0.86) * D * F * max(dot(n, L), 0.0) * 0.22 * wm;
       col += uRim * rim * 0.55 * (0.3 + 0.7 * smoothstep(-0.3, 0.5, dot(n, L)));
     } else col += uRim * rim * 0.55;
+    // aerial perspective: ground seen far off and low lies behind more air, which takes the sky's light there: pale by
+    // day, warm where the sun stands near the horizon, blue-black by night. Looking straight down there is almost none.
+    {
+      float dist = length(cameraPosition - vW), calt = max(length(cameraPosition) - 1.0, 1e-4);
+      float h = uHaze * (1.0 - exp(-max(0.0, dist / calt - 1.15) * 0.35));
+      float sunAt = dot(n, normalize(uLight));
+      vec3 sky = mix(vec3(0.012, 0.016, 0.03), vec3(0.42, 0.5, 0.62), smoothstep(-0.1, 0.5, sunAt));
+      sky += vec3(0.62, 0.27, 0.09) * exp(-pow((sunAt + 0.03) / 0.12, 2.0));
+      col = mix(col, sky, clamp(h, 0.0, 0.85));
+    }
     gl_FragColor = vec4(col, 1.0);
   }`;
 const airFrag = /* glsl */`
@@ -226,7 +236,7 @@ const airFrag = /* glsl */`
       // one scattering, cheaply: bright where the sun is, a warm band at the day's edge, a thin bright limb
       float sun = dot(n, normalize(uLight));
       float day = smoothstep(-0.35, 0.3, sun), edge = exp(-pow((sun + 0.05) / 0.18, 2.0));
-      vec3 c = mix(uRim, vec3(1.0, 0.62, 0.4), edge * 0.55);
+      vec3 c = mix(uRim, vec3(1.0, 0.52, 0.26), edge * 0.75);
       gl_FragColor = vec4(c * (1.0 + 0.6 * pow(f, 6.0)), f * 0.9 * mix(0.22, 1.1, day));
     } else gl_FragColor = vec4(uRim, f * 0.9);
   }`;
@@ -291,6 +301,30 @@ const tubeMaterial = (color, dash = 0, pulse = 0, phase = 0) => new ShaderMateri
   uniforms: { uColor: { value: new Color(color) }, uDraw: { value: 0 }, uOpacity: { value: 0 }, uDash: { value: dash }, uTime: { value: 0 }, uPulse: { value: pulse }, uPhase: { value: phase } },
   vertexShader: tubeVert, fragmentShader: tubeFrag, transparent: true, depthWrite: false, blending: AdditiveBlending,
 });
+
+// Towns at night (assets/data/towns.json): one warm point each, sized by population, lit only on the globe's night
+// side and only on the side facing the camera; a representation of where towns are, not of any year's lights.
+const townVert = /* glsl */`
+  uniform vec3 uLight; uniform float uPx, uZoom; attribute float aPop; varying float vA;
+  void main() {
+    vec4 wp = modelMatrix * vec4(position, 1.0); vec3 n = normalize(wp.xyz);
+    float facing = dot(n, normalize(cameraPosition - wp.xyz));
+    float dark = smoothstep(0.06, -0.22, dot(n, normalize(uLight)));
+    float big = clamp(sqrt(aPop / 3000.0), 0.0, 1.0);
+    vA = facing > 0.02 ? dark * (0.3 + 0.7 * big) : 0.0;
+    // far towns are smaller: seen low across the land they shrink towards the horizon instead of hanging like stars
+    float near = clamp((length(cameraPosition) - 1.0) / max(length(cameraPosition - wp.xyz), 1e-5) * 2.2, 0.18, 1.0);
+    vA *= near;
+    gl_PointSize = vA > 0.0 ? uPx * uZoom * near * (4.0 + 14.0 * big) : 0.0;
+    gl_Position = projectionMatrix * viewMatrix * wp;
+  }`;
+const townFrag = /* glsl */`
+  varying float vA;
+  void main() {
+    // a bright core and a wide faint halo, as a town's lights seen through the air
+    float r = length(gl_PointCoord - 0.5) * 2.0, a = exp(-r * r * 9.0) + 0.22 * exp(-r * r * 2.2) * (1.0 - r);
+    gl_FragColor = vec4(vec3(1.0, 0.76, 0.5) * max(a, 0.0) * vA * 1.3, 1.0);
+  }`;
 
 // A town at night: a soft warm pool of light, one texture for all of them.
 let glowTex = null;
@@ -658,7 +692,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     uRelW: { value: flat }, uRelE: { value: flat }, uTA: { value: blank }, uTB: { value: blank },
     uQA: { value: blank }, uQB: { value: blank }, uQBoxA: { value: new Vector4() }, uQBoxB: { value: new Vector4() },
     uRelBox: { value: new Vector4(...(relief?.europeBox || [0, 0, 1, 1])) },
-    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uFloor: { value: 0.42 }, uCut: { value: new Vector3(0, 0, 0) },
+    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uFloor: { value: 0.42 }, uHaze: { value: 0.5 }, uCut: { value: new Vector3(0, 0, 0) },
     uOcean: { value: new Color('#06080d') }, uOceanLift: { value: new Color('#0c1220') }, uRim: { value: rim }, uFocus: { value: new Color(PALETTE.focus) },
   };
   if (relief) {
@@ -677,6 +711,15 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     side: BackSide, transparent: true, blending: AdditiveBlending, depthWrite: false,
   }));
   globe.add(earth, air);
+  // the towns' lights, fetched after the globe is up (they matter only where night falls)
+  const townU = { uLight: { value: light }, uPx: { value: 1 }, uZoom: { value: 1 } };
+  fetch(new URL('../data/towns.json', import.meta.url)).then(r => r.json()).then(list => {
+    const pos = new Float32Array(list.length * 3), pop = new Float32Array(list.length);
+    list.forEach(([lon, lat, k], n) => { const v = ll(lat, lon, 1.0004); pos.set([v.x, v.y, v.z], n * 3); pop[n] = k; });
+    const g = new BufferGeometry(); g.setAttribute('position', new Float32BufferAttribute(pos, 3)); g.setAttribute('aPop', new Float32BufferAttribute(pop, 1));
+    const pts = new Points(g, new ShaderMaterial({ uniforms: townU, vertexShader: townVert, fragmentShader: townFrag, transparent: true, depthWrite: false, depthTest: false, blending: AdditiveBlending }));
+    pts.frustumCulled = false; globe.add(pts); dirty = true;
+  }).catch(() => { /* lights are a nicety */ });
 
   // star dust far away, for depth when the camera moves
   {
@@ -1089,7 +1132,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const p = clamp(progress, -1, n - 1);
     const heroLive = p < 0 && !reduced;
     // draw only when something can have changed: progress, size, a new texture, the drifting hero or a dashed line
-    if (!dirty && p === drawn && !heroLive && !live) { stats.skipped++; return; }
+    const settling = !reduced && now - movedAt < 7000;
+    if (!dirty && p === drawn && !heroLive && !live && !settling) { stats.skipped++; return; }
     const c0 = performance.now();
     dirty = false; drawn = p;
     const time = (now - t0) / 1000;
@@ -1099,7 +1143,11 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const tt = reduced ? (f < 0.5 ? 0 : 1) : ease(smooth(0.08, 0.92, f));
     // the hero drifts slowly until the reader starts scrolling
     const heroCam = { ...hero.camera, lon: hero.camera.lon + (reduced ? 0 : Math.sin(time * 0.06) * 12) };
-    const alt = placeCamera(camera, i < 0 ? heroCam : sA.camera, j < 0 ? heroCam : sB.camera, tt, W, H);
+    // after the reader stops, the camera keeps moving a little and comes to rest, as a crane does: a slight push in and
+    // turn that fades over seven seconds (none with reduced motion)
+    const settle = reduced ? 0 : 1 - smooth(0, 7000, now - movedAt);
+    const breathe = c => (settle > 0.002 ? { ...c, alt: c.alt * (1 + 0.025 * settle), heading: (c.heading || 0) + 0.9 * settle } : c);
+    const alt = placeCamera(camera, breathe(i < 0 ? heroCam : sA.camera), breathe(j < 0 ? heroCam : sB.camera), tt, W, H);
     lineLift = 1 + clamp(alt / R_KM * 0.002, 1e-6, 0.0015);
     // a chapter that goes all round the world (Geography) carries its light with the camera, from the upper left as
     // the fixed light falls on Europe, so no scene lands on the night side
@@ -1116,6 +1164,11 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     earthU.uFloor.value = (ka.floor ?? 0.42) * (1 - tt) + (kb.floor ?? 0.42) * tt;
     night = smooth(0.36, 0.12, earthU.uFloor.value); // towns light up as the land goes dark
     if (post) post.uniforms.uExp.value = LENS.exposure * ((ka.exposure ?? 1) * (1 - tt) + (kb.exposure ?? 1) * tt);
+    earthU.uHaze.value = (ka.haze ?? 0.5) * (1 - tt) + (kb.haze ?? 0.5) * tt;
+    // a camera tilted towards the horizon sees the far ground softly, as a long lens would
+    const tiltOf = s => (s && s.camera && s.camera.tilt) || 0;
+    if (post) post.uniforms.uDof.value = smooth(30, 62, tiltOf(sA) * (1 - tt) + tiltOf(sB) * tt) * 0.9;
+    townU.uPx.value = renderer.getPixelRatio(); townU.uZoom.value = clamp(1600 / Math.max(alt, 1), 0.6, 2.2);
 
     // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank. At rest on a
     // scene (f = 0) the next adds nothing to the picture (uMix is 0), so it is not asked for: a phone's budget then holds

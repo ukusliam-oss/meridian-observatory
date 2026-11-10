@@ -450,6 +450,16 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   choice awaits the History teacher's review. Trails pulse while the reader moves and for 8 s after, then stand
   still (0 frames at rest, measured). Headless sessions left open with a live page slowed the browser tests from
   2.7 to 38 minutes: close them before running the suites.
+- World quality (2026-11-10, same branch): aerial perspective in the earth shader (`uHaze`, a scene's `sky.haze`, 0.5 by
+  default): ground seen far and low takes the sky's light, pale by day, warm where the sun is near the horizon, blue-black
+  by night; straight down there is almost none. Town lights (`tools/build-towns.mjs` → `assets/data/towns.json`, Natural
+  Earth populated places of 50,000 or more, 4,215, 79 KB): warm points on the globe's night side only, sized by today's
+  population and shrinking with distance (a representation, said in each chapter's note). The lens softens the top of
+  the frame in tilted shots (`uDof`, from tilt 30° to 62°), its six taps turned per pixel so a small light does not
+  become a hexagon; its colour fringes are halved for the globe. After the reader stops, the camera pushes in 2.5% and
+  turns 0.9° and comes to rest over 7 s (`settle`; none with reduced motion), then draws nothing. Terrain rebuilt for the
+  centred camera and the new 4 November shot (`node tools/build-terrain.mjs`, 8 min with the cached DEM): 74 tiles
+  added, 67 no longer referenced removed.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.
