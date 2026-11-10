@@ -439,6 +439,17 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   plays. KQ6 h4 (4 November) is shot low over Budapest before dawn looking north-east (alt 110, tilt 64, heading 50).
   A keyboard choice from the scene menu focuses the title once the scroll has landed (`goTo(i, done)`): the card is
   only focusable once lit. Chapter screenshot baselines are not updated for this prototype (awaiting review).
+- Learning in Watch (2026-11-10, same branch): every scene ends with two recall steps (`.sc__recall`): its `check`
+  question alone over a frame stepped back to 42% (eased, `watchDim`), then the answer with the scene's sources and
+  "I knew it" / "Not yet" (also under Study's check). Ratings are kept on the device (`store` 'recall:<chapter id>')
+  and mark the reel (`is-known`, `is-again`) and the scene menu (`data-recall`). The reading position is kept as the
+  reader stops (`pos:<chapter id>`) and offered on the next visit ("Continue at scene N" on the reel) unless the
+  address names a scene. A film holds its last shot through the recall steps. Part 2's captions were widened to the
+  interpretive sentences (the UN committee's "spontaneous national uprising", Moscow's 30 October declaration, Nagy on
+  leaving the Pact, Nagy's first premiership, the UN outcome): 36 captions, about 85% of the body's words; the
+  choice awaits the History teacher's review. Trails pulse while the reader moves and for 8 s after, then stand
+  still (0 frames at rest, measured). Headless sessions left open with a live page slowed the browser tests from
+  2.7 to 38 minutes: close them before running the suites.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

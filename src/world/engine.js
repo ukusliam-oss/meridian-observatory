@@ -715,7 +715,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
       const m = arrowMesh([p.lat, p.lon], [q.lat, q.lon], ARROW[a.kind] || ARROW.capital, s.camera.alt); g.add(m); items.push({ type: 'arrow', m, flow: true });
     });
     (s.map.markers || []).forEach(mk => {
-      const sp = new Sprite(new SpriteMaterial({ map: glowTexture(), transparent: true, opacity: 0, depthWrite: false, blending: AdditiveBlending }));
+      const sp = new Sprite(new SpriteMaterial({ map: glowTexture(), transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: AdditiveBlending }));
       sp.position.copy(ll(mk.at[0], mk.at[1], 1.0002)); const k = s.camera.alt / R_KM * 0.09; sp.scale.set(k, k, 1);
       g.add(sp); items.push({ type: 'glow', m: sp });
     });
@@ -782,8 +782,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
           m.uniforms.uDraw.value = reduced ? (it.flow ? (gate > 0.5 ? 1 : 0) : 1) : d;
           m.uniforms.uOpacity.value = opacity; m.uniforms.uTime.value = time;
         }
-        // the pulses run on their own while the movement is on screen
-        if (opacity > 0.001 && !reduced) live = true;
+        // the pulses run while the reader moves and for a few seconds after, then stand still where they are, so a scene
+        // at rest draws nothing (and the battery is spared)
+        if (opacity > 0.001 && !reduced && performance.now() - movedAt < 8000) live = true;
       } else if (it.type === 'glow') {
         it.m.material.opacity = opacity * night;
       } else if (it.type === 'outline') {
@@ -1059,7 +1060,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   }
 
   // ── frame ─────────────────────────────────────────────────────────────────
-  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0, night = 0;
+  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0, night = 0, movedAt = 0;
   const t0 = performance.now();
   const proj = new Vector3();
   let lastA = null, lastB = null;
@@ -1179,7 +1180,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   raf = requestAnimationFrame(frame);
 
   return {
-    setProgress(p) { progress = p; },
+    setProgress(p) { if (p !== progress) movedAt = performance.now(); progress = p; },
     // flows of a panel wait for the step of its chain that sends them (0 hidden, 1 drawn)
     setGate(panel, g) { if (gates.get(panel) !== g) { gates.set(panel, g); dirty = true; } },
     pointOf: key => point.get(key),

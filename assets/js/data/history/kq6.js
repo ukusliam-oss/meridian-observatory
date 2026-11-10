@@ -163,10 +163,11 @@ export default {
     // ── Hungary, 1956 ─────────────────────────────────────────────────────
     {
       id: 'kq6-h1', part: 'Hungary, 1956', date: '1956-07-18', dateLabel: '1953–July 1956',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'Hungary became a one-party communist state in 1949. The hardline leader <b>Mátyás Rákosi</b> ruled through fear, using the secret police against opponents.',
-        'Then three events raised Hungarian hopes.',
+        'In 1953 the reformer <b>Imre Nagy</b> replaced Rákosi, but in 1955 Nagy was removed. Then three events raised Hungarian hopes.',
         'In 1955 neighbouring <b>Austria</b> became neutral, and all occupying forces left. In February 1956 Khrushchev\'s <b>"Secret Speech"</b> attacked Stalin\'s crimes. In June 1956 workers rioted in <b>Poznań</b> in Poland.',
         'Many Hungarians wanted Nagy back, and they wanted Soviet troops to leave.',
       ],
@@ -203,13 +204,15 @@ export default {
     },
     {
       id: 'kq6-h2', part: 'Hungary, 1956', date: '1956-10-23', dateLabel: '23–28 October 1956',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'On <b>23 October</b> a huge demonstration filled the city. The <b>secret police fired</b> on the demonstrators.',
         'During the rising, crowds also pulled down a giant statue of Stalin.',
         'The next day Soviet troops already stationed in Hungary moved in, at the request of the party leader, Gerő.',
         'Fighting spread. Rebels armed with little more than petrol disabled Soviet tanks.',
         'A ceasefire was arranged on <b>28 October</b>.',
+        'A United Nations committee later called the rising "a spontaneous national uprising". It was led by students, workers and intellectuals, many of them communists.',
       ],
       // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
       sky: { sun: [-11.3, -120], floor: 0.14, exposure: 1.15 },
@@ -243,11 +246,13 @@ export default {
     },
     {
       id: 'kq6-h3', part: 'Hungary, 1956', date: '1956-11-01', dateLabel: '30 October–1 November 1956',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'After the ceasefire Nagy moved fast. On <b>30 October</b> he announced the <b>end of one-party rule</b>.',
-        'Soviet troops began to leave Budapest.',
+        'The same day Moscow issued a <b>declaration</b> promising equality and non-interference in other socialist states. Soviet troops began to leave Budapest.',
         'But on <b>31 October</b> the Soviet leaders changed their minds. Khrushchev argued that leaving Hungary would look like weakness to the West.',
+        'That day Nagy also told a crowd that talks had begun on leaving the Warsaw Pact.',
         'On <b>1 November</b> new Soviet units crossed the Hungarian border. Nagy protested.',
         'When the troops kept coming, his government announced that Hungary would <b>leave the Warsaw Pact</b> at once and become <b>neutral</b>.',
       ],
@@ -287,7 +292,8 @@ export default {
     },
     {
       id: 'kq6-h4', part: 'Hungary, 1956', date: '1956-11-04', dateLabel: '4–11 November 1956',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'At 4.15 a.m. on <b>4 November 1956</b> Soviet forces launched a major attack on Hungary.',
         'At 5.20 a.m. Nagy announced the invasion in a short radio broadcast.',
@@ -333,13 +339,16 @@ export default {
     },
     {
       id: 'kq6-h5', part: 'Hungary, 1956', date: '1956-11-04', dateLabel: '29 October–November 1956',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'Some broadcasts by <b>Radio Free Europe</b>, a station run by the CIA, encouraged the rebels to believe Western help was coming. It never came.',
         'On 31 October President <b>Eisenhower</b> said the USA would not use force in Eastern Europe.',
         'Three reasons explain this. First, fighting the USSR risked a <b>global war</b>.',
         'Second, the <b>Suez Crisis</b> divided the West: Israel attacked Egypt on 29 October, and Britain and France soon joined in.',
         'Third, Eisenhower was in the middle of an <b>election campaign</b>.',
+        'The USA condemned the invasion at the United Nations and offered aid to the Hungarian people.',
+        'But on 4 November it decided that there should be no UN force for Hungary.',
       ],
       camera: { lat: 42, lon: 0, alt: 9000 },
       map: {
@@ -380,7 +389,8 @@ export default {
     },
     {
       id: 'kq6-h6', part: 'Hungary, 1956', date: '1958-06-16', dateLabel: '1956–1968',
-      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word; the choice
+      // itself is editorial and awaits the History teacher's review
       captions: [
         'Kádár\'s government cracked down hard. It executed more than 300 people who had taken part in the rising and imprisoned thousands more.',
         'Nagy left the Yugoslav embassy on <b>22 November 1956</b> after being promised safe passage, but he was arrested at once.',

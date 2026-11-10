@@ -179,6 +179,19 @@ const step = (inner, cls = '') => `<div class="sc__step${cls}"><div class="sc__f
 const askStep = x => step(`${x.hint ? `<p class="sc__hint">${esc(x.hint)}</p>` : ''}
   <div class="sc__keys" role="group" aria-label="${esc(x.keysLabel || 'Ask the scene')}">${x.keys.map(k => `<button type="button" data-key="${esc(k.v)}">${esc(k.label)}</button>`).join('')}</div>
   <p class="sc__read" data-read aria-live="polite"></p>`, ' sc__ask');
+// Learning in the film (Meridian Ω: observe, explain, retrieve, revisit). Every scene ends with its own question: it holds
+// alone first, so the reader answers it from memory, and the answer comes with the next step, with the scene's sources
+// and two buttons to say whether it was known. The answers are kept on this device only, and scenes not yet known are
+// marked on the reel and in the scene menu, so they can be found again.
+const CHAPTER = data.id || 'kq6';
+const recallKey = `recall:${CHAPTER}`;
+const recalls = store.get(recallKey, {});
+const rate = id => `<div class="sc__rate" role="group" aria-label="Did you know it?"><button type="button" data-rate="1" data-id="${id}">I knew it</button><button type="button" data-rate="0" data-id="${id}">Not yet</button></div>`;
+const srcLinks = s => [...new Set(s.facts.map(f => f.src))].map(k => `<a class="src mono" href="#src-${k}" title="${esc(data.sources[k].title)}">${srcNo(k)}</a>`).join('');
+const recallSteps = s => `<div class="sc__recall">
+  ${step(`<p class="sc__kick">Check yourself</p><p class="sc__cap sc__qq">${esc(s.check.q)}</p><p class="sc__hint">Answer it in your head, then scroll on.</p>`, ' sc__q')}
+  ${step(`<p class="sc__kick">The answer</p><p class="sc__cap">${esc(s.check.a)}</p>${rate(s.id)}<p class="sc__srcs">Sources ${srcLinks(s)}</p>`, ' sc__ans')}
+</div>`;
 function sceneHTML(s, i) {
   const pi = partOf(i), part = parts[pi];
   const opener = part.first === i ? `<header class="part" data-part="${pi}"><div class="part__in">
@@ -202,6 +215,7 @@ function sceneHTML(s, i) {
       <div class="sc__body sc__watch">${(s.captions || captions(s.body)).map(c => step(`<p class="sc__cap">${c}</p>`)).join('')}</div>
       <div class="sc__study"><div class="sc__body sc__full">${s.body}</div></div>
       ${s.scene && s.scene.keys ? askStep(s.scene) : ''}
+      ${recallSteps(s)}
       <div class="sc__notes">
         ${s.map && s.map.relief3d && !s.map.section ? demLine(s) : ''}
         ${s.chart ? chart(s.chart, s.id) : ''}${s.map && s.map.section && s.map.relief3d ? section(s) : ''}${s.chain ? chain(s.chain) : ''}${s.compare ? compare(s.compare) : ''}${s.cascade ? cascade(s.cascade) : ''}
@@ -209,7 +223,7 @@ function sceneHTML(s, i) {
         ${s.evaluation && s.evaluation.length ? `<div class="sc__block"><span class="sc__label">It depends on</span><ul class="sc__eval">${s.evaluation.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
         ${mis}${judge}
         <div class="sc__block"><button class="sc__check" type="button" aria-expanded="false"><span class="sc__label"><span>Check yourself</span><span>Tap to reveal</span></span>
-          <span class="q">${esc(s.check.q)}</span><span class="a">${esc(s.check.a)}</span></button></div>
+          <span class="q">${esc(s.check.q)}</span><span class="a">${esc(s.check.a)}</span></button>${rate(s.id)}</div>
         <details class="sc__block sc__facts"><summary class="sc__label">Facts and sources (${s.facts.length})</summary>
           <ol>${s.facts.map(f => `<li>${esc(f.text)}<a class="src mono" href="#src-${f.src}" title="${esc(data.sources[f.src].title)}">${srcNo(f.src)}</a></li>`).join('')}</ol></details>
       </div>
@@ -325,6 +339,20 @@ document.addEventListener('click', e => {
   const hint = b.querySelector('.mono span:last-child'); if (hint) hint.textContent = b.getAttribute('aria-expanded') === 'true' ? 'Hide' : 'Tap to reveal';
 });
 
+function showRecall() {
+  scenes.forEach((s, i) => {
+    const v = recalls[s.id];
+    $$(`[data-rate][data-id="${s.id}"]`).forEach(b => b.setAttribute('aria-pressed', String(v != null && +b.dataset.rate === v)));
+    const tick = $$('.reel__tick')[i], item = $(`.chmenu__item[data-go="${i}"]`);
+    tick?.classList.toggle('is-known', v === 1); tick?.classList.toggle('is-again', v === 0);
+    if (item) item.dataset.recall = v == null ? '' : v ? 'known' : 'again';
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-rate]'); if (!b) return;
+  recalls[b.dataset.id] = +b.dataset.rate; store.set(recallKey, recalls); showRecall();
+});
+
 // ── scene menu and pill ───────────────────────────────────────────────────
 const menu = $('[data-menu]');
 const CHEV = '<svg class="chmenu__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18l6-6l-6-6"/></svg>';
@@ -332,7 +360,7 @@ menu.setAttribute('role', 'menu'); menu.tabIndex = -1;
 // the wheel scrolls the list, not the page behind it (Lenis skips elements marked data-lenis-prevent, as on their menu)
 menu.setAttribute('data-lenis-prevent', '');
 menu.innerHTML = '<div class="chmenu__surface" aria-hidden="true"></div><div class="chmenu__items">' + parts.map((p, k) => `${k ? '<div class="chmenu__sep" role="separator"></div>' : ''}<div class="chmenu__label">Part ${k + 1} · ${esc(p.name)}</div>`
-  + p.scenes.map(i => `<a class="chmenu__item" role="menuitem" tabindex="-1" href="#${scenes[i].id}" data-go="${i}"><span class="chmenu__content"><span class="chmenu__num">${String(i + 1).padStart(2, '0')}</span><span class="chmenu__text">${esc(scenes[i].title)}</span></span>${CHEV}</a>`).join('')).join('') + '</div>';
+  + p.scenes.map(i => `<a class="chmenu__item" role="menuitem" tabindex="-1" href="#${scenes[i].id}" data-go="${i}"><span class="chmenu__content"><span class="chmenu__num">${String(i + 1).padStart(2, '0')}</span><span class="chmenu__text">${esc(scenes[i].title)}</span><span class="chmenu__again" aria-label="not yet known"></span></span>${CHEV}</a>`).join('')).join('') + '</div>';
 const menuBtn = $('[data-menu-btn]'), menuItems = $('.chmenu__items', menu), pill = $('.pillnav');
 // the pill is emotion-agency's glass button: pointer-lit rim, aurora inside, glow below on hover
 pill.insertAdjacentHTML('afterbegin', '<div class="pillnav__aurora" aria-hidden="true"><canvas></canvas></div><div class="pillnav__shadow" aria-hidden="true"></div>');
@@ -352,6 +380,7 @@ reel.className = 'reel'; reel.setAttribute('aria-hidden', 'true');
 reel.innerHTML = scenes.map((s, i) => `<i class="reel__tick${parts.some(p => p.first === i) ? ' is-part' : ''}" style="left:${((i + 0.5) / N * 100).toFixed(2)}%"></i>`).join('') + '<i class="reel__fill" data-reel-fill></i>';
 pill.append(reel);
 const reelFill = $('[data-reel-fill]', reel);
+showRecall();
 menuBtn.insertAdjacentHTML('beforeend', '<span class="pillnav__label">Scenes</span>');
 const viewBtn = document.createElement('button');
 viewBtn.type = 'button'; viewBtn.className = 'pillnav__view';
@@ -538,11 +567,22 @@ function lightSteps(y, near) {
   litEl?.classList.remove('is-on'); litEl = el; el?.classList.add('is-on');
   // a title card stands alone on the frame: the map's place names wait for the first caption
   root.classList.toggle('is-card', !!el?.classList.contains('sc__card'));
+  root.classList.toggle('is-recall', !!el?.closest('.sc__recall')); // a question stands alone: the map's names wait
 }
 // the frame darkens while the notes run over it, and clears again before the camera flies on
+// Watch keeps the frame clear but lets it step back behind a question; Study sinks it under the text, and clears it in
+// the flights between scenes
+const dim = { v: 1, to: 1, tw: null };
+function watchDim() {
+  const to = litEl && litEl.closest('.sc__recall') ? 0.42 : 1;
+  if (to === dim.to) return;
+  dim.to = to; dim.tw?.kill();
+  const apply = () => { world?.setDim(dim.v); for (const f of films.values()) if (f.w && f.o > 0) f.w.setDim(dim.v); };
+  if (reduced) { dim.v = to; apply(); return; }
+  dim.tw = gsap.to(dim, { v: to, duration: 0.9, ease: 'power2.inOut', onUpdate: apply });
+}
 function dimAt(k, y) {
-  // Watch keeps the frame clear; Study sinks it under the text, and clears it in the flights between scenes
-  if (!study) return 1;
+  if (!study) return dim.v;
   const vh = innerHeight, top = notesAt[k][0] - y, bot = notesAt[k][1] - y;
   return 1 - 0.8 * smooth(vh * 1.1, vh * 0.6, top) * (1 - smooth(vh * 0.4, vh * 0.05, bot));
 }
@@ -727,6 +767,7 @@ async function loadFilm(k) {
 function stopped(near) {
   clearTimeout(heightsAt);
   heightsAt = setTimeout(() => {
+    if (progressAt(lenis ? lenis.scroll : scrollY) >= 0) store.set(`pos:${CHAPTER}`, near);
     if (!world) return;
     [base[near], base[near + 1], base[near] + span[near] - 1, base[near - 1], base[near + 2]].forEach(k => k != null && world.heights(k));
     scenes.forEach((s, k) => { if (s.scene && s.scene.film && !films.has(k) && Math.abs(near - k) <= 2) loadFilm(k); });
@@ -739,9 +780,10 @@ function updateFilms(p, y) {
     held ||= o > 0.5;
     if (o !== f.o) { f.o = o; f.el.style.opacity = o.toFixed(3); f.el.style.visibility = o > 0 ? 'visible' : 'hidden'; }
     if (!f.w || o <= 0) continue;
-    const st = stepOf(k, y), count = stepsAt[k].length;
+    const count = liveSteps[k].filter(e => !e.closest('.sc__recall')).length, st0 = stepOf(k, y), st = st0 && st0.n < count ? st0 : null;
     // through a step its shot holds; in the step's last third it moves to the next step's (the first two hold the first)
     const n = st ? st.n : (y + innerHeight * CAP_LINE < stepsAt[k][0][0] ? 0 : count - 1), u = st ? smooth(0.62, 1, st.f) : 0;
+    if (st0 && !st) { f.w.setDim(dim.v); continue; } // at its question the film holds its last shot
     const at = (list, m) => list[Math.min(list.length - 1, m)];
     const shots = f.spec.shots || [0], nx = Math.min(count - 1, n + 1);
     f.w.setShot(at(shots, n) + (at(shots, nx) - at(shots, n)) * (n === count - 1 ? 0 : u));
@@ -816,6 +858,21 @@ function soundToggle() {
   $('[data-theme-toggle]', bar).before(b);
 }
 
+// a returning reader is offered the scene they stopped at, on the reel, until they scroll on or take it
+function resume() {
+  const k = store.get(`pos:${CHAPTER}`, 0);
+  if (!(k > 0 && k < N)) return;
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'pillnav__resume';
+  b.innerHTML = `Continue at scene ${k + 1} <span aria-hidden="true">→</span>`;
+  b.setAttribute('aria-label', `Continue at scene ${k + 1}: ${plain(scenes[k].title)}`);
+  $('.pillnav__text', pill).after(b);
+  const off = () => { b.remove(); removeEventListener('scroll', far); };
+  const far = () => { if (progressAt(lenis ? lenis.scroll : scrollY) > -0.6) off(); };
+  b.addEventListener('click', () => { off(); goTo(k, () => focusHeading(sceneHeading(k))); });
+  addEventListener('scroll', far, { passive: true });
+}
+
 async function start() {
   setPct(0.02);
   if (data.sound) {
@@ -858,11 +915,12 @@ async function start() {
     const p = progressAt(y), ep = engineP(y), near = p < 0 ? 0 : Math.min(N - 1, Math.round(p));
     // past the last scene (lab, toolkit): the map's ribbon, legend and labels step aside
     root.classList.toggle('is-past', y + innerHeight * 0.5 > holds[N - 1][1] + innerHeight * 0.35);
-    const dim = p < 0 ? 1 : dimAt(near, y);
-    if (world) { world.setProgress(ep); world.setDim(dim); }
-    root.classList.toggle('is-notes', dim < 0.7);
+    if (world) world.setProgress(ep);
     updateUI(p);
     lightSteps(y, near);
+    const dm = p < 0 ? 1 : dimAt(near, y);
+    if (study) world?.setDim(dm); else watchDim();
+    root.classList.toggle('is-notes', dm < 0.7);
     stopped(near);
     updatePanels(y, ep, near);
     updateFilms(p, y);
@@ -874,5 +932,6 @@ async function start() {
   if (snd) gate(enter); else enter();
   boot();
   if (location.hash) { const k = scenes.findIndex(s => '#' + s.id === location.hash); if (k >= 0) setTimeout(() => goTo(k), 400); }
+  else resume();
 }
 start();

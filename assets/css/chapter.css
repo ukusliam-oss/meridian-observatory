@@ -637,7 +637,7 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 /* the captions rest low and the notes run under a dimmed nav: no band under the nav over the frame */
 .chapter .nav::before { display: none; }
 .world__legend, .world__labels { transition: opacity .5s ease; }
-.has-film .world__legend, .has-film .world__labels, .is-notes .world__legend, .is-notes .world__labels, .is-card .world__labels { opacity: 0; pointer-events: none; }
+.has-film .world__legend, .has-film .world__labels, .is-notes .world__legend, .is-notes .world__labels, .is-card .world__labels, .is-recall .world__labels, .is-recall .world__legend { opacity: 0; pointer-events: none; }
 /* a film's subtitles: a soft shade behind each caption, so it reads over a bright frame as over a dark one */
 .sc__step:not(.sc__card) .sc__fix { isolation: isolate; }
 .sc__step:not(.sc__card) .sc__fix::before { content: ""; position: absolute; inset: -34% -14%; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgb(5 6 10 / .66), rgb(5 6 10 / .34) 62%, transparent); }
@@ -690,3 +690,22 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
   .chapter { --cap-b: calc(env(safe-area-inset-bottom) + 150px); }
 }
 .world__marker span { translate: 0 var(--dy, 0); }
+
+/* ── learning in the film: each scene's question, its answer, its sources, and whether it was known ── */
+.sc__q, .sc__ans { min-height: 80vh; min-height: 80svh; }
+.sc__qq { font-size: clamp(1.35rem, 1.05rem + .9vw, 1.9rem); color: var(--film-ink); }
+.sc__rate { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; }
+.sc__rate button { font: 400 15px var(--serif); letter-spacing: .1em; text-transform: uppercase; color: var(--film-2); background: none; border: 0; border-bottom: 1px solid rgb(236 231 222 / .3); padding: 8px 0 5px; cursor: pointer; }
+.sc__rate button:hover { color: var(--film-ink); border-color: var(--film-ink); }
+.sc__rate button[aria-pressed="true"] { color: var(--film-ink); border-color: var(--acc); }
+.sc__rate button:focus-visible, .pillnav__resume:focus-visible { outline: 1px solid var(--acc); outline-offset: 6px; }
+.sc__srcs { margin: 0; font: 400 12px/1.6 var(--serif); letter-spacing: .2em; text-transform: uppercase; color: var(--film-3); }
+.sc__srcs .src { letter-spacing: 0; text-transform: none; }
+[data-view="study"] .sc__recall { display: none; }
+[data-view="study"] .sc__rate { justify-content: flex-start; margin-top: 12px; }
+.reel__tick.is-known { background: rgb(236 231 222 / .75); }
+.reel__tick.is-again { top: -3px; height: 7px; background: var(--acc); box-shadow: 0 0 6px var(--acc); }
+.chmenu__again { display: none; flex: none; width: 6px; height: 6px; margin-left: 8px; border-radius: 50%; background: var(--acc); }
+.chmenu__item[data-recall="again"] .chmenu__again { display: inline-block; }
+.pillnav__resume { font: 400 13px/1 var(--serif); letter-spacing: .2em; text-transform: uppercase; color: var(--film-ink); background: none; border: 0; border-bottom: 1px solid var(--acc); padding: 8px 0 5px; cursor: pointer; }
+@media (max-width: 760px) { .pillnav__resume { position: absolute; left: 50%; bottom: 58px; translate: -50% 0; white-space: nowrap; } }
