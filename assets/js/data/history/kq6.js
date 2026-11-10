@@ -303,11 +303,13 @@ export default {
         'An estimated <b>200,000 refugees</b> fled Hungary, mostly to Austria.',
       ],
       // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
-      sky: { sun: [-15.4, 131], floor: 0.16, exposure: 1.25 },
+      sky: { sun: [-15.4, 131], floor: 0.3, exposure: 1.4 },
       // low over Budapest before dawn, looking north-east along the road from the border: the columns come towards the
       // camera out of the first light on the horizon
       camera: { lat: 47.35, lon: 19.95, alt: 110, tilt: 64, heading: 50 },
       map: {
+        // the ground from its real heights (Copernicus DEM GLO-30), raised six times so the hills read from 110 km
+        ground3d: { site: 'hungary', exag: 6 },
         borders: '1956-11-04',
         fill: fills({ HUN: 'focus' }),
         arrows: [

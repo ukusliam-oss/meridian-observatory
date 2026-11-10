@@ -460,6 +460,15 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   turns 0.9° and comes to rest over 7 s (`settle`; none with reduced motion), then draws nothing. Terrain rebuilt for the
   centred camera and the new 4 November shot (`node tools/build-terrain.mjs`, 8 min with the cached DEM): 74 tiles
   added, 67 no longer referenced removed.
+- 3D ground for low shots (2026-11-10, same branch): a scene's `map.ground3d: { site, exag }` raises a patch of real
+  heights (`tools/build-ground.mjs` → `assets/data/ground/{site}.png|json`, Copernicus GLO-30 at the overview that
+  gives 1.5 source pixels per output pixel, cached in `tools/.cache/ground/`, the same RGB packing and reader as
+  Geography's landscapes) that wears the globe's own painted surface: the earth's shader and uniforms, the sphere's uv,
+  polygon offset to win the depth test, heights falling to zero at its edges. It rises as the camera lands and sinks
+  as it leaves (`uLift`). KQ6 h4 uses `hungary` (46.7–49.0 N, 18.25–22.95 E, 1100 × 802, 39–1,976 m, raised six times,
+  897 KB). The night is no longer flat: what the night keeps (`floor`) is shaded by a soft key from the upper left of the
+  frame (`uKey`, a film's night lighting, not the moon), so raised ground keeps its shape; h4's floor is 0.3, exposure
+  1.4. Marker glows follow the sun having set at the camera's target, not the floor.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

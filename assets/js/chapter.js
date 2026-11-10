@@ -18,7 +18,7 @@ const CFG = {
   // shaded terrain tiles for close and middle views (tools/build-terrain.mjs); a chapter can switch them off
   terrain: data.terrain === false ? null : '../assets/data/terrain/index.json',
   // Geography layers (tools/build-geo.mjs); the engine fetches only those a scene asks for
-  layers: { quakes: '../assets/data/geo/quakes.json', volcanoes: '../assets/data/geo/volcanoes.json', plates: '../assets/data/geo/plates.json', dem: '../assets/data/geo/dem/', shake: '../assets/data/geo/shake/' },
+  layers: { quakes: '../assets/data/geo/quakes.json', volcanoes: '../assets/data/geo/volcanoes.json', plates: '../assets/data/geo/plates.json', dem: '../assets/data/geo/dem/', shake: '../assets/data/geo/shake/', ground: '../assets/data/ground/' },
   accent: data.accent || null,
   light: data.light || 'fixed',
 };

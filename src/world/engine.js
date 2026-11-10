@@ -85,6 +85,16 @@ const shellVert = /* glsl */`
     vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz;
     gl_Position = projectionMatrix * viewMatrix * w;
   }`;
+// A low shot's ground in 3D (a scene's map.ground3d { site, exag }): a patch of real heights that wears the globe's own
+// painted surface (the same shader and uniforms as the earth, its uv the sphere's), rising as the camera lands.
+const groundVert = /* glsl */`
+  attribute float aH; uniform float uLift;
+  varying vec3 vN; varying vec3 vW; varying vec2 vUv;
+  void main() {
+    vUv = uv; vN = normalize(mat3(modelMatrix) * normal);
+    vec4 w = modelMatrix * vec4(normalize(position) * (1.0 + aH * uLift), 1.0); vW = w.xyz;
+    gl_Position = projectionMatrix * viewMatrix * w;
+  }`;
 // Data maps (id, value and ramp textures) are compiled in only where a chapter has values (HAS_DATA).
 const earthFrag = /* glsl */`
   uniform sampler2D uGA, uDA, uGB, uDB, uRelW, uRelE, uTA, uTB;
@@ -94,7 +104,7 @@ const earthFrag = /* glsl */`
 #endif
   uniform vec4 uSlotA, uSlotB;      // x: value row (< 0: no data layer), y: d0, z: d1, w: ramp row
   uniform float uWA, uWB;           // inside each state, how far its values have moved towards the other state's row
-  uniform float uMix, uHatch, uLook, uFloor, uHaze; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
+  uniform float uMix, uHatch, uLook, uFloor, uHaze; uniform vec3 uLight, uKey, uOcean, uOceanLift, uRim, uFocus, uCut;
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
   vec2 lonlat() { return vec2(vUv.x * 360.0 - 180.0, vUv.y * 180.0 - 90.0); }
   vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
@@ -189,7 +199,10 @@ const earthFrag = /* glsl */`
     vec4 land = mix(a, b, uMix);
     float focus = mix(fa, fb, uMix);
     vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
-    float lit = uFloor + (1.0 - uFloor) * smoothstep(-0.35, 0.9, dot(n, normalize(uLight)));
+    // what the night keeps is not flat: a soft key from the upper left of the frame (a film's night lighting, not the
+    // moon) shades slopes, so raised ground keeps its shape in the dark
+    float keep = uFloor * (0.25 + 1.6 * max(dot(n, normalize(uKey)), 0.0));
+    float lit = keep + (1.0 - keep) * smoothstep(-0.35, 0.9, dot(n, normalize(uLight)));
     float base = relief();
     float rel = mix(terrain(uTA, uBoxA, base), terrain(uTB, uBoxB, base), uMix);
     float shade = clamp(0.2 + 0.93 * rel, 0.48, 1.24);
@@ -692,7 +705,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     uRelW: { value: flat }, uRelE: { value: flat }, uTA: { value: blank }, uTB: { value: blank },
     uQA: { value: blank }, uQB: { value: blank }, uQBoxA: { value: new Vector4() }, uQBoxB: { value: new Vector4() },
     uRelBox: { value: new Vector4(...(relief?.europeBox || [0, 0, 1, 1])) },
-    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uFloor: { value: 0.42 }, uHaze: { value: 0.5 }, uCut: { value: new Vector3(0, 0, 0) },
+    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uKey: { value: new Vector3(0, 1, 0) }, uFloor: { value: 0.42 }, uHaze: { value: 0.5 }, uCut: { value: new Vector3(0, 0, 0) },
     uOcean: { value: new Color('#06080d') }, uOceanLift: { value: new Color('#0c1220') }, uRim: { value: rim }, uFocus: { value: new Color(PALETTE.focus) },
   };
   if (relief) {
@@ -935,6 +948,50 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     });
     return null;
   };
+  // ── a low shot's ground in 3D ──
+  const grounds = new Map(), groundDems = new Map();
+  const groundDem = site => {
+    if (!groundDems.has(site)) groundDems.set(site, layers && layers.ground ? loadDem(layers.ground, site).catch(() => null) : Promise.resolve(null));
+    return groundDems.get(site);
+  };
+  const groundOf = s => {
+    const r = s && s.map.ground3d; if (!r) return null;
+    if (grounds.has(r.site)) return grounds.get(r.site);
+    grounds.set(r.site, null);
+    groundDem(r.site).then(dem => {
+      if (!dem) return;
+      const { meta, at } = dem, [w, so, e, n] = meta.box, exag = r.exag || 1;
+      const gw = phone ? 160 : 260, gh = Math.round(gw * meta.height / meta.width);
+      const pos = [], uv = [], hs = [], idx = [];
+      for (let y = 0; y <= gh; y++) for (let x = 0; x <= gw; x++) {
+        const lat = n - y / gh * (n - so), lon = w + x / gw * (e - w);
+        // the heights fall to sea level at the patch's edges, so it meets the globe without a step
+        const edge = Math.min(x / gw, 1 - x / gw, y / gh, 1 - y / gh), h = Math.max(0, at(lat, lon)) * smooth(0, 0.08, edge);
+        const v = ll(lat, lon, 1 + h * exag / (R_KM * 1000));
+        pos.push(v.x, v.y, v.z); uv.push((lon + 180) / 360, (lat + 90) / 180); hs.push(h);
+      }
+      for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) { const a = y * (gw + 1) + x, b = a + 1, d = a + gw + 1, f = d + 1; idx.push(a, d, b, b, d, f); }
+      const g = new BufferGeometry();
+      g.setAttribute('position', new Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new Float32BufferAttribute(uv, 2)); g.setAttribute('aH', new Float32BufferAttribute(hs, 1));
+      g.setIndex(idx); g.computeVertexNormals();
+      const mat = new ShaderMaterial({ uniforms: { ...earthU, uLift: { value: 0 } }, vertexShader: groundVert, fragmentShader: earthFrag, defines: earth.material.defines,
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
+      const m = new Mesh(g, mat); m.frustumCulled = false; m.visible = false; m.userData.exag = exag;
+      globe.add(m); grounds.set(r.site, m); dirty = true;
+    });
+    return null;
+  };
+  function setGround(sA, sB, mix) {
+    const ga = groundOf(sA), gb = groundOf(sB);
+    for (const m of grounds.values()) if (m && m !== ga && m !== gb) m.visible = false;
+    for (const [m, k] of [[ga, 1 - mix], [gb, mix]]) {
+      if (!m) continue;
+      const rise = (m === ga ? 1 - mix : 0) + (m === gb ? mix : 0);
+      m.visible = rise > 0.001;
+      // the ground rises as the camera lands and sinks as it leaves
+      m.material.uniforms.uLift.value = (reduced ? (rise > 0.5 ? 1 : 0) : ease(clamp(rise))) * m.userData.exag / (R_KM * 1000);
+    }
+  }
   function setLandscape(sA, sB, i, j, mix) {
     const want = new Map();
     const add = (k, s, op) => { if (s && s.map.relief3d && op > 0.001) { const p = patchOf(k); if (p) want.set(p, { s, op: (want.get(p)?.op || 0) + op }); } };
@@ -1151,6 +1208,11 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     lineLift = 1 + clamp(alt / R_KM * 0.002, 1e-6, 0.0015);
     // a chapter that goes all round the world (Geography) carries its light with the camera, from the upper left as
     // the fixed light falls on Europe, so no scene lands on the night side
+    {
+      // the night key: from the upper left of the frame, wherever the camera is
+      const d = camera.position.clone().normalize(), east = new Vector3(0, 1, 0).cross(d).normalize(), north = d.clone().cross(east);
+      earthU.uKey.value.copy(d).addScaledVector(east, -0.9).addScaledVector(north, 0.7).normalize();
+    }
     if (lightMode === 'camera') {
       const d = camera.position.clone().normalize(), east = new Vector3(0, 1, 0).cross(d).normalize(), north = d.clone().cross(east);
       light.copy(d).addScaledVector(east, -0.75).addScaledVector(north, 0.6);
@@ -1162,7 +1224,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const sunA = ka.sun ? ll(ka.sun[0], ka.sun[1]) : base, sunB = kb.sun ? ll(kb.sun[0], kb.sun[1]) : base;
     if (ka.sun || kb.sun) light.copy(sunA).lerp(sunB, tt).normalize();
     earthU.uFloor.value = (ka.floor ?? 0.42) * (1 - tt) + (kb.floor ?? 0.42) * tt;
-    night = smooth(0.36, 0.12, earthU.uFloor.value); // towns light up as the land goes dark
+    night = smooth(0.1, -0.15, camera.position.clone().normalize().dot(light.clone().normalize())); // towns glow where the sun has set
     if (post) post.uniforms.uExp.value = LENS.exposure * ((ka.exposure ?? 1) * (1 - tt) + (kb.exposure ?? 1) * tt);
     earthU.uHaze.value = (ka.haze ?? 0.5) * (1 - tt) + (kb.haze ?? 0.5) * tt;
     // a camera tilted towards the horizon sees the far ground softly, as a long lens would
@@ -1197,6 +1259,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     setSpikes(i, j, mix, alt);
     live = setPoints(sA, sB, mix, time, alt);
     setLandscape(i >= 0 ? sA : null, sB, i, j, j === i ? 0 : mix);
+    setGround(i >= 0 ? sA : null, sB, j === i ? 0 : mix);
     setCutaway(sA, sB, j === i ? 0 : mix);
     setLegend(sA, sB, w);
     for (const [idx, o] of overlays) if (idx !== i && idx !== j) o.g.visible = false;
