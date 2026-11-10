@@ -16,6 +16,10 @@ mkdirSync(CACHE, { recursive: true }); mkdirSync(`${OUT}/ground`, { recursive: t
 const SITES = {
   // KQ6 4 November 1956: from Budapest north-east along the road from the border, the Mátra and Bükk hills beyond
   hungary: { center: [47.85, 20.6], half: [1.15, 2.35], size: 1100 },
+  // KQ6 Prague 1968: the Bohemian basin and the mountains round it (Krkonoše, Ore Mountains, Šumava)
+  bohemia: { center: [49.9, 15.2], half: [2.4, 4.4], size: 1000 },
+  // Geography focus and epicentre: south-east Anatolia, the 2023 earthquakes' ground, and the Taurus
+  anatolia: { center: [37.3, 37.1], half: [3.0, 5.2], size: 1000 },
 };
 const ONLY = process.env.SITES ? process.env.SITES.split(',') : null;
 for (const [name, s] of Object.entries(SITES).filter(([k]) => !ONLY || ONLY.includes(k))) {
@@ -26,8 +30,15 @@ for (const [name, s] of Object.entries(SITES).filter(([k]) => !ONLY || ONLY.incl
   const tileOf = async (lat, lon) => {
     const key = `${lat}_${lon}`; if (tiles.has(key)) return tiles.get(key);
     const n = `Copernicus_DSM_COG_10_${lat < 0 ? 'S' : 'N'}${String(Math.abs(lat)).padStart(2, '0')}_00_${lon < 0 ? 'W' : 'E'}${String(Math.abs(lon)).padStart(3, '0')}_00_DEM`;
-    const file = `${CACHE}/${name}_${n}.f32`;
+    const file = `${CACHE}/${name}_${n}.f32`, url = `https://copernicus-dem-30m.s3.amazonaws.com/${n}/${n}.tif`;
     let t;
+    // open sea has no tile (the bucket answers 404): its height is sea level, remembered so it is not asked again
+    const SEA = { x0: 0, y0: 0, w: 2, h: 2, tw: 1, th: 1, d: new Float32Array(4) };
+    if (existsSync(`${file}.sea`)) { tiles.set(key, SEA); return SEA; }
+    if (!existsSync(file)) {
+      const head = await fetch(url, { method: 'HEAD' }).catch(() => null);
+      if (head && head.status === 404) { writeFileSync(`${file}.sea`, ''); tiles.set(key, SEA); return SEA; }
+    }
     if (existsSync(file)) { const b = readFileSync(file); t = { x0: b.readInt32LE(0), y0: b.readInt32LE(4), w: b.readUInt32LE(8), h: b.readUInt32LE(12), tw: b.readUInt32LE(16), th: b.readUInt32LE(20), d: new Float32Array(b.buffer.slice(b.byteOffset + 24)) }; }
     else {
       // the coarsest overview that still has at least 1.5 source pixels per output pixel: a wide site (Mauna Loa) needs
@@ -36,7 +47,7 @@ for (const [name, s] of Object.entries(SITES).filter(([k]) => !ONLY || ONLY.incl
       let im = null;
       for (let k = 0; k < 4 && !im; k++) { // opening the file can fail too
         try {
-          const tiff = await fromUrl(`https://copernicus-dem-30m.s3.amazonaws.com/${n}/${n}.tif`);
+          const tiff = await fromUrl(url);
           im = await tiff.getImage(0);
           for (let j = 1; j < await tiff.getImageCount(); j++) { const o = await tiff.getImage(j); if (o.getWidth() >= need) im = o; else break; }
         } catch { im = null; console.log(`ground ${name}: retry opening ${k + 1}`); await new Promise(r => setTimeout(r, 3000 * (k + 1))); }

@@ -468,7 +468,12 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   as it leaves (`uLift`). KQ6 h4 uses `hungary` (46.7–49.0 N, 18.25–22.95 E, 1100 × 802, 39–1,976 m, raised six times,
   897 KB). The night is no longer flat: what the night keeps (`floor`) is shaded by a soft key from the upper left of the
   frame (`uKey`, a film's night lighting, not the moon), so raised ground keeps its shape; h4's floor is 0.3, exposure
-  1.4. Marker glows follow the sun having set at the camera's target, not the floor.
+  1.4. Marker glows follow the sun having set at the camera's target, not the floor. Also on KQ6 h2 (`hungary`, ×6),
+  KQ6 c2 (`bohemia`, ×8: 47.5–52.3 N, 10.8–19.6 E) and tectonics tq-8 (`anatolia`, ×6, said in its text;
+  `tools/check-geo.mjs` checks ground patches exist and their raised heights are said). Open sea has no GLO-30 tile (the
+  bucket answers 404): build-ground treats it as sea level and remembers it (`.sea` marker in the cache).
+- The sea's glint has one roughness: a value per 0.5° cell (even blended between cells) showed the cells as squares
+  wherever the sun caught the water.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

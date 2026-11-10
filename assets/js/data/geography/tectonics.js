@@ -172,11 +172,12 @@ export default {
     {
       id: 'tq-8', part: 'Earthquakes', date: '2023-02-06', dateLabel: '6 February 2023',
       camera: { lat: 37.3, lon: 37.1, alt: 900 },
-      map: { borders: 'none', points: [{ id: 'quakes', years: [2023, 2023] }], plates: ['transform', 'convergent'], markers: [{ at: [37.226, 37.014], label: 'Epicentre, magnitude 7.8' }] },
+      map: { borders: 'none', ground3d: { site: 'anatolia', exag: 6 }, points: [{ id: 'quakes', years: [2023, 2023] }], plates: ['transform', 'convergent'], markers: [{ at: [37.226, 37.014], label: 'Epicentre, magnitude 7.8' }] },
       title: 'Focus, epicentre and seismic waves',
       body: `<p>An earthquake starts at the <b>focus</b> (hypocentre), the point underground where the rock breaks. The point on the surface directly above it is the <b>epicentre</b>.</p>
         <p>Energy spreads out from the focus as <b>seismic waves</b>. They are strongest near the epicentre and weaken as they travel.</p>
-        <p>On 6 February 2023 the rock broke along the <b>East Anatolian Fault</b> in Türkiye, at a focus about 10 km deep. The map shows every earthquake of magnitude 5.5 or more in the area that year: most are aftershocks along the faults.</p>`,
+        <p>On 6 February 2023 the rock broke along the <b>East Anatolian Fault</b> in Türkiye, at a focus about 10 km deep. The map shows every earthquake of magnitude 5.5 or more in the area that year: most are aftershocks along the faults.</p>
+        <p>The ground is shown with its heights raised six times.</p>`,
       chain: { title: 'How an earthquake happens', steps: ['Plates move but the rocks at the fault are locked together', 'Stress builds up over years or centuries', 'The rock suddenly breaks and slips at the focus', 'Energy is released as seismic waves', 'The ground shakes, most strongly near the epicentre'] },
       why: 'Define focus and epicentre precisely: many answers mix them up.',
       facts: [{ text: 'USGS: magnitude 7.8 at 01:17 UTC on 6 February 2023, epicentre 37.226°N 37.014°E, depth 10 km.', src: 'usgs-pazarcik' }],

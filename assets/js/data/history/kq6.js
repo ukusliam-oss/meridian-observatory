@@ -218,6 +218,8 @@ export default {
       sky: { sun: [-11.3, -120], floor: 0.2, exposure: 1.15 },
       camera: { lat: 47.50, lon: 19.05, alt: 450 },
       map: {
+        // Budapest's ground from its real heights, raised six times (the Buda hills against the Pest plain)
+        ground3d: { site: 'hungary', exag: 6 },
         borders: '1956-10-23',
         fill: fills({ HUN: 'focus' }),
         arrows: [{ from: [47.10, 19.70], to: C.budapest, kind: 'military', label: 'Soviet troops enter Budapest, 24 October' }],
@@ -666,6 +668,8 @@ export default {
       id: 'kq6-c2', part: 'Czechoslovakia, 1968', date: '1968-04-05', dateLabel: 'March–June 1968',
       camera: { lat: 50.08, lon: 14.44, alt: 700 },
       map: {
+        // Bohemia from its real heights, raised eight times: the basin and the mountains round it
+        ground3d: { site: 'bohemia', exag: 8 },
         borders: '1968-04-05',
         fill: fills({ CSK: 'focus' }),
         arrows: [],

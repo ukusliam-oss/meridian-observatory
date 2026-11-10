@@ -61,6 +61,12 @@ const ids = new Set(), covered = new Set();
     }
     if ((r.exag || 1) !== 1 && !/(times|twice|raised).*height|height.*(times|twice|raised)|not exaggerated/i.test(s.body)) warn(at, `heights are raised ×${r.exag}: say so in the text`);
   } else if (m.section) err(at, 'a section needs a relief3d landscape');
+  // a ground patch (assets/data/ground, tools/build-ground.mjs) raises the globe itself: it must exist, and the text says so
+  const g = m.ground3d;
+  if (g) {
+    if (!existsSync(`assets/data/ground/${g.site}.json`)) err(at, `ground ${g.site} is missing: add it to SITES in tools/build-ground.mjs`);
+    if ((g.exag || 1) !== 1 && !/(times|twice|raised).*height|height.*(times|twice|raised)|not exaggerated/i.test(s.body)) warn(at, `the ground's heights are raised ×${g.exag}: say so in the text`);
+  }
   if (m.cutaway && typeof m.cutaway.lon !== 'number') err(at, 'cutaway needs lon');
   if (s.compare && !(s.compare.rows || []).length) err(at, 'compare has no rows');
   if (s.chain && !(s.chain.steps || []).length) err(at, 'chain has no steps');

@@ -216,13 +216,13 @@ const earthFrag = /* glsl */`
     float grain = fract(sin(dot(floor(gl_FragCoord.xy), vec2(12.9898, 78.233))) * 43758.5453);
     col *= 1.0 + (grain - 0.5) * 0.05 * land.a;
     if (uLook > 0.5) {
-      // the light's look (design plan §8.3): the sun glints on open water and painted water, its roughness swaying
-      // slowly like wind on the sea, and the rim glows only on the lit side
+      // the light's look (design plan §8.3): the sun glints on open water and painted water, one soft lobe,
+      // and the rim glows only on the lit side
       vec3 L = normalize(uLight), hv = normalize(L + v);
       float wm = max(1.0 - clamp(land.a / 0.996, 0.0, 1.0), water);
-      vec2 g = vUv * vec2(720.0, 360.0);
-      float wind = fract(sin(dot(floor(g), vec2(127.1, 311.7))) * 43758.5453);
-      float a = 0.11 + 0.06 * wind, a2 = a * a, nh = max(dot(n, hv), 0.0);
+      // one roughness for the whole sea: varied per 0.5° cell (even blended between cells) the sharp glint showed the
+      // cells as squares wherever the sun caught the water
+      float a = 0.13, a2 = a * a, nh = max(dot(n, hv), 0.0);
       float D = a2 / (3.14159 * pow(nh * nh * (a2 - 1.0) + 1.0, 2.0));
       float F = 0.02 + 0.98 * pow(1.0 - max(dot(v, hv), 0.0), 5.0);
       col += vec3(1.0, 0.95, 0.86) * D * F * max(dot(n, L), 0.0) * 0.22 * wm;
