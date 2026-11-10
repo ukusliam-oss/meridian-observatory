@@ -1027,7 +1027,7 @@ html.is-booting { overflow: hidden; }
    radius 112 at the middle of a 320 px dial whose centre is where the chapter's globe has its centre on the screen ── */
 .m-dial { position: absolute; left: 50%; width: 320px; height: 320px; translate: -50% -50%; transform-origin: 50% 50%; pointer-events: none; z-index: 2; }
 .m-dial__still { position: absolute; left: 48px; top: 48px; width: 224px; height: 224px; border-radius: 50%; transition: opacity .5s ease; }
-.m-dial__ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+.m-dial__ring { position: absolute; left: -12px; top: -12px; width: 344px; height: 344px; } /* a 344 px drawing, its years just outside the 320 px dial */
 .m-dial__needle { position: absolute; left: 159.25px; top: 16px; width: 1.5px; height: 30px; background: #ece7de; transform-origin: 50% 144px; rotate: var(--a, 0deg); }
 .m-dial__needle::before { content: ""; position: absolute; left: -2.25px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: #ece7de; }
 /* the History hub on its eyepiece: the title above the dial, the next panel below it, nothing else on the first screen */

@@ -499,7 +499,10 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   flight between scenes, the sky going over to the scene's; the middle goes soft; the scene's card comes up as it
   lands; then the camera is given back with no settling move). Town lights fade towards the limb and from far off: they
   had added up into a yellow band on the night side. The 19 History hub and chapter screenshot baselines were updated
-  to this look (approved 2026-11-10).
+  to this look (approved 2026-11-10). Kept from the second study at the owner's word: the dial is lit by the globe's
+  sun from the upper left (`tools/build-eyepiece.mjs`, a 344 px drawing whose years sit outside the 320 px dial), and
+  the dive opens in two movements: while the lens opens the camera comes down with it so the Earth fills it (held as a
+  flight that has not begun, so the sky does not change), then the first study's flight on down to the scene.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

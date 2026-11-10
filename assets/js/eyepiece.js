@@ -19,7 +19,7 @@ export async function eyepiece(hero) {
   const mins = Math.max(1, Math.round(50 * (N - k) / N));
   hero.classList.add('s-hero--eye');
   hero.insertAdjacentHTML('beforeend', `
-    <div class="m-dial" aria-hidden="true" data-eye><img class="m-dial__still" src="assets/img/eyepiece-kq6.jpg" alt="" width="224" height="224"><img class="m-dial__ring" src="assets/img/eyepiece-history.svg" alt="" width="320" height="320"><i class="m-dial__needle" style="--a:${a.toFixed(2)}deg"></i></div>
+    <div class="m-dial" aria-hidden="true" data-eye><img class="m-dial__still" src="assets/img/eyepiece-kq6.jpg" alt="" width="224" height="224"><img class="m-dial__ring" src="assets/img/eyepiece-history.svg" alt="" width="344" height="344"><i class="m-dial__needle" style="--a:${a.toFixed(2)}deg"></i></div>
     <section class="eye-next" aria-labelledby="eye-next-t" data-eye-next>
       <p class="eye-next__why">Next · Paper 2 · June 2027</p>
       <p class="eye-next__where">KQ6 · Part ${pi + 1} of ${parts.length} · ${esc(s.part)}</p>

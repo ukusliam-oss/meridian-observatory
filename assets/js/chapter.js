@@ -912,7 +912,7 @@ async function dive() {
   // the altitude at which the Earth's disc is r px across the middle of the screen (vertical field 32°; a tall phone's
   // altitudes are scaled by 1.7 in placeCamera, so the request is divided by it)
   const altFor = r => (1 / Math.sin(Math.atan(r / (H / 2) * Math.tan(16 * Math.PI / 180))) - 1) * 6371 / (W / H < 0.8 ? 1.7 : 1);
-  const from = { ...EYE, alt: altFor(lens0 * 0.97) }, to = s.camera;
+  const from = { ...EYE, alt: altFor(lens0 * 0.97) }, to = s.camera; // from: the lens's view, the hub's still
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), span = (t, a, b) => clamp((t - a) / (b - a));
   const inOut = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
   world.setCamera({ from, to, t: 0 });
@@ -922,22 +922,30 @@ async function dive() {
   $('.m-dial__still', dial).style.opacity = 0; // the live globe is the same picture: the still fades as the dive begins
   if (HOLD) return; // the dive held at its first frame, for making the still
   if (reduced) { done(); return; }
-  const END = 2.4;
+  // Two movements, one after the other. While the dial comes towards the reader and its lens opens over the frame, the
+  // camera comes down with it so that the Earth's disc always fills the lens (the second entry study's lens, kept);
+  // when the ring has passed out of view the camera flies on down to the scene and lands, as in the first study.
+  const OPEN = 1.25, LAND = 1.9, END = OPEN + LAND + 0.1;
+  const opened = { ...EYE, alt: altFor(full * 0.97) };
   await new Promise(res => {
     const t0 = performance.now();
     const step = ts => {
       const t = Math.min(END, (ts - t0) / 1000);
-      // the dial comes towards the reader and its lens opens over the whole frame; the ring passes out of view
-      const r = lens0 + (full - lens0) * inOut(span(t, 0, 1.2));
+      const d = inOut(span(t, 0, OPEN)), r = lens0 + (full - lens0) * d;
       dial.style.transform = `scale(${(r / lens0).toFixed(4)})`;
-      dial.style.opacity = (1 - span(t, 0.65, 1.15)).toFixed(3);
-      host.style.clipPath = `circle(${r.toFixed(1)}px at 50% ${cy}px)`;
-      // the camera flies from the lens's view down into the scene; the middle of the dive goes soft, as a fast move does
-      const f = span(t, -0.15, 1.95);
-      world.setCamera({ from, to, t: f });
-      world.setSoft(Math.pow(Math.sin(Math.PI * clamp((f - 0.12) / 0.8)), 1.5) * 0.9);
+      dial.style.opacity = (1 - span(t, OPEN * 0.6, OPEN)).toFixed(3);
+      host.style.clipPath = t < OPEN ? `circle(${r.toFixed(1)}px at 50% ${cy}px)` : '';
+      // (held as a flight that has not begun, so the sky stays the lens's until the flight takes it over to the scene's)
+      if (t < OPEN) { const c = { ...EYE, alt: altFor(r * 0.97) }; world.setCamera({ from: c, to: c, t: 0 }); }
+      else {
+        // the flight between scenes' path and easing, from Europe filling the frame down into the scene; its middle,
+        // through heights no texture is made for, goes soft as a fast move does
+        const f = span(t, OPEN, OPEN + LAND);
+        world.setCamera({ from: opened, to, t: f });
+        world.setSoft(Math.pow(Math.sin(Math.PI * clamp((f - 0.1) / 0.75)), 1.5) * 0.8);
+      }
       // as the camera lands, the scene's card comes up and the page's own frame (nav, reel) returns
-      if (t >= 1.7) root.classList.remove('is-dive');
+      if (t >= OPEN + LAND * 0.8) root.classList.remove('is-dive');
       if (t < END) requestAnimationFrame(step); else res();
     };
     requestAnimationFrame(step);
