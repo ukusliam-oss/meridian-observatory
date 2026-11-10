@@ -500,6 +500,11 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   lands; then the camera is given back with no settling move). Town lights fade towards the limb and from far off: they
   had added up into a yellow band on the night side. The 19 History hub and chapter screenshot baselines were updated
   to this look (approved 2026-11-10).
+- A new home (2026-11-11, lab/home-study, commit 3c387d0) was built and dropped: the owner kept the current home. It was
+  MERIDIAN over one eyepiece whose ring was divided between the three subjects (pointing at one turned the needle and
+  showed its world in the lens: 1948 borders, the inflation map, the Pacific's earthquakes) and the subjects as rows,
+  with no overture loader, no dot globe and no buttons. Do not bring it back without asking what was better in the
+  current home.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.
