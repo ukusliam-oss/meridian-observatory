@@ -498,7 +498,8 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   flies its own camera `world.setCamera({ from, to, t })` from the lens's view to the scene, on the path and easing of a
   flight between scenes, the sky going over to the scene's; the middle goes soft; the scene's card comes up as it
   lands; then the camera is given back with no settling move). Town lights fade towards the limb and from far off: they
-  had added up into a yellow band on the night side. History hub and chapter screenshot baselines are not updated.
+  had added up into a yellow band on the night side. The 19 History hub and chapter screenshot baselines were updated
+  to this look (approved 2026-11-10).
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.
