@@ -474,6 +474,17 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   bucket answers 404): build-ground treats it as sea level and remembers it (`.sea` marker in the cache).
 - The sea's glint has one roughness: a value per 0.5° cell (even blended between cells) showed the cells as squares
   wherever the sun caught the water.
+- Entry study (2026-11-10, `lab/entry-study.html`, unlinked, noindex): the History hub's first screen with its year dial
+  as an eyepiece onto the globe (the dial's marks lit by the globe's sun from the upper left), a "next" panel, and the
+  dive. "Continue" turns the needle to the scene's day; the dial comes towards the reader while the page holds the
+  camera (`world.setCamera`) so the Earth's disc always fills the opening lens (`altFor`, the altitude for a disc r px
+  across); then down to 2,400 km over Hungary into the night; the frame dims and the scene's title card comes up in the
+  dark. The chapter opens on that same card: the card is handed over in sessionStorage ('meridian:arrive') and
+  `kq6.html?arrive#kq6-h4` draws it in its first script (`.m-arrive`), skips the loader and the sound gate, goes to the
+  scene at once (`toArrive`: Lenis is resized first, or it clamps to its stale height and the chapter opened on scene
+  1) and keeps the hash out of the address until the site's boot has run (its anchor handler scrolled to the section's
+  top). The globe's light then comes up behind the card. This keeps the camera on one page, the trap of Phase 6.
+  The engine's air and haze warm bands were thinned: seen from far off they had burned into a yellow crescent.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

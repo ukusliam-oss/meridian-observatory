@@ -709,3 +709,12 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 .chmenu__item[data-recall="again"] .chmenu__again { display: inline-block; }
 .pillnav__resume { font: 400 13px/1 var(--serif); letter-spacing: .2em; text-transform: uppercase; color: var(--film-ink); background: none; border: 0; border-bottom: 1px solid var(--acc); padding: 8px 0 5px; cursor: pointer; }
 @media (max-width: 760px) { .pillnav__resume { position: absolute; left: 50%; bottom: 58px; translate: -50% 0; white-space: nowrap; } }
+
+/* ── arriving from the hub's dive: the scene's title card over the dark, the globe's light coming up behind it ── */
+.is-arrive .loader { background: transparent; }
+.is-arrive .loader > * { visibility: hidden; }
+.is-arrive .world { opacity: 0; transition: opacity 1.6s cubic-bezier(.16, 1, .3, 1); }
+.is-arrive.is-ready .world { opacity: 1; }
+.m-arrive { position: fixed; left: 50%; top: 50%; translate: -50% -50%; z-index: 210; width: min(100% - 2 * var(--gutter), 1100px);
+  display: grid; justify-items: center; gap: 18px; text-align: center; pointer-events: none; }
+.sc__step.is-arrived .sc__fix { transition: none; }

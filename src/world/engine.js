@@ -234,8 +234,10 @@ const earthFrag = /* glsl */`
       float dist = length(cameraPosition - vW), calt = max(length(cameraPosition) - 1.0, 1e-4);
       float h = uHaze * (1.0 - exp(-max(0.0, dist / calt - 1.15) * 0.35));
       float sunAt = dot(n, normalize(uLight));
-      vec3 sky = mix(vec3(0.012, 0.016, 0.03), vec3(0.42, 0.5, 0.62), smoothstep(-0.1, 0.5, sunAt));
-      sky += vec3(0.62, 0.27, 0.09) * exp(-pow((sunAt + 0.03) / 0.12, 2.0));
+      vec3 sky = mix(vec3(0.012, 0.016, 0.03), vec3(0.22, 0.27, 0.35), smoothstep(-0.1, 0.5, sunAt));
+      // the warm band where the sun is low: thin, and only where the air is seen at length (from far off it had burned
+      // into a yellow crescent along the limb)
+      sky += vec3(0.32, 0.14, 0.05) * exp(-pow((sunAt + 0.03) / 0.08, 2.0));
       col = mix(col, sky, clamp(h, 0.0, 0.85));
     }
     gl_FragColor = vec4(col, 1.0);
@@ -249,7 +251,7 @@ const airFrag = /* glsl */`
       // one scattering, cheaply: bright where the sun is, a warm band at the day's edge, a thin bright limb
       float sun = dot(n, normalize(uLight));
       float day = smoothstep(-0.35, 0.3, sun), edge = exp(-pow((sun + 0.05) / 0.18, 2.0));
-      vec3 c = mix(uRim, vec3(1.0, 0.52, 0.26), edge * 0.75);
+      vec3 c = mix(uRim, vec3(1.0, 0.62, 0.4), edge * 0.35); // a thin warm band: stronger, it burned into a yellow crescent
       gl_FragColor = vec4(c * (1.0 + 0.6 * pow(f, 6.0)), f * 0.9 * mix(0.22, 1.1, day));
     } else gl_FragColor = vec4(uRim, f * 0.9);
   }`;
@@ -1160,7 +1162,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   }
 
   // ── frame ─────────────────────────────────────────────────────────────────
-  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0, night = 0, movedAt = 0;
+  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0, night = 0, movedAt = 0, shot = null;
   const t0 = performance.now();
   const proj = new Vector3();
   let lastA = null, lastB = null;
@@ -1204,7 +1206,9 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     // turn that fades over seven seconds (none with reduced motion)
     const settle = reduced ? 0 : 1 - smooth(0, 7000, now - movedAt);
     const breathe = c => (settle > 0.002 ? { ...c, alt: c.alt * (1 + 0.025 * settle), heading: (c.heading || 0) + 0.9 * settle } : c);
-    const alt = placeCamera(camera, breathe(i < 0 ? heroCam : sA.camera), breathe(j < 0 ? heroCam : sB.camera), tt, W, H);
+    // a page may hold the camera itself (the hub's dive through its dial): progress then only chooses the textures and sky
+    const alt = shot ? placeCamera(camera, shot, shot, 0, W, H)
+      : placeCamera(camera, breathe(i < 0 ? heroCam : sA.camera), breathe(j < 0 ? heroCam : sB.camera), tt, W, H);
     lineLift = 1 + clamp(alt / R_KM * 0.002, 1e-6, 0.0015);
     // a chapter that goes all round the world (Geography) carries its light with the camera, from the upper left as
     // the fixed light falls on Europe, so no scene lands on the night side
@@ -1297,6 +1301,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
   return {
     setProgress(p) { if (p !== progress) movedAt = performance.now(); progress = p; },
+    // hold the camera at { lat, lon, alt, tilt, heading } (null gives it back to the scenes)
+    setCamera(c) { shot = c; dirty = true; },
     // flows of a panel wait for the step of its chain that sends them (0 hidden, 1 drawn)
     setGate(panel, g) { if (gates.get(panel) !== g) { gates.set(panel, g); dirty = true; } },
     pointOf: key => point.get(key),

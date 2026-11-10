@@ -873,7 +873,31 @@ function resume() {
   addEventListener('scroll', far, { passive: true });
 }
 
+// Arriving from the hub's dive (?arrive#scene): the page opened on the scene's title card over the dark (kq6.html's
+// first script drew the handed-over card), so it goes straight to that scene's card, skips the loader and the sound
+// gate (the tap that started the dive was on the other page), and lets the globe's light come up behind the card.
+const arriveAt = root.classList.contains('is-arrive') && location.hash ? scenes.findIndex(s => '#' + s.id === location.hash) : -1;
+// to the arriving scene's card at once (Lenis is told the page's height first: before it has measured, it clamps the
+// scroll to what it last knew and the chapter opened on its first scene)
+function toArrive() {
+  measure();
+  const y = holds[arriveAt][0] - innerHeight * 0.5 + innerHeight * 0.3;
+  lenis?.resize?.(); scrollTo(0, y);
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+  return y;
+}
+function arrive() {
+  const y = toArrive();
+  // the chapter's own card takes over from the handed-over one without fading in a second time
+  const card = liveSteps[arriveAt][0]; card.classList.add('is-arrived');
+  lightSteps(y, arriveAt);
+  setTimeout(() => $('.m-arrive')?.remove(), 600);
+  // the address keeps no hash until the site's boot has run, or its anchor handler would scroll to the section's top
+  history.replaceState(null, '', location.pathname);
+}
+
 async function start() {
+  if (arriveAt >= 0) arrive();
   setPct(0.02);
   if (data.sound) {
     try { snd = await import('./sound.js'); soundToggle(); snd.bindUI(); } catch (err) { console.warn('Sound unavailable:', err); snd = null; }
@@ -929,9 +953,10 @@ async function start() {
   document.fonts?.ready.then(() => { measure(); lastY = NaN; });
   new ResizeObserver(() => { measure(); lastY = NaN; }).observe($('[data-scenes]'));
   const enter = () => requestAnimationFrame(() => { loader.classList.add('is-done'); root.classList.add('is-ready'); });
-  if (snd) gate(enter); else enter();
+  if (snd && arriveAt < 0) gate(enter); else enter();
   boot();
-  if (location.hash) { const k = scenes.findIndex(s => '#' + s.id === location.hash); if (k >= 0) setTimeout(() => goTo(k), 400); }
+  if (arriveAt >= 0) { toArrive(); lastY = NaN; history.replaceState(null, '', location.pathname + '#' + scenes[arriveAt].id); }
+  else if (location.hash) { const k = scenes.findIndex(s => '#' + s.id === location.hash); if (k >= 0) setTimeout(() => goTo(k), 400); }
   else resume();
 }
 start();
