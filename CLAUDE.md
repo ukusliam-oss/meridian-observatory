@@ -424,6 +424,21 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   scenes it passes). Test helpers use `[data-panel]` and `.sc__card`; `holdOf` lands on a scene's title card
   (the card step's top at 30% of the screen; the card itself holds at the frame's middle). The 12 chapter screenshot baselines were updated to the film look (approved
   2026-11-08); the scene baselines show the title card.
+- KQ6 Part 2 prototype (2026-11-10, branch exp/p2-04x-part2-prototype): "one world, one light, one voice, two views".
+  Watch (default) plays the film: title cards and captions only; Study (`data-view`, store 'view', the reel's right
+  button) sinks the frame (`dimAt`) under the full text in Inter and the notes. A scene may name `captions` (whole
+  sentences of its reviewed body, kept word for word, at most 30 words each; Part 2 has 30) and `sky: { sun: [lat, lon]
+  of the subsolar point, floor (night lift, 0.42 default), exposure }`: the sun moves between scenes, the land's night
+  side is truly dark, and named places glow warm as the floor drops (`glowTexture` sprites). Camera `heading` (degrees,
+  0 north) joins `tilt`; tilted cameras keep a level horizon (up leans to the ground's own up). Movements are light, not
+  arrows: low trails with pulses running along them, military columns in three lanes, no heads (they animate, so the
+  engine draws while one is on screen). The focus is land lit from within (colour half-way to white, no bright edge,
+  a wide soft inner glow); the air is pale sky blue (`#a9b9d8`), not the chapter's violet. The subject sits in the
+  middle of the frame (`setViewport`: no sideways offset). The pill is the reel: a hairline with a tick per scene at
+  the foot of the frame, the menu as "Scenes", the part, the view switch; the nav leaves the frame while the chapter
+  plays. KQ6 h4 (4 November) is shot low over Budapest before dawn looking north-east (alt 110, tilt 64, heading 50).
+  A keyboard choice from the scene menu focuses the title once the scroll has landed (`goTo(i, done)`): the card is
+  only focusable once lit. Chapter screenshot baselines are not updated for this prototype (awaiting review).
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

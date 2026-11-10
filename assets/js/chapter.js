@@ -3,7 +3,7 @@
 // The text works without WebGL: if the globe cannot start, the page is still a complete chapter.
 // The page names its data file in <body data-chapter>; anything a chapter does not set falls back to KQ6's values.
 
-import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, navOffset } from './core.js';
+import { $, $$, gsap, lenis, reduced, boot, esc, QUALITY, quality, navOffset, store } from './core.js';
 import { MT, strokeBorder, aurora, animIcon, drawIn, nudge } from './glass.js';
 const { default: data } = await import(document.body.dataset.chapter || './data/history/kq6.js');
 const usesValues = data.scenes.some(s => (s.map && (s.map.data || s.map.spikes)) || (s.chart && (s.chart.series || []).some(sr => sr.ind)));
@@ -27,6 +27,10 @@ const CFG = {
 const VALUES = CFG.values ? await fetch(CFG.values).then(r => r.json()).then(j => j.indicators).catch(() => null) : null;
 
 const root = document.documentElement;
+// two views of the same chapter: Watch (the film: title cards and captions over the frame) and Study (the frame sunk
+// under the full text and the notes, for revision); the reader's choice is kept
+let study = store.get('view', 'watch') === 'study';
+root.dataset.view = study ? 'study' : 'watch';
 const phone = matchMedia('(max-width: 760px)').matches;
 const scenes = data.scenes;
 const N = scenes.length;
@@ -179,7 +183,7 @@ function sceneHTML(s, i) {
   const pi = partOf(i), part = parts[pi];
   const opener = part.first === i ? `<header class="part" data-part="${pi}"><div class="part__in">
       <p class="sc__kick">Part ${pi + 1} of ${parts.length}</p>
-      <h2 class="part__title"><em>${pi === parts.length - 1 ? 'After' : 'Part ' + (pi + 1)}</em><span>${esc(s.part)}</span></h2>
+      <h2 class="part__title"><span>${esc(s.part)}</span></h2>
       <div class="part__fps">${[...new Set(part.scenes.flatMap(k => scenes[k].syllabus || []))].sort()
         .map(t => (data.focusPoints || data.syllabus || []).find(f => f.id === t)).filter(Boolean)
         .filter(f => !data.focusPoints || f.id.startsWith('FP')).map(f => `<span>${f.id} · ${esc(f.text)}</span>`).join('')}</div>
@@ -195,7 +199,8 @@ function sceneHTML(s, i) {
     <div class="sc__film" data-panel>
       <div class="sc__fly" aria-hidden="true"></div>
       ${step(`<p class="sc__kick sc__date">${esc(s.dateLabel)}</p><h2 class="sc__title">${cardTitle(s.title)}</h2>`, ' sc__card')}
-      <div class="sc__body">${captions(s.body).map(c => step(`<p class="sc__cap">${c}</p>`)).join('')}</div>
+      <div class="sc__body sc__watch">${(s.captions || captions(s.body)).map(c => step(`<p class="sc__cap">${c}</p>`)).join('')}</div>
+      <div class="sc__study"><div class="sc__body sc__full">${s.body}</div></div>
       ${s.scene && s.scene.keys ? askStep(s.scene) : ''}
       <div class="sc__notes">
         ${s.map && s.map.relief3d && !s.map.section ? demLine(s) : ''}
@@ -238,12 +243,13 @@ async function glossary() {
   const re = new RegExp(`\\b(${names.join('|')})\\b`, 'i');
   const met = new Set();
   $$('.sc').forEach(sc => {
-    const body = $('.sc__body', sc); if (!body) return;
+    // its captions (Watch) and its full text (Study) each get their chips
+    const seenBefore = new Set(met);
+    for (const body of $$('.sc__body', sc)) {
     const here = new Set();
     // the scene's text nodes, outside links and chips, in reading order
     const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement.closest('a, .gl') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
     const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
-    const seenBefore = new Set(met);
     for (const node of nodes) {
       let m; let rest = node;
       while (rest && (m = re.exec(rest.textContent))) {
@@ -261,6 +267,7 @@ async function glossary() {
         // inside a bold run the chip keeps the weight
         word.replaceWith(b);
       }
+    }
     }
   });
   const card = document.createElement('div');
@@ -336,6 +343,32 @@ $('svg', menuBtn).innerHTML = '<path d="M4 9h16"/><path d="M4 15h16"/>';
 $('svg', menuBtn).setAttribute('stroke-width', '2');
 animIcon($('svg', menuBtn), drawIn($$('path', menuBtn)));
 $$('.chmenu__item', menu).forEach(a => animIcon($('svg', a), nudge($('svg path', a))));
+
+// The pill is now the reel: one hairline across the foot of the frame, a tick per scene (taller where a part
+// begins), lit as far as the chapter has been read; the scene menu at its left, the part in the middle, the view at
+// its right. No glass, no aurora: the frame is the film's.
+const reel = document.createElement('div');
+reel.className = 'reel'; reel.setAttribute('aria-hidden', 'true');
+reel.innerHTML = scenes.map((s, i) => `<i class="reel__tick${parts.some(p => p.first === i) ? ' is-part' : ''}" style="left:${((i + 0.5) / N * 100).toFixed(2)}%"></i>`).join('') + '<i class="reel__fill" data-reel-fill></i>';
+pill.append(reel);
+const reelFill = $('[data-reel-fill]', reel);
+menuBtn.insertAdjacentHTML('beforeend', '<span class="pillnav__label">Scenes</span>');
+const viewBtn = document.createElement('button');
+viewBtn.type = 'button'; viewBtn.className = 'pillnav__view';
+const showView = () => { viewBtn.textContent = study ? 'Watch' : 'Study'; viewBtn.setAttribute('aria-label', study ? 'Watch view: the film, with captions' : 'Study view: the full text and notes'); };
+showView();
+$('.pillnav__ring', pill).before(viewBtn);
+viewBtn.addEventListener('click', () => setView(!study));
+// switching keeps the reader on the scene they were in, at its title card
+function setView(on) {
+  const near = holds.length ? Math.max(0, Math.min(N - 1, Math.round(progressAt(lenis ? lenis.scroll : scrollY)))) : 0;
+  study = on; store.set('view', on ? 'study' : 'watch'); root.dataset.view = on ? 'study' : 'watch'; showView();
+  if (!holds.length) return;
+  measure();
+  const y = holds[near][0] - innerHeight * 0.5 + innerHeight * 0.3;
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else scrollTo(0, y);
+  lastY = NaN;
+}
 
 // Opening follows their SettingsDropdown: the pointer reaching the trigger opens it at once; once the pointer is more
 // than 8px outside both the trigger and the panel it closes after 150ms, and coming back cancels that. The panel
@@ -425,10 +458,9 @@ document.addEventListener('keydown', e => {
 menu.addEventListener('click', e => {
   const a = e.target.closest('[data-go]'); if (!a) return;
   const i = +a.dataset.go, keys = e.detail === 0, shows = keys || anchorShows(i);
-  e.preventDefault(); setMenu(false); goTo(i);
+  e.preventDefault(); setMenu(false); goTo(i, keys ? () => focusHeading(sceneHeading(i)) : null);
   if (!keys && shows) return;
   e.stopPropagation(); history.replaceState(null, '', a.getAttribute('href'));
-  if (keys) focusHeading(sceneHeading(i));
 });
 // whether the anchor handler's landing (the section's top under the nav, as scrollToEl puts it) makes scene i the
 // active one (on wide screens it stops a few pixels short of the hold, with the camera already there) with its title
@@ -452,18 +484,21 @@ function sceneHeading(i) { return $(`.sc[data-i="${i}"] .sc__title`); }
 // A scene holds (p = i exactly) from its title card to the end of its notes; the camera flies in the empty length of
 // scroll before each title card (and over a part's title). As on the directed pages, a step is lit while it is under
 // the middle of the screen.
-let holds = [], heroAnchor = 0, capsEnd = [], stepsAt = [], notesAt = [];
+let holds = [], heroAnchor = 0, capsEnd = [], stepsAt = [], notesAt = [], liveSteps = [];
 const panels = $$('[data-panel]');
 const sections = $$('.sc[data-i]');
 const stepEls = panels.map(p => $$('.sc__step', p));
 const CAP_LINE = 0.5;
 function measure() {
   const y = scrollY, vh = innerHeight, abs = el => { const r = el.getBoundingClientRect(); return [y + r.top, y + r.bottom]; };
-  stepsAt = stepEls.map(list => list.map(abs));
-  notesAt = panels.map(p => abs($('.sc__notes', p)));
-  holds = panels.map((p, k) => { const start = stepsAt[k][0][0] - vh * (CAP_LINE - 0.5); return [start, Math.max(start + 1, notesAt[k][1] - vh * 0.2)]; });
-  // a map that steps through years moves through them while the captions are read, and rests on the last under the notes
-  capsEnd = panels.map((p, k) => Math.max(holds[k][0] + 1, notesAt[k][0] - vh * 0.5));
+  // the steps the view shows (Study hides the captions; it shows the title card and the scene's full text and notes)
+  liveSteps = stepEls.map(list => list.filter(e => e.offsetParent));
+  stepsAt = liveSteps.map(list => list.map(abs));
+  notesAt = panels.map(p => (study ? [abs($('.sc__study', p))[0], abs($('.sc__notes', p))[1]] : null));
+  const ends = panels.map(p => abs(p)[1]);
+  holds = panels.map((p, k) => { const start = stepsAt[k][0][0] - vh * (CAP_LINE - 0.5); return [start, Math.max(start + 1, ends[k] - vh * 0.2)]; });
+  // a map that steps through years moves through them while the captions (or the full text) are read
+  capsEnd = panels.map((p, k) => Math.max(holds[k][0] + 1, (study ? notesAt[k][0] + vh : stepsAt[k].at(-1)[1]) - vh * 0.5));
   heroAnchor = vh * 0.5;
 }
 function progressAt(y) {
@@ -498,7 +533,7 @@ function stepOf(k, y) {
 let litEl = null;
 function lightSteps(y, near) {
   let el = null;
-  for (let k = Math.max(0, near - 1); k <= Math.min(N - 1, near + 1) && !el; k++) { const st = stepOf(k, y); if (st) el = stepEls[k][st.n]; }
+  for (let k = Math.max(0, near - 1); k <= Math.min(N - 1, near + 1) && !el; k++) { const st = stepOf(k, y); if (st) el = liveSteps[k][st.n]; }
   if (el === litEl) return;
   litEl?.classList.remove('is-on'); litEl = el; el?.classList.add('is-on');
   // a title card stands alone on the frame: the map's place names wait for the first caption
@@ -506,13 +541,17 @@ function lightSteps(y, near) {
 }
 // the frame darkens while the notes run over it, and clears again before the camera flies on
 function dimAt(k, y) {
+  // Watch keeps the frame clear; Study sinks it under the text, and clears it in the flights between scenes
+  if (!study) return 1;
   const vh = innerHeight, top = notesAt[k][0] - y, bot = notesAt[k][1] - y;
-  return 1 - 0.68 * smooth(vh * 0.95, vh * 0.45, top) * (1 - smooth(vh * 0.6, vh * 0.15, bot));
+  return 1 - 0.8 * smooth(vh * 1.1, vh * 0.6, top) * (1 - smooth(vh * 0.4, vh * 0.05, bot));
 }
-function goTo(i) {
-  // to the scene's title card at rest
+function goTo(i, done) {
+  // to the scene's title card at rest; `done` once there (the card only shows, and can take focus, when it is lit)
   const y = holds[i][0] - innerHeight * 0.5 + innerHeight * 0.3;
-  if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
+  const after = () => { lastY = NaN; requestAnimationFrame(() => requestAnimationFrame(() => done?.())); };
+  if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4), onComplete: after });
+  else { scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' }); setTimeout(after, reduced ? 0 : 900); }
 }
 
 // ── date ribbon ───────────────────────────────────────────────────────────
@@ -568,6 +607,7 @@ function updateUI(p) {
   const fr = Math.min(1, Math.max(0, (p + 1) / N));
   if (Math.abs(fr - lastFr) > 1e-4) {
     lastFr = fr;
+    reelFill.style.transform = `scaleX(${fr.toFixed(4)})`;
     ringBar.style.strokeDashoffset = (1 - fr).toFixed(4); ringBar.style.opacity = fr > 0.004 ? 1 : 0; // a round cap would show a dot at 0
   }
 }

@@ -163,6 +163,15 @@ export default {
     // ── Hungary, 1956 ─────────────────────────────────────────────────────
     {
       id: 'kq6-h1', part: 'Hungary, 1956', date: '1956-07-18', dateLabel: '1953–July 1956',
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'Hungary became a one-party communist state in 1949. The hardline leader <b>Mátyás Rákosi</b> ruled through fear, using the secret police against opponents.',
+        'Then three events raised Hungarian hopes.',
+        'In 1955 neighbouring <b>Austria</b> became neutral, and all occupying forces left. In February 1956 Khrushchev\'s <b>"Secret Speech"</b> attacked Stalin\'s crimes. In June 1956 workers rioted in <b>Poznań</b> in Poland.',
+        'Many Hungarians wanted Nagy back, and they wanted Soviet troops to leave.',
+      ],
+      // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
+      sky: { sun: [-12, -30], floor: 0.5, exposure: 1.1 },
       camera: { lat: 47.6, lon: 18.5, alt: 1500 },
       map: {
         borders: '1956-07-18',
@@ -194,6 +203,16 @@ export default {
     },
     {
       id: 'kq6-h2', part: 'Hungary, 1956', date: '1956-10-23', dateLabel: '23–28 October 1956',
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'On <b>23 October</b> a huge demonstration filled the city. The <b>secret police fired</b> on the demonstrators.',
+        'During the rising, crowds also pulled down a giant statue of Stalin.',
+        'The next day Soviet troops already stationed in Hungary moved in, at the request of the party leader, Gerő.',
+        'Fighting spread. Rebels armed with little more than petrol disabled Soviet tanks.',
+        'A ceasefire was arranged on <b>28 October</b>.',
+      ],
+      // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
+      sky: { sun: [-11.3, -120], floor: 0.14, exposure: 1.15 },
       camera: { lat: 47.50, lon: 19.05, alt: 450 },
       map: {
         borders: '1956-10-23',
@@ -224,6 +243,16 @@ export default {
     },
     {
       id: 'kq6-h3', part: 'Hungary, 1956', date: '1956-11-01', dateLabel: '30 October–1 November 1956',
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'After the ceasefire Nagy moved fast. On <b>30 October</b> he announced the <b>end of one-party rule</b>.',
+        'Soviet troops began to leave Budapest.',
+        'But on <b>31 October</b> the Soviet leaders changed their minds. Khrushchev argued that leaving Hungary would look like weakness to the West.',
+        'On <b>1 November</b> new Soviet units crossed the Hungarian border. Nagy protested.',
+        'When the troops kept coming, his government announced that Hungary would <b>leave the Warsaw Pact</b> at once and become <b>neutral</b>.',
+      ],
+      // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
+      sky: { sun: [-13.8, 15], floor: 0.42 },
       camera: { lat: 47.6, lon: 20.2, alt: 1300 },
       map: {
         borders: '1956-11-01',
@@ -258,7 +287,20 @@ export default {
     },
     {
       id: 'kq6-h4', part: 'Hungary, 1956', date: '1956-11-04', dateLabel: '4–11 November 1956',
-      camera: { lat: 47.4, lon: 19.6, alt: 1300 },
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'At 4.15 a.m. on <b>4 November 1956</b> Soviet forces launched a major attack on Hungary.',
+        'At 5.20 a.m. Nagy announced the invasion in a short radio broadcast.',
+        '<b>János Kádár</b>, a member of Nagy\'s government, had been flown secretly to Moscow. He returned with the invasion to head a new government with Soviet backing.',
+        'Hungarians fought back, but by <b>11 November</b> the revolt had been crushed.',
+        'Britannica estimates that about <b>2,500 Hungarians</b> and <b>700 Soviet soldiers</b> died in the fighting.',
+        'An estimated <b>200,000 refugees</b> fled Hungary, mostly to Austria.',
+      ],
+      // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
+      sky: { sun: [-15.4, 131], floor: 0.16, exposure: 1.25 },
+      // low over Budapest before dawn, looking north-east along the road from the border: the columns come towards the
+      // camera out of the first light on the horizon
+      camera: { lat: 47.35, lon: 19.95, alt: 110, tilt: 64, heading: 50 },
       map: {
         borders: '1956-11-04',
         fill: fills({ HUN: 'focus' }),
@@ -291,6 +333,14 @@ export default {
     },
     {
       id: 'kq6-h5', part: 'Hungary, 1956', date: '1956-11-04', dateLabel: '29 October–November 1956',
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'Some broadcasts by <b>Radio Free Europe</b>, a station run by the CIA, encouraged the rebels to believe Western help was coming. It never came.',
+        'On 31 October President <b>Eisenhower</b> said the USA would not use force in Eastern Europe.',
+        'Three reasons explain this. First, fighting the USSR risked a <b>global war</b>.',
+        'Second, the <b>Suez Crisis</b> divided the West: Israel attacked Egypt on 29 October, and Britain and France soon joined in.',
+        'Third, Eisenhower was in the middle of an <b>election campaign</b>.',
+      ],
       camera: { lat: 42, lon: 0, alt: 9000 },
       map: {
         borders: '1956-11-04',
@@ -298,8 +348,8 @@ export default {
         arrows: [{ from: C.washington, to: C.budapest, kind: 'pressure', label: 'Protests and aid, but no force' }],
         markers: [
           { at: C.portSaid, label: 'Suez: Israel attacks Egypt, 29 October' },
-          { at: C.washington, label: 'US election campaign' },
-          { at: C.newYork, label: 'UN General Assembly, 4 November' },
+          { at: C.washington, label: 'US election campaign', dy: 12 },
+          { at: C.newYork, label: 'UN General Assembly, 4 November', dy: -12 },
           { at: C.budapest, label: 'Budapest' },
         ],
         lines: [],
@@ -330,6 +380,16 @@ export default {
     },
     {
       id: 'kq6-h6', part: 'Hungary, 1956', date: '1958-06-16', dateLabel: '1956–1968',
+      // the film's captions (Watch view): whole sentences of the reviewed text, chosen and kept word for word
+      captions: [
+        'Kádár\'s government cracked down hard. It executed more than 300 people who had taken part in the rising and imprisoned thousands more.',
+        'Nagy left the Yugoslav embassy on <b>22 November 1956</b> after being promised safe passage, but he was arrested at once.',
+        'After a secret trial he was <b>executed for treason in June 1958</b>.',
+        'Yet Kádár later softened his rule. From the 1960s censorship eased, and economic reforms from 1968 brought what Hungarians called <b>"goulash communism"</b>.',
+        'In Washington, the CIA Director judged on 9 November 1956 that Moscow had "lost a satellite and gained a conquered province". Was Soviet control now secure, or only enforced?',
+      ],
+      // the sky of the day and hour: the sun overhead at [lat, lon]; floor, how much of the land the night keeps
+      sky: { sun: [-17, 10], floor: 0.3, exposure: 0.92 },
       camera: { lat: 47.3, lon: 19.3, alt: 1500 },
       map: {
         borders: '1958-06-16',

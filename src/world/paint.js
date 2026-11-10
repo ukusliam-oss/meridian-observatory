@@ -66,7 +66,9 @@ const FLAGS = {
 };
 const SECTOR_NAMES = { us: [52.43, 13.36, 'AMERICAN SECTOR'], uk: [52.49, 13.19, 'BRITISH SECTOR'], fr: [52.6, 13.31, 'FRENCH SECTOR'], su: [52.47, 13.52, 'SOVIET SECTOR'] };
 // how much of a state colour covers the land beneath it; the focus colour is bright, so it is the thinnest glaze
-const GLAZE = { focus: 0.4, soviet: 0.82, bloc: 0.8, west: 0.85, neutral: 0.8 }; // the focus is lit by its glow and outline, its fill stays faint
+// a colour taken part of the way to white (the focus as light rather than paint)
+const mixWhite = (hex, k) => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.round(v + (255 - v) * k)); return `rgb(${c.join(',')})`; };
+const GLAZE = { focus: 0.3, soviet: 0.82, bloc: 0.8, west: 0.85, neutral: 0.8 }; // the focus is lit by its glow and outline, its fill stays faint
 // water colours, with alpha 254/255 (see paintTexture): the shallow sea, and rivers and lakes
 const SHELF = 'rgba(44, 52, 70, 0.996)', WATERC = 'rgba(76, 122, 172, 0.996)';
 const lighter = hex => { const n = parseInt(hex.slice(1), 16), m = c => Math.round(c + (255 - c) * 0.38); return `rgb(${m(n >> 16)},${m((n >> 8) & 255)},${m(n & 255)})`; };
@@ -149,9 +151,11 @@ export function paintTexture(canvas, feats, map, box = [-180, -90, 180, 90], tex
   for (const f of countries) {
     const state = fill[f.properties.key];
     if (!state) continue;
-    const c = PALETTE[state] || PALETTE.land;
+    // the focus is land lit from within (its colour half-way to white, no bright edge), not a neon outline
+    const c = state === 'focus' ? mixWhite(PALETTE.focus, 0.5) : PALETTE[state] || PALETTE.land;
     ctx.globalAlpha = GLAZE[state] ?? 0.8; ctx.fillStyle = c;
     ctx.beginPath(); path(f); ctx.fill();
+    if (state === 'focus') continue;
     ctx.save(); ctx.clip(); ctx.globalAlpha = 0.5; ctx.strokeStyle = lighter(c); ctx.lineWidth = edge * 2; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
   }
   ctx.globalAlpha = 1;
@@ -185,7 +189,7 @@ export function paintTexture(canvas, feats, map, box = [-180, -90, 180, 90], tex
   }
   const focus = map.focus || [];
   if (focus.length) {
-    ctx.save(); ctx.strokeStyle = PALETTE.focus; ctx.globalAlpha = 0.85; ctx.lineWidth = Math.max(1, W / 2600); ctx.lineJoin = 'round';
+    ctx.save(); ctx.strokeStyle = mixWhite(PALETTE.focus, 0.4); ctx.globalAlpha = 0.32; ctx.lineWidth = Math.max(1, W / 2600); ctx.lineJoin = 'round';
     for (const f of countries) if (focus.includes(f.properties.key)) { ctx.beginPath(); path(f); ctx.stroke(); }
     ctx.restore();
   }
@@ -217,10 +221,11 @@ export function paintTexture(canvas, feats, map, box = [-180, -90, 180, 90], tex
   } else if (box[2] - box[0] < 360) {
     // an inner glow in the focus countries so the eye lands on them; kept inside the border, so it never spills onto a
     // neighbour (detail texture only: blur is expensive)
-    const glow = Math.max(4, Math.round(Math.max(W, H) / 220));
+    // wide and soft: a pool of light gathered inside the edge, the way a lit room glows at its windows
+    const glow = Math.max(6, Math.round(Math.max(W, H) / 110));
     for (const f of countries) if (fill[f.properties.key] === 'focus' || focus.includes(f.properties.key)) {
       ctx.save(); ctx.beginPath(); path(f); ctx.clip();
-      ctx.globalCompositeOperation = 'lighter'; ctx.filter = `blur(${glow}px)`; ctx.globalAlpha = 0.35;
+      ctx.globalCompositeOperation = 'lighter'; ctx.filter = `blur(${glow}px)`; ctx.globalAlpha = 0.2;
       ctx.strokeStyle = PALETTE.focus; ctx.lineWidth = glow * 2; ctx.stroke(); ctx.restore();
     }
   }

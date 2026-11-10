@@ -11,11 +11,11 @@ export const ll = (lat, lon, r = 1) => {
 };
 const latLonOf = v => [Math.asin(clamp(v.y, -1, 1)) / DEG, Math.atan2(v.x, v.z) / DEG];
 
-// Keep the subject clear of the text: right of the panel on desktop, above the panel on phones.
+// The subject in the middle of the frame, a little above it, clear of the captions at its foot (the chapters as film).
 export function setViewport(camera, W, H) {
   camera.aspect = W / H;
   const wide = W > 900;
-  camera.setViewOffset(W, H, wide ? -W * 0.2 : 0, wide ? 0 : H * 0.18, W, H);
+  camera.setViewOffset(W, H, 0, wide ? H * 0.06 : H * 0.1, W, H);
   camera.updateProjectionMatrix();
 }
 
@@ -38,8 +38,12 @@ export function placeCamera(camera, a, b, t, W, H) {
   // there, not at sea level beneath it, and its altitude counts from that ground
   const ground = ((a.ground || 0) * (1 - t) + (b.ground || 0) * t) / R_KM;
   const south = new Vector3().crossVectors(dir, new Vector3().crossVectors(UP, dir)).normalize().negate();
+  // and its heading (degrees, 0 looking north, 90 looking east): the camera stands back from the target the other way
+  const heading = ((a.heading ?? 0) * (1 - t) + (b.heading ?? 0) * t) * DEG;
+  if (heading) south.applyAxisAngle(dir, -heading);
   camera.position.copy(dir).multiplyScalar(d + ground).addScaledVector(south, Math.tan(tilt) * (d - 1) * 1.2);
-  camera.up.copy(UP);
+  // a tilted camera keeps the horizon level: its up leans from the world's axis to the ground's own up as it tilts
+  camera.up.copy(UP).multiplyScalar(1 - smooth(0, 30 * DEG, tilt)).addScaledVector(dir, smooth(0, 30 * DEG, tilt)).normalize();
   camera.lookAt(tmp.copy(dir).multiplyScalar(1 + ground - smooth(2500, 6000, alt)));
   camera.near = Math.max(0.000002, (d - 1) * 0.15); camera.far = d + 3; camera.updateProjectionMatrix();
   return alt;

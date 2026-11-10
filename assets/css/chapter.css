@@ -643,3 +643,50 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 .sc__step:not(.sc__card) .sc__fix::before { content: ""; position: absolute; inset: -34% -14%; z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgb(5 6 10 / .66), rgb(5 6 10 / .34) 62%, transparent); }
 /* the shade reaches past the caption's column; clipped (not a scroll box, so the captions still hold) */
 .sc { overflow-x: clip; }
+
+/* ── one world, one light, one voice (KQ6 Part 2 prototype) ─────────────
+   The nav leaves the frame while the chapter plays (a hover or a key brings it back); the pill becomes the reel. */
+.chapter .nav__bar { opacity: calc(1 - var(--d)); }
+.pillnav { left: 0; right: 0; bottom: 0; transform: none; height: 64px; padding: 0 clamp(18px, 3vw, 40px); gap: 24px; justify-content: space-between;
+  border-radius: 0; background: linear-gradient(to top, rgb(5 6 10 / .6), rgb(5 6 10 / 0)); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+.pillnav.stroke-border::before, .pillnav__aurora, .pillnav__shadow, .pillnav__ring { display: none !important; }
+.pillnav__menu { width: auto; height: auto; padding: 10px 0; border-radius: 0; gap: 12px; display: flex; color: var(--film-2); }
+.pillnav__menu:hover, .pillnav__menu:focus-visible { background: none; color: var(--film-ink); }
+.pillnav__menu:focus-visible, .pillnav__view:focus-visible { outline: 1px solid var(--acc); outline-offset: 6px; }
+.pillnav__menu svg { width: 1rem; height: 1rem; }
+.pillnav__label, .pillnav__view, .pillnav__text { font: 400 13px/1 var(--serif); letter-spacing: .2em; text-transform: uppercase; }
+.pillnav__text { min-width: 0; max-width: 50vw; color: var(--film-3); }
+.pillnav__text .mono { font: inherit; letter-spacing: inherit; }
+.pillnav__text .pillnav__roll:first-child { font-size: inherit; color: inherit; }
+.pillnav__text [data-pill-date] { display: none; }
+.pillnav__view { margin-right: clamp(80px, 8vw, 120px); padding: 10px 0; background: none; border: 0; color: var(--film-2); cursor: pointer; }
+.pillnav__view:hover { color: var(--film-ink); }
+.reel { position: absolute; left: clamp(18px, 3vw, 40px); right: clamp(18px, 3vw, 40px); top: 0; height: 1px; background: rgb(236 231 222 / .14); pointer-events: none; }
+.reel__tick { position: absolute; top: -2px; width: 1px; height: 5px; background: rgb(236 231 222 / .28); }
+.reel__tick.is-part { top: -4px; height: 9px; background: rgb(236 231 222 / .5); }
+.reel__fill { position: absolute; inset: 0; background: var(--film-ink); transform-origin: left; transform: scaleX(0); }
+.ribbon { bottom: 14px; z-index: 72; }
+.ribbon__year { font-size: clamp(1.6rem, 1.2rem + 1vw, 2.2rem); }
+.chapter { --cap-b: clamp(110px, 14vh, 160px); }
+
+/* Watch: only the film. Study: the frame sinks under the full text and the notes, read in one column */
+[data-view="watch"] .sc__study, [data-view="watch"] .sc__notes { display: none; }
+[data-view="study"] .sc__watch, [data-view="study"] .sc__ask { display: none; }
+[data-view="study"] .sc__card { min-height: 0; padding: 40vh 0 6vh; }
+[data-view="study"] .sc__card .sc__fix { position: static; translate: none; width: min(100% - 2 * var(--gutter), 620px); margin: 0 auto; opacity: 1; filter: none; visibility: visible; justify-items: start; text-align: left; transition: none; }
+[data-view="study"] .sc__card .sc__title span { font-size: clamp(2rem, 1.2rem + 2.4vw, 3.4rem); }
+.sc__study { width: min(100% - 2 * var(--gutter), 620px); margin: 0 auto; }
+.sc__full { font: 400 17px/1.68 var(--sans); color: rgb(236 231 222 / .86); }
+.sc__full p + p { margin-top: .9em; }
+.sc__full b { font-weight: 600; color: #fff; }
+[data-view="study"] .sc__notes { padding: 8vh 0 30vh; }
+[data-view="study"] .sc__why p { font-size: clamp(1.25rem, 1rem + .6vw, 1.55rem); }
+[data-view="study"] .sc__mis p, [data-view="study"] .sc__check .q { font: 400 16px/1.55 var(--sans); }
+@media (max-width: 760px) {
+  .pillnav { bottom: calc(env(safe-area-inset-bottom) + 70px); height: 52px; gap: 14px; }
+  .pillnav__text { display: none; }
+  .pillnav__view { margin-right: 76px; }
+  .ribbon { display: block; bottom: calc(env(safe-area-inset-bottom) + 76px); }
+  .chapter { --cap-b: calc(env(safe-area-inset-bottom) + 150px); }
+}
+.world__marker span { translate: 0 var(--dy, 0); }

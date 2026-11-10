@@ -14,6 +14,7 @@ import {
   TextureLoader, Vector2, Vector3, Vector4, Color, BufferGeometry, Float32BufferAttribute, LineSegments, LineBasicMaterial,
   TubeGeometry, CatmullRomCurve3, ConeGeometry, MeshBasicMaterial, BackSide, DoubleSide, AdditiveBlending, SRGBColorSpace,
   LinearFilter, LinearMipmapLinearFilter, NearestFilter, RGFormat, FloatType, Quaternion, Points, InstancedMesh, CylinderGeometry, Matrix4, DynamicDrawUsage,
+  Sprite, SpriteMaterial,
 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
@@ -28,7 +29,7 @@ import { pointsLayer, plateLines, loadDem, terrainPatch, sectionOf, cutaway, PLA
 
 export { PALETTE, ll };
 const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-const ARROW = { military: '#ff5a4f', people: '#ffd59a', pressure: '#c9b3ff', capital: '#7ef0c2', trade: '#9db7ff' };
+const ARROW = { military: '#ff8f5e', people: '#ffd59a', pressure: '#c9b3ff', capital: '#7ef0c2', trade: '#9db7ff' };
 const LINE = { 'iron-curtain': '#dfe6f2', wall: '#ffffff' };
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -93,7 +94,7 @@ const earthFrag = /* glsl */`
 #endif
   uniform vec4 uSlotA, uSlotB;      // x: value row (< 0: no data layer), y: d0, z: d1, w: ramp row
   uniform float uWA, uWB;           // inside each state, how far its values have moved towards the other state's row
-  uniform float uMix, uHatch, uLook; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
+  uniform float uMix, uHatch, uLook, uFloor; uniform vec3 uLight, uOcean, uOceanLift, uRim, uFocus, uCut;
   varying vec3 vN; varying vec3 vW; varying vec2 vUv;
   vec2 lonlat() { return vec2(vUv.x * 360.0 - 180.0, vUv.y * 180.0 - 90.0); }
   vec3 lin(vec3 c) { return pow(c, vec3(2.2)); }
@@ -188,7 +189,7 @@ const earthFrag = /* glsl */`
     vec4 land = mix(a, b, uMix);
     float focus = mix(fa, fb, uMix);
     vec3 n = normalize(vN), v = normalize(cameraPosition - vW);
-    float lit = 0.42 + 0.58 * smoothstep(-0.35, 0.9, dot(n, normalize(uLight)));
+    float lit = uFloor + (1.0 - uFloor) * smoothstep(-0.35, 0.9, dot(n, normalize(uLight)));
     float base = relief();
     float rel = mix(terrain(uTA, uBoxA, base), terrain(uTB, uBoxB, base), uMix);
     float shade = clamp(0.2 + 0.93 * rel, 0.48, 1.24);
@@ -232,11 +233,20 @@ const airFrag = /* glsl */`
 const tubeVert = /* glsl */`
   varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const tubeFrag = /* glsl */`
-  uniform vec3 uColor; uniform float uDraw, uOpacity, uDash, uTime; varying vec2 vUv;
+  uniform vec3 uColor; uniform float uDraw, uOpacity, uDash, uTime, uPulse, uPhase; varying vec2 vUv;
   void main() {
     if (vUv.x > uDraw) discard;
     if (uDash > 0.0 && fract(vUv.x * uDash - uTime * 0.15) < 0.38) discard;
     float head = smoothstep(uDraw - 0.12, uDraw, vUv.x);
+    if (uPulse > 0.0) {
+      // a movement as light, not as a sign: a faint trail low over the ground, pulses running along it the way it goes
+      // (a column on the move), its leading edge the brightest, its start fading out of the dark
+      float run = fract(vUv.x * uPulse - uTime * 0.32 + uPhase);
+      float p = pow(smoothstep(0.0, 1.0, run), 6.0);
+      float tail = smoothstep(0.0, 0.2, vUv.x);
+      gl_FragColor = vec4(uColor * (0.32 + 1.2 * p + 1.5 * head), uOpacity * tail * (0.3 + 0.7 * max(p, head)));
+      return;
+    }
     gl_FragColor = vec4(uColor * (1.0 + head * 0.6), uOpacity * (0.8 + 0.45 * head));
   }`;
 
@@ -277,26 +287,48 @@ function pathPoints(points, lift) {
   return out;
 }
 
-const tubeMaterial = (color, dash = 0) => new ShaderMaterial({
-  uniforms: { uColor: { value: new Color(color) }, uDraw: { value: 0 }, uOpacity: { value: 0 }, uDash: { value: dash }, uTime: { value: 0 } },
+const tubeMaterial = (color, dash = 0, pulse = 0, phase = 0) => new ShaderMaterial({
+  uniforms: { uColor: { value: new Color(color) }, uDraw: { value: 0 }, uOpacity: { value: 0 }, uDash: { value: dash }, uTime: { value: 0 }, uPulse: { value: pulse }, uPhase: { value: phase } },
   vertexShader: tubeVert, fragmentShader: tubeFrag, transparent: true, depthWrite: false, blending: AdditiveBlending,
 });
 
-function arrowMesh(a, b, color, alt) {
+// A town at night: a soft warm pool of light, one texture for all of them.
+let glowTex = null;
+function glowTexture() {
+  if (glowTex) return glowTex;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, 'rgba(255, 226, 180, 1)'); g.addColorStop(0.12, 'rgba(255, 196, 140, 0.55)');
+  g.addColorStop(0.4, 'rgba(255, 160, 100, 0.12)'); g.addColorStop(1, 'rgba(255, 140, 80, 0)');
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+  glowTex = new CanvasTexture(c); glowTex.colorSpace = SRGBColorSpace; return glowTex;
+}
+
+// A movement between two places: a trail of light gliding low over the ground with pulses running along it. A
+// military column runs in three lanes side by side, so it reads as a column and not as a line.
+function arrowMesh(a, b, color, alt, kind) {
   const from = [a[1], a[0]], to = [b[1], b[0]];
   const it = geoInterpolate(from, to);
   const ang = geoDistance(from, to);
-  const h = clamp(ang * 0.22, 0.00002, 0.07);
+  const h = clamp(ang * 0.035, 0.00002, 0.04); // low: a column keeps to the ground
   const pts = [];
-  for (let i = 0; i <= 48; i++) { const t = i / 48; const [lon, lat] = it(t); pts.push(ll(lat, lon, 1.002 + Math.sin(Math.PI * t) * h)); }
-  const radius = clamp(alt / R_KM * 0.0032, 0.00006, 0.004);
-  const curve = new CatmullRomCurve3(pts);
-  const mat = tubeMaterial(color);
-  const tube = new Mesh(new TubeGeometry(curve, 96, radius, 6, false), mat);
-  const head = new Mesh(new ConeGeometry(radius * 3.2, radius * 9, 10), new MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false }));
-  head.position.copy(curve.getPointAt(1));
-  head.quaternion.copy(new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), curve.getTangentAt(1)));
-  const g = new Group(); g.add(tube, head); g.userData = { mat, head };
+  for (let i = 0; i <= 48; i++) { const t = i / 48; const [lon, lat] = it(t); pts.push(ll(lat, lon, 1.0015 + Math.sin(Math.PI * t) * h)); }
+  const radius = clamp(alt / R_KM * 0.0016, 0.00004, 0.002);
+  const pulse = clamp(ang * R_KM / 45, 3, 12);
+  const g = new Group(), mats = [];
+  const lanes = kind === 'military' ? [-1, 0, 1] : [0];
+  for (const lane of lanes) {
+    // each lane is the path moved sideways (across its direction, along the ground) by a few of its own widths
+    const off = lane * radius * 5;
+    const lp = !off ? pts : pts.map((p, i) => {
+      const q = pts[Math.min(pts.length - 1, i + 1)], r = pts[Math.max(0, i - 1)];
+      const side = new Vector3().subVectors(q, r).cross(p).normalize();
+      return p.clone().addScaledVector(side, off);
+    });
+    const mat = tubeMaterial(color, 0, pulse, lane * 0.31);
+    g.add(new Mesh(new TubeGeometry(new CatmullRomCurve3(lp), 96, lane ? radius * 0.7 : radius, 6, false), mat)); mats.push(mat);
+  }
+  g.userData = { mats, mat: mats[0] };
   return g;
 }
 
@@ -615,8 +647,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
   // relief: Natural Earth shaded relief, a world image plus a sharper one over Europe
   const flat = new DataTexture(new Uint8Array([219, 219, 219, 255]), 1, 1); flat.needsUpdate = true;
-  const light = new Vector3(-0.6, 0.55, 0.9);
-  const rim = new Color('#8f86ff');
+  const light = new Vector3(-0.6, 0.55, 0.9), LIGHT0 = light.clone();
+  const rim = new Color('#a9b9d8'); // the sky's own pale blue: the air is physical light, not the chapter's colour
   const earthU = {
     uGA: { value: null }, uDA: { value: null }, uGB: { value: null }, uDB: { value: null },
     uIGA: { value: blank }, uIDA: { value: blank }, uIGB: { value: blank }, uIDB: { value: blank },
@@ -626,7 +658,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     uRelW: { value: flat }, uRelE: { value: flat }, uTA: { value: blank }, uTB: { value: blank },
     uQA: { value: blank }, uQB: { value: blank }, uQBoxA: { value: new Vector4() }, uQBoxB: { value: new Vector4() },
     uRelBox: { value: new Vector4(...(relief?.europeBox || [0, 0, 1, 1])) },
-    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uCut: { value: new Vector3(0, 0, 0) },
+    uMix: { value: 0 }, uHatch: { value: 60 }, uLook: { value: look ? 1 : 0 }, uLight: { value: light }, uFloor: { value: 0.42 }, uCut: { value: new Vector3(0, 0, 0) },
     uOcean: { value: new Color('#06080d') }, uOceanLift: { value: new Color('#0c1220') }, uRim: { value: rim }, uFocus: { value: new Color(PALETTE.focus) },
   };
   if (relief) {
@@ -677,10 +709,15 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     if (i < 0 || i >= scenes.length) return null;
     if (overlays.has(i)) return overlays.get(i);
     const s = scenes[i]; const g = new Group(); const items = [];
-    (s.map.arrows || []).forEach(a => { const m = arrowMesh(a.from, a.to, ARROW[a.kind] || '#fff', s.camera.alt); g.add(m); items.push({ type: 'arrow', m }); });
+    (s.map.arrows || []).forEach(a => { const m = arrowMesh(a.from, a.to, ARROW[a.kind] || '#fff', s.camera.alt, a.kind); g.add(m); items.push({ type: 'arrow', m }); });
     (s.map.flows || []).forEach(a => {
       const p = point.get(a.from), q = point.get(a.to); if (!p || !q) return;
       const m = arrowMesh([p.lat, p.lon], [q.lat, q.lon], ARROW[a.kind] || ARROW.capital, s.camera.alt); g.add(m); items.push({ type: 'arrow', m, flow: true });
+    });
+    (s.map.markers || []).forEach(mk => {
+      const sp = new Sprite(new SpriteMaterial({ map: glowTexture(), transparent: true, opacity: 0, depthWrite: false, blending: AdditiveBlending }));
+      sp.position.copy(ll(mk.at[0], mk.at[1], 1.0002)); const k = s.camera.alt / R_KM * 0.09; sp.scale.set(k, k, 1);
+      g.add(sp); items.push({ type: 'glow', m: sp });
     });
     if (s.map.plates && layerData.plates) for (const [kind, lines] of plateLines(layerData.plates, s.map.plates)) {
       const m = fatLines(lines, PLATE_COLOR[kind], 1.8); g.add(m); items.push({ type: 'outline', m, mat: m.material });
@@ -741,9 +778,14 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     o.items.forEach((it, k) => {
       if (it.type === 'arrow') {
         const d = clamp(draw * 1.25 - k * 0.12) * (it.flow ? gate : 1);
-        it.m.userData.mat.uniforms.uDraw.value = reduced ? (it.flow ? (gate > 0.5 ? 1 : 0) : 1) : d;
-        it.m.userData.mat.uniforms.uOpacity.value = opacity;
-        it.m.userData.head.material.opacity = opacity * smooth(0.92, 1, it.m.userData.mat.uniforms.uDraw.value);
+        for (const m of it.m.userData.mats) {
+          m.uniforms.uDraw.value = reduced ? (it.flow ? (gate > 0.5 ? 1 : 0) : 1) : d;
+          m.uniforms.uOpacity.value = opacity; m.uniforms.uTime.value = time;
+        }
+        // the pulses run on their own while the movement is on screen
+        if (opacity > 0.001 && !reduced) live = true;
+      } else if (it.type === 'glow') {
+        it.m.material.opacity = opacity * night;
       } else if (it.type === 'outline') {
         it.mat.opacity = opacity * 0.9; it.mat.resolution = lineRes; it.m.scale.setScalar(lineLift);
       } else {
@@ -979,6 +1021,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const list = [...(s.map.markers || []), ...auto].map(m => {
       const el = document.createElement('div'); el.className = 'world__marker';
       el.innerHTML = `<i></i><span>${m.label}</span>${m.key ? '<b class="mono"></b>' : ''}`; labels.appendChild(el);
+      // two places close together on a wide view: a label may stand a little above or below its point (px)
+      if (m.dy) el.style.setProperty('--dy', `${m.dy}px`);
       return { el, at: m.at, v: ll(m.at[0], m.at[1], 1.000002), key: m.key, val: m.key ? el.querySelector('b') : null, text: '' };
     });
     // on a 3D landscape a marker stands on the raised ground, not at sea level under it
@@ -1015,7 +1059,7 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
   }
 
   // ── frame ─────────────────────────────────────────────────────────────────
-  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0;
+  let progress = -1, drawn = NaN, live = false, visible = true, raf = 0, night = 0;
   const t0 = performance.now();
   const proj = new Vector3();
   let lastA = null, lastB = null;
@@ -1061,7 +1105,16 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     if (lightMode === 'camera') {
       const d = camera.position.clone().normalize(), east = new Vector3(0, 1, 0).cross(d).normalize(), north = d.clone().cross(east);
       light.copy(d).addScaledVector(east, -0.75).addScaledVector(north, 0.6);
-    }
+    } else light.copy(LIGHT0);
+    // a scene may set its own sky: where the sun stands overhead ([lat, lon], so its night side is truly night), how
+    // much of the land the night keeps (floor, 0.42 by default) and the exposure; flights between skies move the sun
+    const skyOf = s => (s && s.sky) || {};
+    const ka = skyOf(sA), kb = skyOf(sB), base = light.clone();
+    const sunA = ka.sun ? ll(ka.sun[0], ka.sun[1]) : base, sunB = kb.sun ? ll(kb.sun[0], kb.sun[1]) : base;
+    if (ka.sun || kb.sun) light.copy(sunA).lerp(sunB, tt).normalize();
+    earthU.uFloor.value = (ka.floor ?? 0.42) * (1 - tt) + (kb.floor ?? 0.42) * tt;
+    night = smooth(0.36, 0.12, earthU.uFloor.value); // towns light up as the land goes dark
+    if (post) post.uniforms.uExp.value = LENS.exposure * ((ka.exposure ?? 1) * (1 - tt) + (kb.exposure ?? 1) * tt);
 
     // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank. At rest on a
     // scene (f = 0) the next adds nothing to the picture (uMix is 0), so it is not asked for: a phone's budget then holds
