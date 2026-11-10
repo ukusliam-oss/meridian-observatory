@@ -326,7 +326,8 @@ const townVert = /* glsl */`
     float facing = dot(n, normalize(cameraPosition - wp.xyz));
     float dark = smoothstep(0.06, -0.22, dot(n, normalize(uLight)));
     float big = clamp(sqrt(aPop / 3000.0), 0.0, 1.0);
-    vA = facing > 0.02 ? dark * (0.3 + 0.7 * big) : 0.0;
+    // towns crowd together towards the limb and from far off: there they would add up into a band of light, so they fade
+    vA = facing > 0.02 ? dark * (0.3 + 0.7 * big) * smoothstep(0.05, 0.4, facing) * smoothstep(0.65, 1.1, uZoom) : 0.0;
     // far towns are smaller: seen low across the land they shrink towards the horizon instead of hanging like stars
     float near = clamp((length(cameraPosition) - 1.0) / max(length(cameraPosition - wp.xyz), 1e-5) * 2.2, 0.18, 1.0);
     vA *= near;
@@ -1207,7 +1208,11 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     const settle = reduced ? 0 : 1 - smooth(0, 7000, now - movedAt);
     const breathe = c => (settle > 0.002 ? { ...c, alt: c.alt * (1 + 0.025 * settle), heading: (c.heading || 0) + 0.9 * settle } : c);
     // a page may hold the camera itself (the hub's dive through its dial): progress then only chooses the textures and sky
-    const alt = shot ? placeCamera(camera, shot, shot, 0, W, H)
+    // or fly it itself, from a camera of its own to a scene's ({ from, to, t }: the hub's dive into a chapter), on the
+    // same path and easing as a flight between scenes; the sky then goes over from the default one to the scene's
+    const flight = shot && shot.from, ft = flight ? (reduced ? (shot.t < 0.5 ? 0 : 1) : ease(smooth(0.08, 0.92, shot.t))) : 0;
+    const alt = flight ? placeCamera(camera, shot.from, shot.to, ft, W, H)
+      : shot ? placeCamera(camera, shot, shot, 0, W, H)
       : placeCamera(camera, breathe(i < 0 ? heroCam : sA.camera), breathe(j < 0 ? heroCam : sB.camera), tt, W, H);
     lineLift = 1 + clamp(alt / R_KM * 0.002, 1e-6, 0.0015);
     // a chapter that goes all round the world (Geography) carries its light with the camera, from the upper left as
@@ -1224,16 +1229,16 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     // a scene may set its own sky: where the sun stands overhead ([lat, lon], so its night side is truly night), how
     // much of the land the night keeps (floor, 0.42 by default) and the exposure; flights between skies move the sun
     const skyOf = s => (s && s.sky) || {};
-    const ka = skyOf(sA), kb = skyOf(sB), base = light.clone();
+    const ka = flight ? {} : skyOf(sA), kb = flight ? skyOf(sA) : skyOf(sB), base = light.clone(), st = flight ? ft : tt;
     const sunA = ka.sun ? ll(ka.sun[0], ka.sun[1]) : base, sunB = kb.sun ? ll(kb.sun[0], kb.sun[1]) : base;
-    if (ka.sun || kb.sun) light.copy(sunA).lerp(sunB, tt).normalize();
-    earthU.uFloor.value = (ka.floor ?? 0.42) * (1 - tt) + (kb.floor ?? 0.42) * tt;
+    if (ka.sun || kb.sun) light.copy(sunA).lerp(sunB, st).normalize();
+    earthU.uFloor.value = (ka.floor ?? 0.42) * (1 - st) + (kb.floor ?? 0.42) * st;
     night = smooth(0.1, -0.15, camera.position.clone().normalize().dot(light.clone().normalize())); // towns glow where the sun has set
-    if (post) post.uniforms.uExp.value = LENS.exposure * ((ka.exposure ?? 1) * (1 - tt) + (kb.exposure ?? 1) * tt);
-    earthU.uHaze.value = (ka.haze ?? 0.5) * (1 - tt) + (kb.haze ?? 0.5) * tt;
+    if (post) post.uniforms.uExp.value = LENS.exposure * ((ka.exposure ?? 1) * (1 - st) + (kb.exposure ?? 1) * st);
+    earthU.uHaze.value = (ka.haze ?? 0.5) * (1 - st) + (kb.haze ?? 0.5) * st;
     // a camera tilted towards the horizon sees the far ground softly, as a long lens would
     const tiltOf = s => (s && s.camera && s.camera.tilt) || 0;
-    if (post) post.uniforms.uDof.value = smooth(30, 62, tiltOf(sA) * (1 - tt) + tiltOf(sB) * tt) * 0.9;
+    if (post) post.uniforms.uDof.value = smooth(30, 62, flight ? tiltOf(sA) * ft : tiltOf(sA) * (1 - tt) + tiltOf(sB) * tt) * 0.9;
     townU.uPx.value = renderer.getPixelRatio(); townU.uZoom.value = clamp(1600 / Math.max(alt, 1), 0.6, 2.2);
 
     // textures: keep the last complete state while a new one is painting, so nothing ever flashes blank. At rest on a
@@ -1301,8 +1306,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
 
   return {
     setProgress(p) { if (p !== progress) movedAt = performance.now(); progress = p; },
-    // hold the camera at { lat, lon, alt, tilt, heading } (null gives it back to the scenes)
-    setCamera(c) { shot = c; dirty = true; },
+    // hold the camera at { lat, lon, alt, tilt, heading }, or fly it { from, to, t } (null gives it back to the scenes)
+    setCamera(c) { shot = c; if (!c) movedAt = -1e9; dirty = true; }, // given back: no settling move after it
     // flows of a panel wait for the step of its chain that sends them (0 hidden, 1 drawn)
     setGate(panel, g) { if (gates.get(panel) !== g) { gates.set(panel, g); dirty = true; } },
     pointOf: key => point.get(key),

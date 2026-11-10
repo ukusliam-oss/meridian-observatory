@@ -485,6 +485,20 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   1) and keeps the hash out of the address until the site's boot has run (its anchor handler scrolled to the section's
   top). The globe's light then comes up behind the card. This keeps the camera on one page, the trap of Phase 6.
   The engine's air and haze warm bands were thinned: seen from far off they had burned into a yellow crescent.
+- The History hub opens on the eyepiece (2026-11-10, built in from the first entry study, which the owner preferred to
+  the second): `assets/js/eyepiece.js` (mounted by subject.js for History only; the other hubs keep their instruments)
+  puts the dial (`assets/img/eyepiece-history.svg`, `tools/build-eyepiece.mjs`) round a still of the chapter's opening
+  view (`assets/img/eyepiece-kq6.jpg`, taken from `kq6.html?dive&hold`, see `.m-dial` in site.css) with its centre
+  where the chapter's globe has its centre (40% of the height on phones, 44% on wide screens), the needle at the reader's
+  scene (`store 'pos:kq6'`) and one "next" panel (Start or Continue, the part, the scene, time left, Paper 2 sources).
+  The hero's lede, code and three numbers are hidden there. "Continue" lets the words go (0.38 s) and opens
+  `history/kq6.html?dive#scene`: the chapter's first script draws the same dial at the same place (needle angle via
+  sessionStorage 'meridian:dive'), the loader and the sound gate are skipped, and once the globe is drawn behind the
+  still the dive plays on the chapter page (`dive()`: the dial grows and its lens opens over the frame while the engine
+  flies its own camera `world.setCamera({ from, to, t })` from the lens's view to the scene, on the path and easing of a
+  flight between scenes, the sky going over to the scene's; the middle goes soft; the scene's card comes up as it
+  lands; then the camera is given back with no settling move). Town lights fade towards the limb and from far off: they
+  had added up into a yellow band on the night side. History hub and chapter screenshot baselines are not updated.
 - Phase 6 (one camera across pages: the home's camera handed to the hub's dot globe and on to the chapter, whose dots
   resolved into territory) was built and dropped on 2026-10-26: the user found it awkward. Each page keeps its own
   opening. Do not retry a globe flight across pages without asking what felt wrong.

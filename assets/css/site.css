@@ -1022,3 +1022,40 @@ html.is-booting { overflow: hidden; }
 @keyframes lost-turn { 0% { transform: scaleX(1); } 25% { transform: scaleX(0); } 50% { transform: scaleX(-1); } 75% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
 @keyframes lost-ping { 0% { transform: scale(1); opacity: .8; } 70%, 100% { transform: scale(5); opacity: 0; } }
 @media (max-width: 760px) { .lost__globe { right: -30vw; width: 110vw; } }
+
+/* ── the eyepiece (History hub, and a chapter opening on the dive): one drawing at one place on both pages, a lens of
+   radius 112 at the middle of a 320 px dial whose centre is where the chapter's globe has its centre on the screen ── */
+.m-dial { position: absolute; left: 50%; width: 320px; height: 320px; translate: -50% -50%; transform-origin: 50% 50%; pointer-events: none; z-index: 2; }
+.m-dial__still { position: absolute; left: 48px; top: 48px; width: 224px; height: 224px; border-radius: 50%; transition: opacity .5s ease; }
+.m-dial__ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+.m-dial__needle { position: absolute; left: 159.25px; top: 16px; width: 1.5px; height: 30px; background: #ece7de; transform-origin: 50% 144px; rotate: var(--a, 0deg); }
+.m-dial__needle::before { content: ""; position: absolute; left: -2.25px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: #ece7de; }
+/* the History hub on its eyepiece: the title above the dial, the next panel below it, nothing else on the first screen */
+.s-hero--eye { min-height: 100svh; padding: 0; overflow: hidden; }
+.s-hero--eye .inst, .s-hero--eye .s-hero__row, .s-hero--eye .s-hero__code { display: none; }
+.s-hero--eye .wrap { position: absolute; left: 0; right: 0; top: calc(var(--nav-h, 64px) + 6px); width: auto; text-align: center; }
+.s-hero--eye .eyebrow { justify-content: center; }
+.s-hero--eye .s-hero__title { justify-content: center; }
+.s-hero--eye .h1 { font-size: clamp(3rem, 2rem + 6vw, 5.6rem); line-height: .9; }
+.eye-next { position: absolute; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 92px); z-index: 3; padding: 20px 20px 18px; border-radius: 6px;
+  background: #0a0c12; box-shadow: inset 1px 1px 0 rgb(236 231 222 / .16), 0 30px 60px -30px #000; display: grid; gap: 6px; text-align: left; }
+.eye-next__why { margin: 0; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--hist); }
+.eye-next__where { margin: 0; font: 400 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(236 231 222 / .56); }
+.eye-next__what { margin: 6px 0 2px; font: 400 1.7rem/1.05 var(--serif); text-transform: uppercase; color: #ece7de; }
+.eye-next__what em { display: block; font-size: .62em; text-transform: none; color: rgb(236 231 222 / .74); margin-bottom: .2em; }
+.eye-next__left { margin: 0; font: 400 14px/1.4 var(--sans); color: rgb(236 231 222 / .74); }
+.eye-next__bar { height: 1px; background: rgb(236 231 222 / .14); margin: 8px 0 12px; }
+.eye-next__bar i { display: block; height: 100%; background: #ece7de; }
+.eye-next__go { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.eye-next__btn { font: 400 15px/1 var(--serif); letter-spacing: .14em; text-transform: uppercase; color: #05060a; background: #ece7de; border-radius: 999px; padding: 14px 22px; text-decoration: none; }
+.eye-next__alt { font: 400 13px var(--serif); letter-spacing: .14em; text-transform: uppercase; color: rgb(236 231 222 / .74); text-decoration: none; border-bottom: 1px solid rgb(236 231 222 / .3); padding-bottom: 3px; }
+.eye-next__btn:focus-visible, .eye-next__alt:focus-visible { outline: 1px solid var(--hist); outline-offset: 4px; }
+.s-hero--eye .wrap, .eye-next { transition: opacity .38s ease, filter .38s ease; }
+.s-hero--eye.is-leaving .wrap, .s-hero--eye.is-leaving .eye-next { opacity: 0; filter: blur(6px); }
+@media (min-width: 900px) {
+  .s-hero--eye .wrap { left: clamp(24px, 6vw, 96px); right: auto; top: 50%; translate: 0 -50%; text-align: left; }
+  .s-hero--eye .eyebrow, .s-hero--eye .s-hero__title { justify-content: flex-start; }
+  .s-hero--eye .h1 { font-size: clamp(4rem, 2rem + 4vw, 7rem); }
+  .eye-next { left: auto; right: clamp(24px, 6vw, 96px); bottom: auto; top: 50%; translate: 0 -50%; width: 380px; }
+}
+@media (prefers-reduced-motion: reduce) { .s-hero--eye .wrap, .eye-next { transition: none; } }

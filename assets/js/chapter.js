@@ -876,7 +876,8 @@ function resume() {
 // Arriving from the hub's dive (?arrive#scene): the page opened on the scene's title card over the dark (kq6.html's
 // first script drew the handed-over card), so it goes straight to that scene's card, skips the loader and the sound
 // gate (the tap that started the dive was on the other page), and lets the globe's light come up behind the card.
-const arriveAt = root.classList.contains('is-arrive') && location.hash ? scenes.findIndex(s => '#' + s.id === location.hash) : -1;
+const diving = root.classList.contains('is-dive'), HOLD = new URLSearchParams(location.search).has('hold'); // read before the address is tidied
+const arriveAt = (root.classList.contains('is-arrive') || diving) && location.hash ? scenes.findIndex(s => '#' + s.id === location.hash) : -1;
 // to the arriving scene's card at once (Lenis is told the page's height first: before it has measured, it clamps the
 // scroll to what it last knew and the chapter opened on its first scene)
 function toArrive() {
@@ -888,12 +889,60 @@ function toArrive() {
 }
 function arrive() {
   const y = toArrive();
-  // the chapter's own card takes over from the handed-over one without fading in a second time
-  const card = liveSteps[arriveAt][0]; card.classList.add('is-arrived');
+  // the chapter's own card takes over from the handed-over one without fading in a second time (after a dive it comes
+  // up as the camera lands, as every card does)
+  if (!diving) liveSteps[arriveAt][0].classList.add('is-arrived');
   lightSteps(y, arriveAt);
   setTimeout(() => $('.m-arrive')?.remove(), 600);
   // the address keeps no hash until the site's boot has run, or its anchor handler would scroll to the section's top
   history.replaceState(null, '', location.pathname);
+}
+
+// The hub's dive (?dive#scene): the page opened on the hub's eyepiece (kq6.html's first script drew the same dial at
+// the same place, its needle at the reader's place and a still of the globe in its lens). Once the globe has been drawn
+// behind the still, the still goes; the dial comes towards the reader and its lens opens over the frame while the camera
+// flies from the lens's view down to the scene (world.setCamera { from, to, t }, the path and easing of a flight between
+// scenes), and the scene's card comes up: the first entry study (lab/entry-study.html, e69a1a8), now on this page.
+const EYE = { lat: 44, lon: 15 };
+async function dive() {
+  const dial = $('.m-dial'), host = $('[data-world]'), s = scenes[arriveAt];
+  const done = () => { world?.setCamera(null); world?.setSoft?.(0); host.style.clipPath = ''; dial?.remove(); root.classList.remove('is-dive'); lastY = NaN; };
+  if (!world || !dial) { done(); return; }
+  const W = innerWidth, H = innerHeight, cy = (W > 900 ? 0.44 : 0.4) * H, lens0 = 112, full = Math.hypot(W, H) / 2 * 1.08;
+  // the altitude at which the Earth's disc is r px across the middle of the screen (vertical field 32°; a tall phone's
+  // altitudes are scaled by 1.7 in placeCamera, so the request is divided by it)
+  const altFor = r => (1 / Math.sin(Math.atan(r / (H / 2) * Math.tan(16 * Math.PI / 180))) - 1) * 6371 / (W / H < 0.8 ? 1.7 : 1);
+  const from = { ...EYE, alt: altFor(lens0 * 0.97) }, to = s.camera;
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), span = (t, a, b) => clamp((t - a) / (b - a));
+  const inOut = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  world.setCamera({ from, to, t: 0 });
+  host.style.clipPath = `circle(${lens0}px at 50% ${cy}px)`;
+  // the live globe behind the still, drawn and settled, then the still goes
+  await new Promise(r => setTimeout(r, HOLD ? 700 : 250));
+  $('.m-dial__still', dial).style.opacity = 0; // the live globe is the same picture: the still fades as the dive begins
+  if (HOLD) return; // the dive held at its first frame, for making the still
+  if (reduced) { done(); return; }
+  const END = 2.4;
+  await new Promise(res => {
+    const t0 = performance.now();
+    const step = ts => {
+      const t = Math.min(END, (ts - t0) / 1000);
+      // the dial comes towards the reader and its lens opens over the whole frame; the ring passes out of view
+      const r = lens0 + (full - lens0) * inOut(span(t, 0, 1.2));
+      dial.style.transform = `scale(${(r / lens0).toFixed(4)})`;
+      dial.style.opacity = (1 - span(t, 0.65, 1.15)).toFixed(3);
+      host.style.clipPath = `circle(${r.toFixed(1)}px at 50% ${cy}px)`;
+      // the camera flies from the lens's view down into the scene; the middle of the dive goes soft, as a fast move does
+      const f = span(t, -0.15, 1.95);
+      world.setCamera({ from, to, t: f });
+      world.setSoft(Math.pow(Math.sin(Math.PI * clamp((f - 0.12) / 0.8)), 1.5) * 0.9);
+      // as the camera lands, the scene's card comes up and the page's own frame (nav, reel) returns
+      if (t >= 1.7) root.classList.remove('is-dive');
+      if (t < END) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+  done();
 }
 
 async function start() {
@@ -955,7 +1004,7 @@ async function start() {
   const enter = () => requestAnimationFrame(() => { loader.classList.add('is-done'); root.classList.add('is-ready'); });
   if (snd && arriveAt < 0) gate(enter); else enter();
   boot();
-  if (arriveAt >= 0) { toArrive(); lastY = NaN; history.replaceState(null, '', location.pathname + '#' + scenes[arriveAt].id); }
+  if (arriveAt >= 0) { toArrive(); lastY = NaN; history.replaceState(null, '', location.pathname + '#' + scenes[arriveAt].id); if (diving) dive(); }
   else if (location.hash) { const k = scenes.findIndex(s => '#' + s.id === location.hash); if (k >= 0) setTimeout(() => goTo(k), 400); }
   else resume();
 }

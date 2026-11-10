@@ -64,7 +64,9 @@ commandWords(m('words'), d.words);
 flashcards(m('cards'), d.cards, d.id);
 quiz(m('quiz'), d.quiz.map(q => ({ ...q })), { title: `${d.name} ${d.code}` });
 
-instrument($('[data-inst]'), id, d);
+// History opens on the eyepiece and its next step (assets/js/eyepiece.js); the other hubs keep their instruments
+if (id === 'history') import('./eyepiece.js').then(m => m.eyepiece($('.s-hero')));
+else instrument($('[data-inst]'), id, d);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 bar();
 boot();
