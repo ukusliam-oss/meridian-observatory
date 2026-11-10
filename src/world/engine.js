@@ -225,7 +225,7 @@ const earthFrag = /* glsl */`
       float a = 0.13, a2 = a * a, nh = max(dot(n, hv), 0.0);
       float D = a2 / (3.14159 * pow(nh * nh * (a2 - 1.0) + 1.0, 2.0));
       float F = 0.02 + 0.98 * pow(1.0 - max(dot(v, hv), 0.0), 5.0);
-      col += vec3(1.0, 0.95, 0.86) * D * F * max(dot(n, L), 0.0) * 0.22 * wm;
+      col += vec3(1.0, 0.95, 0.86) * min(D, 5.0) * F * max(dot(n, L), 0.0) * 0.16 * wm; // capped: seen from far off the lobe had burned out
       col += uRim * rim * 0.55 * (0.3 + 0.7 * smoothstep(-0.3, 0.5, dot(n, L)));
     } else col += uRim * rim * 0.55;
     // aerial perspective: ground seen far off and low lies behind more air, which takes the sky's light there: pale by
@@ -1318,6 +1318,8 @@ export async function createWorld(host, { scenes, hero, data, dataUrl, relief, t
     heightsReady: site => demOf(site).then(Boolean),
     stats,
     get post() { return post; }, // the lens, when `look` is 1 or more
+    // the whole frame softened (0 sharp … 1), as a fast camera move is: a dive passes through heights no texture is made for
+    setSoft(k) { if (post && post.uniforms.uSoft.value !== k) { post.uniforms.uSoft.value = k; dirty = true; } },
     // the frame darkens while the scene's notes are read over it (1 clear … 0.4 dim)
     setDim(k) { if (post && post.uniforms.uDim.value !== k) { post.uniforms.uDim.value = k; dirty = true; } },
     camera, // for checks in the preview

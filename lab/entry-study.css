@@ -1,0 +1,39 @@
+/* Entry study: the History hub's first screen with its dial as an eyepiece, and the dive through it into a scene. */
+.study-page { --lens: 112; --film-ink: #ece7de; --film-2: rgb(236 231 222 / .74); --film-3: rgb(236 231 222 / .56); overflow: hidden; height: 100svh; background: #05060a; }
+/* the globe is seen only through the dial's lens until the dive opens it to the whole frame */
+.es-world { clip-path: circle(var(--r, 0px) at var(--cx, 50%) var(--cy, 40%)); }
+.es-hub { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.es-hub > * { pointer-events: auto; }
+.es-kicker, .es-title, .es-next { transition: none; }
+.es-kicker { position: absolute; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 34px); margin: 0; text-align: center; font: 400 12px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--film-3); }
+.es-title { position: absolute; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 58px); margin: 0; text-align: center; font: 400 clamp(3rem, 2rem + 6vw, 5.6rem)/.9 var(--serif); letter-spacing: .02em; text-transform: uppercase; color: var(--film-ink); }
+/* the dial: a ring of years round a lens; its centre is where the globe's centre falls on the screen */
+.es-dial { position: absolute; left: 50%; top: var(--cy, 40%); width: 320px; height: 320px; translate: -50% -50%; transform-origin: 50% 50%; will-change: transform, opacity; }
+.es-dial svg { width: 100%; height: 100%; overflow: visible; }
+.es-dial text { font: 400 9px var(--mono); letter-spacing: .08em; fill: rgb(236 231 222 / .5); }
+/* the next panel: an opaque night plate, lit only along its sun-side edge */
+.es-next { position: absolute; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 22px); padding: 20px 20px 18px; border-radius: 6px;
+  background: #0a0c12; box-shadow: inset 1px 1px 0 rgb(236 231 222 / .16), 0 30px 60px -30px #000; display: grid; gap: 6px; }
+.es-why { margin: 0; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--acc); }
+.es-where { margin: 0; font: 400 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--film-3); }
+.es-what { margin: 6px 0 2px; font: 400 1.7rem/1.05 var(--serif); text-transform: uppercase; color: var(--film-ink); }
+.es-what em { display: block; font-size: .62em; text-transform: none; color: var(--film-2); margin-bottom: .2em; }
+.es-left { margin: 0; font: 400 14px/1.4 var(--sans); color: var(--film-2); }
+.es-bar { height: 1px; background: rgb(236 231 222 / .14); margin: 8px 0 12px; }
+.es-bar i { display: block; height: 100%; background: var(--film-ink); }
+.es-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.es-go { font: 400 15px/1 var(--serif); letter-spacing: .14em; text-transform: uppercase; color: #05060a; background: var(--film-ink); border: 0; border-radius: 999px; padding: 14px 22px; cursor: pointer; }
+.es-go:focus-visible, .es-alt:focus-visible { outline: 1px solid var(--acc); outline-offset: 4px; }
+.es-alt { font: 400 13px var(--serif); letter-spacing: .14em; text-transform: uppercase; color: var(--film-2); text-decoration: none; border-bottom: 1px solid rgb(236 231 222 / .3); padding-bottom: 3px; }
+/* the scene's title card, as the chapter opens it */
+.es-card { position: fixed; left: 50%; top: 50%; translate: -50% -50%; z-index: 4; width: min(100% - 32px, 1100px); display: grid; justify-items: center; gap: 18px; text-align: center;
+  opacity: 0; filter: blur(6px); pointer-events: none; }
+.es-card.is-on { opacity: 1; filter: none; transition: opacity 1.1s cubic-bezier(.16, 1, .3, 1), filter 1.1s cubic-bezier(.16, 1, .3, 1); }
+.es-replay { position: fixed; right: 16px; bottom: 16px; z-index: 5; font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--film-3); background: none; border: 1px solid rgb(236 231 222 / .2); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.es-replay[hidden] { display: none !important; }
+@media (min-width: 900px) {
+  .study-page { --lens: 118; }
+  .es-next { left: auto; right: clamp(24px, 6vw, 96px); bottom: auto; top: 50%; translate: 0 -50%; width: 380px; }
+  .es-title { left: clamp(24px, 6vw, 96px); right: auto; top: 50%; translate: 0 -50%; text-align: left; font-size: clamp(4rem, 2rem + 4vw, 7rem); }
+  .es-kicker { left: clamp(24px, 6vw, 96px); right: auto; top: calc(50% - 4.4rem); text-align: left; }
+}

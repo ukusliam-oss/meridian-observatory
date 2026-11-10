@@ -4241,7 +4241,7 @@ void main() {
     c += (h1(floor(gl_FragCoord.xy)) - .5) * uGrain * (1. - .6 * lm);
     gl_FragColor = vec4(c, 1.);
   }`,ih=i=>{i.userData.srgbOut=!0;let t=i.onBeforeCompile;i.onBeforeCompile=(n,s)=>{t?.call(i,n,s),n.fragmentShader=n.fragmentShader.replace("#include <colorspace_fragment>","gl_FragColor = sRGBTransferOETF( gl_FragColor );")};let e=i.customProgramCacheKey?.bind(i);i.customProgramCacheKey=()=>(e?e():"")+"|srgbOut",i.needsUpdate=!0};var Jv=new Mn(-1,1,1,-1,0,1),$v=new Dt,Kv=new Dt;var cg="varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }",hg=`
-  uniform sampler2D tScene; uniform vec2 uRes; uniform float uGrain, uExp, uSat, uDim, uDisplay, uDof;
+  uniform sampler2D tScene; uniform vec2 uRes; uniform float uGrain, uExp, uSat, uDim, uDisplay, uDof, uSoft;
   varying vec2 vUv;
   float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
   vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
@@ -4252,7 +4252,7 @@ void main() {
     vec2 dir = c * (uDisplay > 0.5 ? 0.006 : 0.012) * k, px = 1.0 / uRes;
     vec3 col = vec3(texture2D(tScene, vUv + dir).r, texture2D(tScene, vUv).g, texture2D(tScene, vUv - dir).b);
     // and a long lens's depth: in a shot tilted towards the horizon the far ground, at the top of the frame, goes soft
-    float kd = max(k, uDof * smoothstep(0.6, 0.97, vUv.y));
+    float kd = max(max(k, uDof * smoothstep(0.6, 0.97, vUv.y)), uSoft);
     vec3 soft = vec3(0.0);
     // the six taps turn a little from pixel to pixel, so a small bright light goes soft instead of into a hexagon
     float turn = hash(gl_FragCoord.xy * 0.71) * 1.0472;
@@ -4275,7 +4275,7 @@ void main() {
     col = pow(col, vec3(1.0 / 2.2));
     col += (hash(floor(gl_FragCoord.xy)) - 0.5) * uGrain;
     gl_FragColor = vec4(col, 1.0);
-  }`;function sh(i,{phone:t=!1,exposure:e=1,grain:n=.035,sat:s=.18,display:r=!1}={}){let a=new we(4,4,{type:Oe,samples:t?0:4}),o={tScene:{value:a.texture},uRes:{value:new zt},uGrain:{value:n},uExp:{value:e},uSat:{value:s},uDim:{value:1},uDisplay:{value:r?1:0},uDof:{value:0}},l=new Dt,c=new Dt,u=new Un,d=new Mn(-1,1,1,-1,0,1);return u.add(new xe(new sn(2,2),new fe({uniforms:o,vertexShader:cg,fragmentShader:hg,depthTest:!1,depthWrite:!1}))),{uniforms:o,setSize(h,m){a.setSize(h,m),o.uRes.value.set(h,m)},render(h,m){if(!r){i.setRenderTarget(a),i.render(h,m),i.setRenderTarget(null),i.render(u,d);return}h.traverse(M=>{let g=M.material;g&&!Array.isArray(g)&&!g.userData.srgbOut&&ih(g)}),i.getClearColor(l);let _=i.getClearAlpha();i.setClearColor(c.copy(l).convertLinearToSRGB(),_),i.setRenderTarget(a),i.clear(),i.render(h,m),i.setClearColor(l,_),i.setRenderTarget(null),i.render(u,d)},dispose(){a.dispose()}}}var rh=.1,jo=i=>Math.sqrt(Math.max(0,i))*.08,ah=2,oh=(i,t)=>[i*rh,-t*rh],ch=`
+  }`;function sh(i,{phone:t=!1,exposure:e=1,grain:n=.035,sat:s=.18,display:r=!1}={}){let a=new we(4,4,{type:Oe,samples:t?0:4}),o={tScene:{value:a.texture},uRes:{value:new zt},uGrain:{value:n},uExp:{value:e},uSat:{value:s},uDim:{value:1},uDisplay:{value:r?1:0},uDof:{value:0},uSoft:{value:0}},l=new Dt,c=new Dt,u=new Un,d=new Mn(-1,1,1,-1,0,1);return u.add(new xe(new sn(2,2),new fe({uniforms:o,vertexShader:cg,fragmentShader:hg,depthTest:!1,depthWrite:!1}))),{uniforms:o,setSize(h,m){a.setSize(h,m),o.uRes.value.set(h,m)},render(h,m){if(!r){i.setRenderTarget(a),i.render(h,m),i.setRenderTarget(null),i.render(u,d);return}h.traverse(M=>{let g=M.material;g&&!Array.isArray(g)&&!g.userData.srgbOut&&ih(g)}),i.getClearColor(l);let _=i.getClearAlpha();i.setClearColor(c.copy(l).convertLinearToSRGB(),_),i.setRenderTarget(a),i.clear(),i.render(h,m),i.setClearColor(l,_),i.setRenderTarget(null),i.render(u,d)},dispose(){a.dispose()}}}var rh=.1,jo=i=>Math.sqrt(Math.max(0,i))*.08,ah=2,oh=(i,t)=>[i*rh,-t*rh],ch=`
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float vnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
     return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }`,ug=`
