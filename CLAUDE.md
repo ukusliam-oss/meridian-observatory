@@ -514,6 +514,8 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   exam practice) as the last part row. A topic row goes to its notes (`#topic-<code>`, opened on arrival). The four
   steps are a table of contents (hairlines, no cards); hub plates are square-cornered (`--r-lg` 8 px) with a faint
   sun-side edge and a white pointer light; the papers' weights are plates lit by a line of the subject's colour.
+  Between 900 and 1280 px wide the hero's title steps down and the next panel narrows so neither covers the dial. The
+  Economics and Geography hub screenshot baselines and the three 1024 × 600 hub shots were updated (approved 2026-11-12).
 - A new home (2026-11-11, lab/home-study, commit 3c387d0) was built and dropped: the owner kept the current home. It was
   MERIDIAN over one eyepiece whose ring was divided between the three subjects (pointing at one turned the needle and
   showed its world in the lens: 1948 borders, the inflation map, the Pacific's earthquakes) and the subjects as rows,
