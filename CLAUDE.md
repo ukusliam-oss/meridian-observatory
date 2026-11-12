@@ -500,6 +500,20 @@ python3 tools/stamp.py # every page's import map and ?v= hashes (pages.py runs i
   lands; then the camera is given back with no settling move). Town lights fade towards the limb and from far off: they
   had added up into a yellow band on the night side. The 19 History hub and chapter screenshot baselines were updated
   to this look (approved 2026-11-10).
+- Hubs raised to one language (2026-11-12, same branch): all three hubs open on the eyepiece (`eyepiece.js`, `EYE`
+  per subject). Economics and Geography's dials read their chapter, a tick per scene and a numbered long tick where each
+  part begins (`tools/build-eyepiece.mjs` → `eyepiece-{economics,geography}.svg`); the lens shows a still of the chapter's
+  opening view (`eyepiece-{macro-policy,tectonics}.jpg`, taken from `?dive&hold` at 430 × 932, DPR 2, the lens clipped
+  at 215, 0.4 × 932). The chapters' first script is one shared script that names its dial and still from the body's
+  `data-subject` and `data-chapter` (no file names come from storage); the dive starts over the chapter's `hero.camera`
+  (KQ6 has none: 44 N, 15 E); the legend hides during it. The old instruments (`instrument.js`) are no longer mounted.
+  Under the first screen, the schedule (`schedule.js`, `.sched` in site.css) replaces the glass chapter cards: the
+  syllabus topics in order as hairline rows (code, question, Notes, the reader's confidence), the topic with a film
+  open with its question as the chapter sets it and its parts as rows (years for History, scenes, minutes, a tick per
+  scene: seen, known, "not yet"; "You are here" on the reader's part), and the companion (Paper 2 room, policy lab,
+  exam practice) as the last part row. A topic row goes to its notes (`#topic-<code>`, opened on arrival). The four
+  steps are a table of contents (hairlines, no cards); hub plates are square-cornered (`--r-lg` 8 px) with a faint
+  sun-side edge and a white pointer light; the papers' weights are plates lit by a line of the subject's colour.
 - A new home (2026-11-11, lab/home-study, commit 3c387d0) was built and dropped: the owner kept the current home. It was
   MERIDIAN over one eyepiece whose ring was divided between the three subjects (pointing at one turned the needle and
   showed its world in the lens: 1948 borders, the inflation map, the Pacific's earthquakes) and the subjects as rows,

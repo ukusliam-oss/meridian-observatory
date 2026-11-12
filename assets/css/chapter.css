@@ -722,6 +722,6 @@ html:not(.is-ready) .p2page :is(main, .footer) { visibility: hidden; animation: 
 /* ── the hub's dive: the page opens on the hub's eyepiece; its own frame waits until the camera lands ── */
 .is-dive .loader { background: transparent; }
 .is-dive .loader > * { visibility: hidden; }
-.is-dive .nav, .is-dive .pillnav, .is-dive .ribbon, .is-dive .tabbar, .is-dive .world__labels, .is-dive .sc__fix { opacity: 0 !important; }
+.is-dive .nav, .is-dive .pillnav, .is-dive .ribbon, .is-dive .tabbar, .is-dive .world__labels, .is-dive .world__legend, .is-dive .sc__fix { opacity: 0 !important; }
 .chapter .nav, .chapter .pillnav, .chapter .tabbar { transition: opacity .8s ease; }
 .m-dial { will-change: transform, opacity; }

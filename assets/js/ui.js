@@ -95,7 +95,7 @@ export function topicMap(el, d) {
         <div class="topic-group__head" data-reveal><h3 class="h3">${g.title}</h3>
           <div class="topic-group__side">${g.note ? `<p>${g.note}</p>` : ''}<button class="chip topic-group__all" data-all>Expand all</button></div></div>
         <div class="topics">${g.items.map(t => `
-          <article class="card topic" data-code="${t.code}" data-conf="${conf[t.code] ?? ''}" data-reveal>
+          <article class="card topic" id="topic-${t.code}" data-code="${t.code}" data-conf="${conf[t.code] ?? ''}" data-reveal>
             <button class="topic__btn" aria-expanded="false">
               <span class="topic__code">${t.code}</span>
               <span><span class="topic__title">${t.title}</span><span class="topic__meta">${t.meta || `${t.points.length} points`}</span></span>

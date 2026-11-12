@@ -987,25 +987,6 @@ html.is-booting { overflow: hidden; }
 .section-head .h2 { max-width: 16ch; }
 .door__glyph svg { width: 100%; height: 100%; }
 
-/* ── History scroll chapters (cards under the History hero) ────────── */
-.chapters { padding-block: 56px 24px; }
-.chapters .eyebrow { margin-bottom: 22px; }
-.chapters__grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; }
-.chapter-card { position: relative; display: grid; gap: 16px; align-content: start; padding: clamp(24px, 3vw, 36px); border-radius: var(--r-lg); overflow: hidden; color: #fff;
-  background: radial-gradient(120% 120% at 100% 0%, color-mix(in oklab, var(--accent-deep) 60%, transparent), rgb(12 13 20 / .92) 58%), #0a0b10;
-  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06);
-  transition: transform .6s var(--ease), border-color .3s; }
-.chapter-card:hover { transform: translateY(-4px); border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
-/* History's chapter cards are fully violet, like the chapters they open; the hub around them stays amber */
-[data-subject="history"] .chapter-card { --accent: var(--brand); --accent-deep: var(--brand-deep); }
-.chapter-card--paper { background: radial-gradient(120% 120% at 0% 100%, rgb(242 236 223 / .14), rgb(12 13 20 / .94) 60%), #0a0b10; }
-.chapter-card__tag { font: 500 var(--fs-label)/1.3 var(--mono); letter-spacing: .02em; text-transform: uppercase; color: rgb(255 255 255 / .74); }
-.chapter-card__title { font-family: var(--serif); font-size: clamp(2rem, 1.1rem + 2.6vw, 3.4rem); line-height: .9; text-transform: uppercase; }
-.chapter-card__title em { display: block; font-style: italic; text-transform: none; color: var(--accent); }
-.chapter-card__title .lc { text-transform: none; }
-.chapter-card__text { max-width: 46ch; font-size: 15.5px; line-height: 1.55; color: rgb(255 255 255 / .78); }
-.chapter-card__go { font: 500 var(--fs-label)/1.2 var(--mono); text-transform: uppercase; color: var(--accent); }
-@media (max-width: 900px) { .chapters__grid { grid-template-columns: 1fr; } }
 
 /* ── 404: off the map ── */
 .lost { position: relative; min-height: 100svh; display: grid; align-items: center; padding-block: calc(var(--nav-h) + 40px) 80px; overflow: hidden;
@@ -1030,7 +1011,7 @@ html.is-booting { overflow: hidden; }
 .m-dial__ring { position: absolute; inset: 0; width: 100%; height: 100%; }
 .m-dial__needle { position: absolute; left: 159.25px; top: 16px; width: 1.5px; height: 30px; background: #ece7de; transform-origin: 50% 144px; rotate: var(--a, 0deg); }
 .m-dial__needle::before { content: ""; position: absolute; left: -2.25px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: #ece7de; }
-/* the History hub on its eyepiece: the title above the dial, the next panel below it, nothing else on the first screen */
+/* a hub on its eyepiece: the title above the dial, the next panel below it, nothing else on the first screen */
 .s-hero--eye { min-height: 100svh; padding: 0; overflow: hidden; }
 .s-hero--eye .inst, .s-hero--eye .s-hero__row, .s-hero--eye .s-hero__code { display: none; }
 .s-hero--eye .wrap { position: absolute; left: 0; right: 0; top: calc(var(--nav-h, 64px) + 6px); width: auto; text-align: center; }
@@ -1039,7 +1020,7 @@ html.is-booting { overflow: hidden; }
 .s-hero--eye .h1 { font-size: clamp(3rem, 2rem + 6vw, 5.6rem); line-height: .9; }
 .eye-next { position: absolute; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 92px); z-index: 3; padding: 20px 20px 18px; border-radius: 6px;
   background: #0a0c12; box-shadow: inset 1px 1px 0 rgb(236 231 222 / .16), 0 30px 60px -30px #000; display: grid; gap: 6px; text-align: left; }
-.eye-next__why { margin: 0; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--hist); }
+.eye-next__why { margin: 0; font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
 .eye-next__where { margin: 0; font: 400 12px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(236 231 222 / .56); }
 .eye-next__what { margin: 6px 0 2px; font: 400 1.7rem/1.05 var(--serif); text-transform: uppercase; color: #ece7de; }
 .eye-next__what em { display: block; font-size: .62em; text-transform: none; color: rgb(236 231 222 / .74); margin-bottom: .2em; }
@@ -1049,7 +1030,7 @@ html.is-booting { overflow: hidden; }
 .eye-next__go { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .eye-next__btn { font: 400 15px/1 var(--serif); letter-spacing: .14em; text-transform: uppercase; color: #05060a; background: #ece7de; border-radius: 999px; padding: 14px 22px; text-decoration: none; }
 .eye-next__alt { font: 400 13px var(--serif); letter-spacing: .14em; text-transform: uppercase; color: rgb(236 231 222 / .74); text-decoration: none; border-bottom: 1px solid rgb(236 231 222 / .3); padding-bottom: 3px; }
-.eye-next__btn:focus-visible, .eye-next__alt:focus-visible { outline: 1px solid var(--hist); outline-offset: 4px; }
+.eye-next__btn:focus-visible, .eye-next__alt:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
 .s-hero--eye .wrap, .eye-next { transition: opacity .38s ease, filter .38s ease; }
 .s-hero--eye.is-leaving .wrap, .s-hero--eye.is-leaving .eye-next { opacity: 0; filter: blur(6px); }
 @media (min-width: 900px) {
@@ -1059,3 +1040,88 @@ html.is-booting { overflow: hidden; }
   .eye-next { left: auto; right: clamp(24px, 6vw, 96px); bottom: auto; top: 50%; translate: 0 -50%; width: 380px; }
 }
 @media (prefers-reduced-motion: reduce) { .s-hero--eye .wrap, .eye-next { transition: none; } }
+
+/* ── a hub's schedule (schedule.js): the syllabus topics as rows, the one with a film open on its parts. No boxes, no
+   glass: hairlines on the night, one size for reading, the reader's place shown in ticks and words, nothing moving ── */
+.sched { padding-block: clamp(64px, 9vw, 128px) clamp(48px, 6vw, 88px); background: var(--bg); color: var(--text); }
+.sched__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 40px; margin-bottom: clamp(22px, 3vw, 36px); }
+.sched__h { margin: 0; font: 400 clamp(2.2rem, 1.5rem + 2.2vw, 3.6rem)/.88 var(--serif); text-transform: uppercase; }
+.sched__h sup { margin-left: .35em; font: 400 13px var(--mono); letter-spacing: .06em; vertical-align: top; position: relative; top: .2em; color: var(--text-3); }
+.sched__sub { margin: 0; max-width: 62ch; font: 400 var(--fs-label)/1.6 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.sched__group { margin: 44px 0 0; padding-bottom: 12px; font: 500 var(--fs-label)/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+.sched__head + .sched__group { margin-top: 0; }
+.sched__list, .sched__parts { list-style: none; margin: 0; padding: 0; }
+.sched__list { border-top: 1px solid var(--line-2); }
+.sched__row { border-bottom: 1px solid var(--line-2); }
+.sched a { color: inherit; text-decoration: none; }
+.sched__row > a { position: relative; display: grid; grid-template-columns: 72px minmax(0, 1fr) auto 112px; align-items: baseline; gap: 6px 28px; padding: 20px 36px 20px 0; min-height: 44px; transition: background-color .3s ease; }
+.sched__row > a::after, .sched__go { content: "→"; position: absolute; right: 6px; top: 50%; translate: 0 -50%; font: 400 16px var(--sans); color: var(--text-3); transition: translate .4s var(--ease), color .3s ease; }
+.sched__row > a:hover::after, .sched__part > a:hover .sched__go { translate: 5px -50%; color: var(--text); }
+.sched__code { font: 500 13px/1.4 var(--mono); letter-spacing: .04em; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.sched__q { font: 400 18px/1.4 var(--sans); letter-spacing: -.005em; color: var(--text); }
+.sched__kind, .sched__mine, .sched__meta, .sched__facts { font: 400 var(--fs-label)/1.5 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.sched__mine { color: var(--text-2); text-align: right; }
+.sched__row > a:hover, .sched__part > a:hover { background: rgb(255 255 255 / .025); }
+.sched a:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+/* the film: its question set as the chapter opens it, its parts as rows of their own */
+.sched__row--film { padding-block: clamp(28px, 4vw, 48px) 0; }
+[data-subject="history"] .sched__row--film { --accent: var(--brand); }
+.sched__row > .sched__film { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 18px 28px; align-items: baseline; padding: 0 36px 0 0; }
+.sched__film .sched__code { grid-row: span 2; color: var(--text-2); }
+.sched__title { max-width: 25ch; font: 400 clamp(2rem, 1.2rem + 2.6vw, 3.8rem)/.9 var(--serif); text-transform: uppercase; transition: color .3s ease; }
+.sched__title em { display: block; margin-bottom: .04em; font-style: italic; text-transform: none; color: var(--accent); }
+.sched__title .lc { text-transform: none; }
+.sched__film:hover .sched__title { color: #fff; }
+.sched__facts { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.sched__facts span + span::before { content: none; }
+.sched__parts { margin: clamp(22px, 3vw, 34px) 0 0 100px; border-top: 1px solid var(--line); }
+.sched__part > a { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto 150px; align-items: center; gap: 4px 24px; padding: 13px 36px 13px 0; min-height: 50px; border-bottom: 1px solid var(--line); transition: background-color .3s ease; }
+.sched__n { font: 400 var(--fs-label)/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.sched__name { font: 400 17px/1.35 var(--sans); color: var(--text); }
+.sched__here { margin-left: 12px; font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.sched__part.is-here .sched__n { color: var(--accent); }
+/* a tick per scene: seen is grey, known is white, "not yet" is an outline in the chapter's colour */
+.sched__ticks { display: flex; justify-content: flex-end; gap: 3px; }
+.sched__ticks i { width: 3px; height: 14px; border-radius: 1px; background: var(--line-2); }
+.sched__ticks i.is-seen { background: var(--text-3); }
+.sched__ticks i.is-known { background: var(--text); }
+.sched__ticks i.is-again { background: none; box-shadow: inset 0 0 0 1px var(--accent); }
+.sched__part--side .sched__name { font-family: var(--serif); font-size: 19px; letter-spacing: .06em; text-transform: uppercase; }
+.sched__part--side .sched__n { color: var(--accent); }
+.sched__part--side .sched__meta { grid-column: 3 / 5; text-align: right; }
+.sched__more { margin: 22px 0 0; font: 400 15px/1.5 var(--sans); color: var(--text-2); }
+.sched__more a { color: var(--text); border-bottom: 1px solid var(--line-3); }
+@media (max-width: 760px) {
+  .sched__row > a { grid-template-columns: 44px minmax(0, 1fr); padding: 16px 28px 16px 0; }
+  .sched__kind, .sched__mine { grid-column: 2; text-align: left; }
+  .sched__mine:empty { display: none; }
+  .sched__q { font-size: 17px; }
+  .sched__row > .sched__film { grid-template-columns: 1fr; gap: 12px; padding-right: 28px; }
+  .sched__film .sched__code { grid-row: auto; }
+  .sched__parts { margin-left: 0; }
+  .sched__part > a { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 4px 28px; padding-right: 28px; }
+  .sched__part > a .sched__meta { grid-column: 2; grid-row: 2; }
+  .sched__part > a .sched__ticks { grid-column: 3; grid-row: 1 / 3; }
+  .sched__part--side .sched__meta { grid-column: 2 / 4; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) { .sched__row > a::after, .sched__go, .sched__title { transition: none; } }
+
+/* the four steps as a table of contents, not cards: a hairline over each, the number a label */
+.path__steps { gap: 0 28px; }
+.path__step { position: relative; height: 100%; padding: 20px 0 10px; border-top: 1px solid var(--line-2); color: var(--text); text-decoration: none; transition: border-color .4s var(--ease); }
+.path__step:hover { transform: none; border-color: var(--text-2); }
+.path__n { font: 400 var(--fs-label)/1 var(--mono); letter-spacing: .1em; color: var(--text-3); }
+@media (max-width: 560px) { .path__steps { gap: 0; } .path__step { padding: 16px 0; } .path__n { grid-row: span 3; font-size: var(--fs-label); } }
+
+/* a hub's reading plates: square-cornered, opaque, lit only by a faint line on the sun's side; the pointer's light is
+   white, not the subject's colour */
+body[data-subject]:not(.chapter) { --r-lg: 8px; --r-md: 6px; --r-sm: 4px; }
+body[data-subject]:not(.chapter) .card { box-shadow: inset 1px 1px 0 rgb(255 255 255 / .05), 0 30px 80px -40px rgb(0 0 0 / .6); }
+[data-theme="light"] body[data-subject]:not(.chapter) .card { box-shadow: 0 1px 2px rgb(22 20 12 / .05), 0 24px 60px -36px rgb(22 20 12 / .22); }
+body[data-subject]:not(.chapter) .card[data-spot]::before { background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / .035), transparent 62%); }
+body[data-subject]:not(.chapter) .weights { border-radius: var(--r-md); }
+/* the papers' weights: plates on the night, each lit by a line of the subject's colour as strong as its share */
+body[data-subject]:not(.chapter) .weights__seg, [data-theme="light"] body[data-subject]:not(.chapter) .weights__seg:not(.weights__seg--alt) {
+  background: var(--surface); color: var(--text); box-shadow: inset 0 3px 0 color-mix(in oklab, var(--accent) var(--mix), transparent), inset 0 0 0 1px var(--line); }
+body[data-subject]:not(.chapter) .weights__seg--alt { background: repeating-linear-gradient(135deg, var(--surface) 0 10px, var(--surface-2) 10px 20px); box-shadow: inset 0 3px 0 color-mix(in oklab, var(--accent) 30%, transparent), inset 0 0 0 1px var(--line); }
+body[data-subject]:not(.chapter) .weights__seg span { color: var(--text-2); }

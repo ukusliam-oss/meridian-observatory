@@ -1,7 +1,8 @@
 // Subject page: the hero is static HTML; everything below it is rendered from the data file.
 import { boot, subnav, $, icons } from './core.js';
 import { examAnatomy, topicMap, technique, commandWords, flashcards, quiz, examplesTracker } from './ui.js';
-import { instrument } from './instrument.js';
+import { eyepiece } from './eyepiece.js';
+import { schedule } from './schedule.js';
 import { practice } from './practice.js';
 import { bar } from './bar.js';
 
@@ -42,7 +43,7 @@ const [nid, nname, ncolor, ncode] = NEXT[id];
 $('#content').insertAdjacentHTML('beforeend', `
   <section class="path"><div class="wrap">
     <p class="eyebrow">Revise in four steps</p>
-    <ol class="path__steps">${STEPS.map((st, k) => `<li><a class="card path__step" href="#${st.secs[0][0]}" data-spot data-reveal>
+    <ol class="path__steps">${STEPS.map((st, k) => `<li><a class="path__step" href="#${st.secs[0][0]}" data-reveal>
       <span class="path__n">${num(k)}</span><span class="path__t"><em>${st.em}</em> ${st.rest}</span>
       <span class="path__d">${st.text}</span><span class="path__in mono">${st.secs.map(x => x[1]).join(' · ')}</span></a></li>`).join('')}</ol>
   </div></section>
@@ -64,9 +65,10 @@ commandWords(m('words'), d.words);
 flashcards(m('cards'), d.cards, d.id);
 quiz(m('quiz'), d.quiz.map(q => ({ ...q })), { title: `${d.name} ${d.code}` });
 
-// History opens on the eyepiece and its next step (assets/js/eyepiece.js); the other hubs keep their instruments
-if (id === 'history') import('./eyepiece.js').then(m => m.eyepiece($('.s-hero')));
-else instrument($('[data-inst]'), id, d);
+// every hub opens on its eyepiece and the next step (eyepiece.js), then its schedule: the syllabus topics as rows, the
+// one with a film open on its parts (schedule.js)
+eyepiece($('.s-hero'), id);
+schedule($('[data-sched]'), d, id);
 $('.nav__links').insertAdjacentHTML('afterend', `<nav class="nav__sub subnav" aria-label="On this page"><div class="seg">${STEPS.map(st => st.secs.map(([h, l]) => `<a href="#${h}">${l}</a>`).join('')).join('<i class="seg__sep" aria-hidden="true"></i>')}</div></nav>`);
 bar();
 boot();

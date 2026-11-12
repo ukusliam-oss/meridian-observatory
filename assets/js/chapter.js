@@ -903,7 +903,9 @@ function arrive() {
 // behind the still, the still goes; the dial comes towards the reader and its lens opens over the frame while the camera
 // flies from the lens's view down to the scene (world.setCamera { from, to, t }, the path and easing of a flight between
 // scenes), and the scene's card comes up: the first entry study (lab/entry-study.html, e69a1a8), now on this page.
-const EYE = { lat: 44, lon: 15 };
+// The lens looks at the chapter's opening view (KQ6, which has none of its own, at Europe); the hub's still of it is
+// taken from this same frame (?dive&hold).
+const EYE = data.hero?.camera ? { lat: data.hero.camera.lat, lon: data.hero.camera.lon } : { lat: 44, lon: 15 };
 async function dive() {
   const dial = $('.m-dial'), host = $('[data-world]'), s = scenes[arriveAt];
   const done = () => { world?.setCamera(null); world?.setSoft?.(0); host.style.clipPath = ''; dial?.remove(); root.classList.remove('is-dive'); lastY = NaN; };

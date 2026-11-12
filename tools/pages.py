@@ -206,64 +206,9 @@ HEROES = {
   'economics': ('Economics', '0455', '2027–2029 syllabus', 'How consumers, firms and governments make decisions when resources are scarce.', [('6', 'topics'), ('40', 'questions in Paper 1'), ('70', '% of total marks in Paper 2')]),
   'geography': ('Geography', '0460', '2027–2029 syllabus', 'Five physical and five human topics. Each topic includes how people manage the environment sustainably.', [('10', 'topics'), ('16', 'detailed specific examples'), ('75', 'marks in each written paper')]),
 }
-# History chapters told as scroll journeys over the globe (history/kq*.html), shown under the History hero
-CHAPTERS = '''
-<section class="chapters" data-tone="dark"><div class="wrap">
-  <p class="eyebrow">Scroll chapters · start here for the June 2027 Paper 2 topic</p>
-  <div class="chapters__grid">
-    <a class="chapter-card" href="history/kq6.html" data-reveal>
-      <span class="chapter-card__tag">Key question 6 · 33 scenes · about 50 minutes</span>
-      <span class="chapter-card__title"><em>How secure was</em>the USSR's control over Eastern Europe, 1948–<span class="lc">c.</span>1989?</span>
-      <span class="chapter-card__text">Travel across a globe with the real borders of each date, from the iron curtain in 1948 to the fall of the Berlin Wall.</span>
-      <span class="chapter-card__go">Open the chapter →</span>
-    </a>
-    <a class="chapter-card chapter-card--paper" href="history/kq6-paper2.html" data-reveal>
-      <span class="chapter-card__tag">Paper 2 practice · 6 sources · 40 marks</span>
-      <span class="chapter-card__title"><em>Hungary, 1956:</em>how secure was Soviet control?</span>
-      <span class="chapter-card__text">Five source questions in the Paper 2 format, with a mark scheme and two example answers for every part.</span>
-      <span class="chapter-card__go">Practise with sources →</span>
-    </a>
-  </div>
-</div></section>'''
-
-# Economics chapter (economics/macro-policy.html), shown under the Economics hero
-ECON_CHAPTERS = '''
-<section class="chapters" data-tone="dark"><div class="wrap">
-  <p class="eyebrow">Scroll chapter · Topic 4.1–4.4</p>
-  <div class="chapters__grid">
-    <a class="chapter-card" href="economics/macro-policy.html" data-reveal>
-      <span class="chapter-card__tag">Government and the macroeconomy · 41 scenes · about 60 minutes</span>
-      <span class="chapter-card__title"><em>How do governments</em>manage the whole economy?</span>
-      <span class="chapter-card__text">The six aims, the conflicts between them, and fiscal, monetary and supply-side policy, on a globe coloured with real IMF data.</span>
-      <span class="chapter-card__go">Open the chapter →</span>
-    </a>
-    <a class="chapter-card chapter-card--paper" href="economics/macro-policy.html#lab" data-reveal>
-      <span class="chapter-card__tag">Policy lab · 5 tools · 6 aims</span>
-      <span class="chapter-card__title"><em>Try it:</em>move the policies, watch the aims</span>
-      <span class="chapter-card__text">Replay the 2009 recession and the 2022 inflation, or test your own policy. A simplified model for learning, not a forecast.</span>
-      <span class="chapter-card__go">Open the lab →</span>
-    </a>
-  </div>
-</div></section>'''
-GEO_CHAPTERS = '''
-<section class="chapters" data-tone="dark"><div class="wrap">
-  <p class="eyebrow">Scroll chapter · Topic 4 · draft, not yet reviewed by a teacher</p>
-  <div class="chapters__grid">
-    <a class="chapter-card" href="geography/tectonics.html" data-reveal>
-      <span class="chapter-card__tag">Tectonic hazards · 26 scenes · about 45 minutes</span>
-      <span class="chapter-card__title"><em>Why does the ground</em>shake and burn?</span>
-      <span class="chapter-card__text">Plates and boundaries, earthquakes and volcanoes, why people live with the risk, and how the impacts are managed, on a globe drawn from real earthquake, volcano and elevation data.</span>
-      <span class="chapter-card__go">Open the chapter →</span>
-    </a>
-    <a class="chapter-card chapter-card--paper" href="geography/tectonics.html#toolkit" data-reveal>
-      <span class="chapter-card__tag">Paper 1 practice · 2 questions · 7-mark answers</span>
-      <span class="chapter-card__title"><em>Then try:</em>earthquakes and volcanoes, exam style</span>
-      <span class="chapter-card__text">Resource questions, a 5-mark evaluation and a 7-mark answer on a named example, with mark schemes and Level 2 and Level 3 answers to compare.</span>
-      <span class="chapter-card__go">Open the practice →</span>
-    </a>
-  </div>
-</div></section>'''
-SUBJECT_CHAPTERS = {'history': CHAPTERS, 'economics': ECON_CHAPTERS, 'geography': GEO_CHAPTERS}
+# Under each hub's first screen, its schedule: the syllabus topics as rows, the one with a film open on its parts
+# (assets/js/schedule.js fills it; the chapters and their companions are links there)
+SCHEDULE = '\n<section class="sched" data-sched data-tone="dark"></section>'
 
 for k, (name, code, eyebrow, lede, stats) in HEROES.items():
     main = f'''
@@ -276,7 +221,7 @@ for k, (name, code, eyebrow, lede, stats) in HEROES.items():
     <div class="s-hero__row"><p class="lede">{lede}</p>
       <div class="s-hero__stats">{''.join(f'<div><b>{n}</b><span>{t}</span></div>' for n, t in stats)}</div></div>
   </div>
-</section>''' + SUBJECT_CHAPTERS.get(k, '')
+</section>''' + SCHEDULE
     (ROOT / f'{k}.html').write_text(shell(k, f'{name} {code} | Meridian', f'Cambridge IGCSE {name} {code} revision: assessment overview, syllabus content, an interactive diagram, exam technique, command words, flashcards and a quiz.', main, 'subject.js', k))
 # a page for an address that is not on the site (GitHub Pages serves /404.html for any of them, at any depth): it
 # sets its <base> from the address first, so its relative links and assets work wherever it is shown
