@@ -1040,6 +1040,13 @@ html.is-booting { overflow: hidden; }
   .eye-next { left: auto; right: clamp(24px, 6vw, 96px); bottom: auto; top: 50%; translate: 0 -50%; width: 380px; }
 }
 @media (prefers-reduced-motion: reduce) { .s-hero--eye .wrap, .eye-next { transition: none; } }
+/* between a tablet and a wide screen the dial, the title and the panel share less room: the title steps down and the
+   panel narrows to the edge, so neither covers the dial */
+@media (min-width: 900px) and (max-width: 1279px) {
+  .s-hero--eye .wrap { left: 24px; }
+  .s-hero--eye .h1 { font-size: clamp(3rem, .5rem + 5vw, 5rem); }
+  .eye-next { right: 24px; width: 320px; padding: 18px; }
+}
 
 /* ── a hub's schedule (schedule.js): the syllabus topics as rows, the one with a film open on its parts. No boxes, no
    glass: hairlines on the night, one size for reading, the reader's place shown in ticks and words, nothing moving ── */
